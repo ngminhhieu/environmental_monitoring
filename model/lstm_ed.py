@@ -40,6 +40,7 @@ class EncoderDecoder():
         self._dataset = self._data_kwargs.get('dataset')
         self._test_size = self._data_kwargs.get('test_size')
         self._valid_size = self._data_kwargs.get('valid_size')
+        self._test_batch_size = self._data_kwargs.get('test_batch_size')
 
         # logging.
         self._log_dir = self._get_log_dir(kwargs)
@@ -108,6 +109,48 @@ class EncoderDecoder():
         return log_dir
 
     def _model_construction(self, is_training=True):
+        # Model
+        encoder_inputs = Input(shape=(None, self._input_dim), name='encoder_input')
+        encoder = LSTM(self._rnn_units, return_state=True)
+        _, state_h, state_c = encoder(encoder_inputs)
+
+        encoder_states = [state_h, state_c]
+
+        decoder_inputs = Input(shape=(None, self._output_dim), name='decoder_input')
+        decoder_lstm = LSTM(self._rnn_units, return_sequences=True, return_state=True)
+        decoder_outputs, _, _ = decoder_lstm(decoder_inputs, initial_state=encoder_states)
+
+        decoder_dense = Dense(self._output_dim, activation='relu')
+        decoder_outputs = decoder_dense(decoder_outputs)
+        model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
+
+        if is_training:
+            return model
+        else:
+            self._logger.info("Load model from: {}".format(self._log_dir))
+            model.load_weights(self._log_dir + 'best_model.hdf5')
+            model.compile(optimizer=self._optimizer, loss='mse')
+
+            # Inference encoder_model
+            self.encoder_model = Model(encoder_inputs, encoder_states)
+
+            # Inference decoder_model
+            decoder_state_input_h = Input(shape=(self._rnn_units,))
+            decoder_state_input_c = Input(shape=(self._rnn_units,))
+            decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
+            decoder_outputs, state_h, state_c = decoder_lstm(decoder_inputs, initial_state=decoder_states_inputs)
+            decoder_states = [state_h, state_c]
+            decoder_outputs = decoder_dense(decoder_outputs)
+
+            self.decoder_model = Model([decoder_inputs] + decoder_states_inputs, [decoder_outputs] + decoder_states)
+
+            plot_model(model=self.encoder_model, to_file=self._log_dir + '/encoder.png', show_shapes=True)
+            plot_model(model=self.decoder_model, to_file=self._log_dir + '/decoder.png', show_shapes=True)
+
+            return model
+
+
+    def _model_construction_layers(self, is_training=True):
         # Model
         encoder_inputs = Input(shape=(None, self._input_dim))
         _, encoder_states = lstm_enc(encoder_inputs, rnn_unit=self._rnn_units,
@@ -188,14 +231,15 @@ class EncoderDecoder():
     def _test(self):
         scaler = self._data['scaler']
         data_test = self._data['test_data_norm']
+        weather_data = data_test[:, 0:4].copy()
+        pm_data = data_test[:, 4:].copy()
         T = len(data_test)
-        K = data_test.shape[1]
         l = self._seq_len
         h = self._horizon
-        pd = np.zeros(shape=(T - h), dtype='float32')
-        pd[:l] = data_test[:l]
-        _pd = np.zeros(shape=(T - h), dtype='float32')
-        _pd[:l] = data_test[:l]
+        pd = np.zeros(shape=(T - h, self._output_dim), dtype='float32')
+        pd[:l] = pm_data[:l]
+        _pd = np.zeros(shape=(T - h, self._output_dim), dtype='float32')
+        _pd[:l] = pm_data[:l]
         iterator = tqdm(range(0, T - l - h, h))
         for i in iterator:
             if i+l+h > T-h:
@@ -204,55 +248,55 @@ class EncoderDecoder():
                 _pd = _pd[~np.all(_pd==0, axis=1)]
                 iterator.close()
                 break
-            input = np.zeros(shape=(1, l, self._input_dim))
-            # input_dim = 2
-            input[0, :, 0] = pd[i:i + l]
-            # input[0, :, 1] = bm[i:i + l, k]
+            input = np.zeros(shape=(self._test_batch_size, l, self._input_dim))
+            input[0, :, 0:4] = weather_data[i:i + l]
+            input[0, :, 4:] = pm_data[i:i + l]
             yhats = self._predict(input)
-            yhats = np.squeeze(yhats, axis=-1)
-            _pd[i + l:i + l + h, k] = yhats
-            # update y
-            _bm = bm[i + l:i + l + h, k].copy()
-            _gt = data_test[i + l:i + l + h, k].copy()
-            pd[i + l:i + l + h, k] = yhats * (1.0 - _bm) + _gt * _bm
-        # save bm and pd to log dir
-        np.savez(self._log_dir + "binary_matrix_and_pd", bm=bm, pd=pd)
-        predicted_data = scaler.inverse_transform(_pd)
-        ground_truth = scaler.inverse_transform(data_test[:_pd.shape[0]])
+            _pd[i + l:i + l + h] = yhats
+            _gt = data_test[i + l:i + l + h, -h].copy()
+            pd[i + l:i + l + h] = _gt
+        # trim row to make weather data shape equal _pd shape
+        """ No Inverse Transform
+            predicted_data = _pd
+            ground_truth = data_test[:predicted_data.shape[0], -self._output_dim:]
+        """
+        
+        weather_data_trim = np.delete(weather_data, (_pd.shape[0]-weather_data.shape[0]), axis=0)
+        inverse_pred_data = scaler.inverse_transform(np.concatenate((weather_data_trim,_pd), axis=1))
+        predicted_data = inverse_pred_data[:,-self._output_dim:]
+        inverse_actual_data = scaler.inverse_transform(data_test[:predicted_data.shape[0]])
+        ground_truth = inverse_actual_data[:, -self._output_dim:]
         np.save(self._log_dir+'pd', predicted_data)
         np.save(self._log_dir+'gt', ground_truth)
+        print(predicted_data.shape)
         # save metrics to log dir
+        print(len(ground_truth.flatten()))
         error_list = utils.cal_error(ground_truth.flatten(), predicted_data.flatten())
         utils.save_metrics(error_list, self._log_dir, self._alg_name)
 
     def _predict_2(self, input):
-        target_seq = np.zeros((1, 1, self._output_dim))
-        yhat = np.zeros(shape=(self._horizon, 1),
+        target_seq = np.zeros((self._test_batch_size, 1, self._output_dim))
+        yhat = np.zeros(shape=(self._horizon, self._output_dim),
                         dtype='float32')
 
         output_tokens = self.model.predict([input, target_seq])
-        output_tokens = output_tokens[0, -1, 0]
-        yhat[0] = output_tokens
+        yhat = output_tokens
 
         return yhat
 
     def _predict(self, source):
         states_value = self.encoder_model.predict(source)
-        target_seq = np.zeros((1, 1, self._output_dim))
-        yhat = np.zeros(shape=(self._horizon+1, 1),
+        target_seq = np.zeros((self._test_batch_size, 1, self._output_dim))
+        yhat = np.zeros(shape=(self._horizon, self._output_dim),
                         dtype='float32')
-        for i in range(self._horizon + 1):
+        for i in range(self._horizon):
             output = self.decoder_model.predict([target_seq] + states_value)
             output_tokens = output[0]
-            output_tokens = output_tokens[0, -1, 0]
             yhat[i] = output_tokens
-
-            target_seq = np.zeros((1, 1, self._output_dim))
-            target_seq[0, 0, 0] = output_tokens
-
+            target_seq = output_tokens
             # Update states
             states_value = output[1:]
-        return yhat[-self._horizon:]
+        return yhat
 
     def load(self):
         self.model.load_weights(self._log_dir + 'best_model.hdf5')
@@ -299,5 +343,5 @@ class EncoderDecoder():
             plt.plot(preds[:, i], label='preds')
             plt.plot(gt[:, i], label='gt')
             plt.legend()
-            plt.savefig(self._log_dir + '[result_predict]series_{}.png'.format(str(i+1)))
+            plt.savefig(self._log_dir + '[result_predict]output_dim_{}.png'.format(str(i+1)))
             plt.close()

@@ -5,17 +5,18 @@ log_level: INFO
 gpu: 0
 data:
   batch_size: 200
+  test_batch_size: 1
   dataset: data/modified_monitoring_data.npz
   test_size: 0.2
   valid_size: 0.2
 model:
   seq_len: 24
   horizon: 1
-  input_dim: 8
+  input_dim: 7
   l1_decay: 0
   output_dim: 3
   rnn_units: 100
-  rnn_layers: 3
+  rnn_layers: 1
 train:
   dropout: 0.5
   epochs: 300

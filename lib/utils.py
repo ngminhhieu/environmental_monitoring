@@ -47,20 +47,20 @@ def prepare_train_valid_test_2d(data, test_size, valid_size):
 
 def create_data(data, seq_len, input_dim, output_dim, horizon):
     T = data.shape[0]
-    weather_data = data[:, 0:5].copy()
-    pm_data = data[:, 6:].copy()
+    weather_data = data[:, 0:4].copy()
+    pm_data = data[:, 4:].copy()
 
     en_x = np.zeros(shape=((T - seq_len - horizon), seq_len, input_dim))
-    de_x = np.zeros(shape=((T - seq_len - horizon), horizon + 1, output_dim))
-    de_y = np.zeros(shape=((T - seq_len - horizon), horizon + 1, output_dim))
+    de_x = np.zeros(shape=((T - seq_len - horizon), horizon, output_dim))
+    de_y = np.zeros(shape=((T - seq_len - horizon), horizon, output_dim))
 
     for i in range(T - seq_len - horizon):
-        en_x[i, :, 0:5] = weather_data[i:i + seq_len]
-        en_x[i, :, 6:] = pm_data[i:i + seq_len]
+        en_x[i, :, 0:4] = weather_data[i:i + seq_len]
+        en_x[i, :, 4:] = pm_data[i:i + seq_len]
 
-        de_x[i, :, 0] = pm_data[i + seq_len - 1:i + seq_len + horizon - 1]
-        de_x[i, 0, 0] = 0
-        de_y[i, :, 0] = pm_data[i + seq_len:i + seq_len + horizon]
+        de_x[i, :, :] = pm_data[i + seq_len - 1:i + seq_len + horizon - 1]
+        de_x[i, 0, :] = 0
+        de_y[i, :, :] = pm_data[i + seq_len:i + seq_len + horizon]
 
     return en_x, de_x, de_y
 

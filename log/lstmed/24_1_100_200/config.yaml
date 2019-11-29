@@ -1,0 +1,25 @@
+alg: lstmed
+base_dir: log/lstmed
+data:
+  batch_size: 200
+  dataset: data/modified_monitoring_data.npz
+  test_size: 0.2
+  valid_size: 0.2
+gpu: 0
+log_level: INFO
+model:
+  horizon: 1
+  input_dim: 7
+  l1_decay: 0
+  output_dim: 3
+  rnn_layers: 1
+  rnn_units: 100
+  seq_len: 24
+test:
+  run_times: 1
+train:
+  dropout: 0.5
+  epochs: 300
+  log_dir: log/lstmed\24_1_100_200/
+  optimizer: adam
+  patience: 20
