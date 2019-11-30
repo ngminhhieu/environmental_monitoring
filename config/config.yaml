@@ -17,6 +17,7 @@ model:
   output_dim: 3
   rnn_units: 100
   rnn_layers: 1
+  verified_percentage: 1
 train:
   dropout: 0.5
   epochs: 300

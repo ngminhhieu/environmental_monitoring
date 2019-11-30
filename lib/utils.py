@@ -45,11 +45,16 @@ def prepare_train_valid_test_2d(data, test_size, valid_size):
     return train_set, valid_set, test_set
 
 
-def create_data(data, seq_len, input_dim, output_dim, horizon):
+def create_data(data, seq_len, input_dim, output_dim, horizon, verified_percentage):
     T = data.shape[0]
-    weather_data = data[:, 0:4].copy()
-    pm_data = data[:, 4:].copy()
-
+    K = data.shape[1]
+    bm = binary_matrix(verified_percentage, T, K)
+    _data = data.copy()
+    _std = np.std(data)
+    _data[bm == 0] = np.random.uniform(_data[bm == 0] - _std, _data[bm == 0] + _std)
+    weather_data = _data[:, 0:4].copy()
+    pm_data = _data[:, 4:].copy()
+    
     en_x = np.zeros(shape=((T - seq_len - horizon), seq_len, input_dim))
     de_x = np.zeros(shape=((T - seq_len - horizon), horizon, output_dim))
     de_y = np.zeros(shape=((T - seq_len - horizon), horizon, output_dim))
@@ -65,7 +70,7 @@ def create_data(data, seq_len, input_dim, output_dim, horizon):
     return en_x, de_x, de_y
 
 
-def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, valid_size, **kwargs):
+def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, valid_size, verified_percentage):
     raw_data = np.load(dataset)['monitoring_data']
 
     print('|--- Splitting train-test set.')
@@ -83,17 +88,20 @@ def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, va
                                                                                          seq_len=seq_len,
                                                                                          input_dim=input_dim,
                                                                                          output_dim=output_dim,
-                                                                                         horizon=horizon)
+                                                                                         horizon=horizon,
+                                                                                         verified_percentage=verified_percentage)
     encoder_input_val, decoder_input_val, decoder_target_val = create_data(valid_data2d_norm,
                                                                                    seq_len=seq_len,
                                                                                    input_dim=input_dim,
                                                                                    output_dim=output_dim,
-                                                                                   horizon=horizon)
+                                                                                   horizon=horizon,
+                                                                                   verified_percentage=verified_percentage)
     encoder_input_eval, decoder_input_eval, decoder_target_eval = create_data(test_data2d_norm,
                                                                                       seq_len=seq_len,
                                                                                       input_dim=input_dim,
                                                                                       output_dim=output_dim,
-                                                                                      horizon=horizon)
+                                                                                      horizon=horizon,
+                                                                                      verified_percentage=verified_percentage)
 
     for cat in ["train", "val", "eval"]:
         e_x, d_x, d_y = locals()["encoder_input_" + cat], locals()[
@@ -132,3 +140,8 @@ def save_metrics(error_list, log_dir, alg):
     with open(log_dir + alg + "_metrics.csv", 'a') as file:
         writer = csv.writer(file)
         writer.writerow(error_list)
+
+def binary_matrix(verified_percentage, row, col):
+    tf = np.array([1, 0])
+    bm = np.random.choice(tf, size=(row, col), p=[verified_percentage, 1.0 - verified_percentage])
+    return bm

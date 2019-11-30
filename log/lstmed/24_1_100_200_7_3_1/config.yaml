@@ -3,6 +3,7 @@ base_dir: log/lstmed
 data:
   batch_size: 200
   dataset: data/modified_monitoring_data.npz
+  test_batch_size: 1
   test_size: 0.2
   valid_size: 0.2
 gpu: 0
@@ -15,11 +16,12 @@ model:
   rnn_layers: 1
   rnn_units: 100
   seq_len: 24
+  verified_percentage: 1
 test:
   run_times: 1
 train:
   dropout: 0.5
   epochs: 300
-  log_dir: log/lstmed\24_1_100_200/
+  log_dir: log/lstmed\24_1_100-100_200_7_3_1/
   optimizer: adam
   patience: 20

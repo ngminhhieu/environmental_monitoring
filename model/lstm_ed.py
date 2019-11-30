@@ -55,6 +55,7 @@ class EncoderDecoder():
         self._input_dim = self._model_kwargs.get('input_dim')
         self._output_dim = self._model_kwargs.get('output_dim')
         self._rnn_layers = self._model_kwargs.get('rnn_layers')
+        self._verified_percentage = self._model_kwargs.get('verified_percentage')
 
         # Train's args
         self._drop_out = self._train_kwargs.get('dropout')
@@ -69,7 +70,8 @@ class EncoderDecoder():
         self._data = utils.load_dataset(seq_len=self._seq_len, horizon=self._horizon,
                                                     input_dim=self._input_dim, output_dim=self._output_dim,
                                                     dataset=self._dataset,
-                                                    test_size=self._test_size, valid_size=self._valid_size)
+                                                    test_size=self._test_size, valid_size=self._valid_size,
+                                                    verified_percentage=self._verified_percentage)
 
         self.callbacks_list = []
 
@@ -99,9 +101,11 @@ class EncoderDecoder():
                 ['%d' % rnn_units for _ in range(rnn_layers)])
             seq_len = kwargs['model'].get('seq_len')
             horizon = kwargs['model'].get('horizon')
+            input_dim = kwargs['model'].get('input_dim')
+            output_dim = kwargs['model'].get('output_dim')
+            verified_percentage = kwargs['model'].get('verified_percentage')
 
-
-            run_id = '%d_%d_%s_%d/' % (seq_len, horizon, structure, batch_size)
+            run_id = '%d_%d_%s_%d_%d_%d_%g/' % (seq_len, horizon, structure, batch_size, input_dim, output_dim, verified_percentage)
             base_dir = kwargs.get('base_dir')
             log_dir = os.path.join(base_dir, run_id)
         if not os.path.exists(log_dir):
@@ -236,6 +240,7 @@ class EncoderDecoder():
         T = len(data_test)
         l = self._seq_len
         h = self._horizon
+        bm = utils.binary_matrix(self._verified_percentage, len(data_test), data_test.shape[1])
         pd = np.zeros(shape=(T - h, self._output_dim), dtype='float32')
         pd[:l] = pm_data[:l]
         _pd = np.zeros(shape=(T - h, self._output_dim), dtype='float32')
@@ -253,8 +258,11 @@ class EncoderDecoder():
             input[0, :, 4:] = pm_data[i:i + l]
             yhats = self._predict(input)
             _pd[i + l:i + l + h] = yhats
+
+            # update y
             _gt = data_test[i + l:i + l + h, -h].copy()
-            pd[i + l:i + l + h] = _gt
+            _bm = bm[i + l:i + l + h, -h].copy()
+            pd[i + l:i + l + h] = yhats * (1.0 - _bm) + _gt * _bm
         # trim row to make weather data shape equal _pd shape
         """ No Inverse Transform
             predicted_data = _pd
@@ -268,9 +276,7 @@ class EncoderDecoder():
         ground_truth = inverse_actual_data[:, -self._output_dim:]
         np.save(self._log_dir+'pd', predicted_data)
         np.save(self._log_dir+'gt', ground_truth)
-        print(predicted_data.shape)
         # save metrics to log dir
-        print(len(ground_truth.flatten()))
         error_list = utils.cal_error(ground_truth.flatten(), predicted_data.flatten())
         utils.save_metrics(error_list, self._log_dir, self._alg_name)
 
