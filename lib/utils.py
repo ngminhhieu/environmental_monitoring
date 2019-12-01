@@ -53,7 +53,7 @@ def create_data(data, seq_len, input_dim, output_dim, horizon, verified_percenta
     _std = np.std(data)
     _data[bm == 0] = np.random.uniform(_data[bm == 0] - _std, _data[bm == 0] + _std)
     weather_data = _data[:, 0:4].copy()
-    pm_data = _data[:, 4:].copy()
+    pm_data = _data[:, 5:].copy()
     
     en_x = np.zeros(shape=((T - seq_len - horizon), seq_len, input_dim))
     de_x = np.zeros(shape=((T - seq_len - horizon), horizon, output_dim))

@@ -235,8 +235,8 @@ class EncoderDecoder():
     def _test(self):
         scaler = self._data['scaler']
         data_test = self._data['test_data_norm']
-        weather_data = data_test[:, 0:4].copy()
-        pm_data = data_test[:, 4:].copy()
+        weather_data = data_test[:, 0:5].copy()
+        pm_data = data_test[:, 5:].copy()
         T = len(data_test)
         l = self._seq_len
         h = self._horizon
@@ -254,7 +254,7 @@ class EncoderDecoder():
                 iterator.close()
                 break
             input = np.zeros(shape=(self._test_batch_size, l, self._input_dim))
-            input[0, :, 0:4] = weather_data[i:i + l]
+            input[0, :, 0:4] = weather_data[i:i + l, 0:4]
             input[0, :, 4:] = pm_data[i:i + l]
             yhats = self._predict(input)
             _pd[i + l:i + l + h] = yhats
@@ -293,16 +293,18 @@ class EncoderDecoder():
     def _predict(self, source):
         states_value = self.encoder_model.predict(source)
         target_seq = np.zeros((self._test_batch_size, 1, self._output_dim))
-        yhat = np.zeros(shape=(self._horizon, self._output_dim),
+        preds = np.zeros(shape=(self._horizon, self._output_dim),
                         dtype='float32')
         for i in range(self._horizon):
             output = self.decoder_model.predict([target_seq] + states_value)
-            output_tokens = output[0]
-            yhat[i] = output_tokens
-            target_seq = output_tokens
+            yhat = output[0]
+            # store prediction
+            preds[i] = yhat
+            # update target sequence
+            target_seq = yhat
             # Update states
             states_value = output[1:]
-        return yhat
+        return preds
 
     def load(self):
         self.model.load_weights(self._log_dir + 'best_model.hdf5')
