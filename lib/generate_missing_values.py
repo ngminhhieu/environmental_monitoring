@@ -3,21 +3,21 @@ from pandas import read_csv
 import pandas as pd
 
 if __name__ == "__main__":
+    predicted_var = ['pm_10', 'pm_2.5', 'pm_1']
+    # dependent_var = ['wind_speed','wind_dir','temp', 'barometer', 'inner_temp']
+    dependent_var = ['wind_speed','wind_dir','temp', 'rh', 'barometer', 'inner_temp']
     original_data = read_csv('data/original_monitoring.csv')
-    for i in range(original_data.shape[0]):
-        data = original_data.iloc[:,i+1]
-        train_data = data[pd.isnull(data) == False]
-        train_data_2d = train_data.values.reshape(train_data.shape[0],1)
-        missing_data = data[pd.isnull(data)]
-        missing_data_2d = missing_data.values.reshape(missing_data.shape[0],1)
-        print(missing_data)
+    
+    for i in range(len(predicted_var)):
+        with_pm = original_data[pd.isnull(original_data[predicted_var[i]]) == False]
+        without_pm = original_data[pd.isnull(original_data[predicted_var[i]])]
         # fill missing values
         rfModel= RandomForestRegressor()
-        rfModel.fit(train_data_2d, train_data)
+        rfModel.fit(with_pm[dependent_var], with_pm[predicted_var[i]])
 
-        generated_values = rfModel.predict(X = missing_data_2d)
-        missing_data = generated_values.astype(float)
-        data = train_data.append(missing_data)
-
-    np.savez('data/predicted_data.npz', monitoring_data = data)
-    
+        generated_values = rfModel.predict(X = without_pm[dependent_var])
+        without_pm[predicted_var[i]] = generated_values.astype(float)
+        data = with_pm.append(without_pm)
+        data.sort_index(inplace=True)
+        original_data[predicted_var[i]] = data[predicted_var[i]]
+        original_data.to_csv('data/predicted_data_2.csv', encoding='utf-8', index=False)

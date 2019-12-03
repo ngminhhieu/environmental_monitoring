@@ -4,7 +4,7 @@ import sys
 import tensorflow as tf
 import numpy as np
 import yaml
-from model.lstm_ed import EncoderDecoder
+from model.supervisor import EncoderDecoder
 
 config = tf.ConfigProto()
 session = tf.Session(config=config)
