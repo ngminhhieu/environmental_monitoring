@@ -1,21 +1,21 @@
 ---
 alg: seq2seq
-base_dir: log/seq2seq/mean_data
+base_dir: log/seq2seq/comparison_data
 log_level: INFO
 gpu: 0
 data:
   batch_size: 200
   test_batch_size: 1
-  dataset: data/mean_data.npz
+  dataset: data/comparison_data.npz
   test_size: 0.2
   valid_size: 0.2
 model:
-  type: bilstm_ed
+  type: lstm_ed
   seq_len: 24
   horizon: 1
-  input_dim: 7
+  input_dim: 5
   l1_decay: 0
-  output_dim: 3
+  output_dim: 2
   rnn_units: 100
   rnn_layers: 1
   verified_percentage: 1

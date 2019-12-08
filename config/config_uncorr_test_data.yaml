@@ -1,12 +1,12 @@
 ---
 alg: seq2seq
-base_dir: log/seq2seq/mean_data
+base_dir: log/seq2seq/uncorr_test_data
 log_level: INFO
 gpu: 0
 data:
   batch_size: 200
   test_batch_size: 1
-  dataset: data/mean_data.npz
+  dataset: data/uncorr_test_data.npz
   test_size: 0.2
   valid_size: 0.2
 model:

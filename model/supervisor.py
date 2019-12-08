@@ -11,6 +11,7 @@ from keras.utils import plot_model
 from model.bilstm_ed_construction import bilstm_ed_model_construction
 from model.lstm_layers_ed_construction import lstm_layers_ed_model_construction
 from model.lstm_ed_construction import lstm_ed_model_construction
+from datetime import datetime
 
 
 class TimeHistory(keras_callbacks.Callback):
@@ -169,8 +170,8 @@ class EncoderDecoder():
     def _test(self):
         scaler = self._data['scaler']
         data_test = self._data['test_data_norm']
-        weather_data = data_test[:, 0:6].copy()
-        pm_data = data_test[:, 6:].copy()
+        weather_data = data_test[:, 0:3].copy()
+        pm_data = data_test[:, 3:].copy()
         T = len(data_test)
         l = self._seq_len
         h = self._horizon
@@ -188,8 +189,8 @@ class EncoderDecoder():
                 iterator.close()
                 break
             input = np.zeros(shape=(self._test_batch_size, l, self._input_dim))
-            input[0, :, 0:6] = weather_data[i:i + l]
-            input[0, :, 6:] = pm_data[i:i + l]
+            input[0, :, 0:3] = weather_data[i:i + l].copy()
+            input[0, :, 3:] = pm_data[i:i + l].copy()
             yhats = self._predict(input)
             _pd[i + l:i + l + h] = yhats
 
@@ -197,12 +198,12 @@ class EncoderDecoder():
             _gt = pm_data[i + l:i + l + h].copy()
             _bm = bm[i + l:i + l + h].copy()
             pd[i + l:i + l + h] = yhats * (1.0 - _bm) + _gt * _bm
-        # trim row to make weather data shape equal _pd shape
+        # save metrics when still be scaled
+        gt = data_test[0:_pd.shape[0], -self._output_dim:].copy()
+        error_list_scaled = utils.cal_error(gt.flatten(), _pd.flatten())
+        utils.save_metrics(error_list_scaled, self._log_dir, self._alg_name)
         
-        print(_pd.shape)
-        print(weather_data.shape)
-        # weather_data_trim = np.delete(weather_data, (_pd.shape[0]-weather_data.shape[0]), axis=0)
-        # print(weather_data_trim.shape)        
+        # rescale metrics
         inverse_pred_data = scaler.inverse_transform(np.concatenate((weather_data,_pd), axis=1))
         predicted_data = inverse_pred_data[:,-self._output_dim:]
         inverse_actual_data = scaler.inverse_transform(data_test[:predicted_data.shape[0]])
@@ -248,7 +249,12 @@ class EncoderDecoder():
         dump_model_history = pd.DataFrame(index=range(loss.size),
                                           columns=['epoch', 'loss', 'val_loss', 'train_time'])
 
+        # check time lai o day
+        now = datetime.now()
+        training_time = now.strftime("%d/%m/%Y %H:%M:%S")
+
         dump_model_history['epoch'] = range(loss.size)
+        dump_model_history['time'] = training_time        
         dump_model_history['loss'] = loss
         dump_model_history['val_loss'] = val_loss
 
