@@ -1,0 +1,28 @@
+alg: seq2seq
+base_dir: log/seq2seq/corr_data_radiation
+data:
+  batch_size: 200
+  dataset: data/corr_data_radiation.npz
+  test_batch_size: 1
+  test_size: 0.2
+  valid_size: 0.2
+gpu: 0
+log_level: INFO
+model:
+  horizon: 1
+  input_dim: 8
+  l1_decay: 0
+  output_dim: 3
+  rnn_layers: 1
+  rnn_units: 100
+  seq_len: 24
+  type: bilstm_ed
+  verified_percentage: 1
+test:
+  run_times: 1
+train:
+  dropout: 0
+  epochs: 300
+  log_dir: log/seq2seq/corr_data_radiation\bilstm_ed_24_1_100_200_8_3_1/
+  optimizer: adam
+  patience: 20

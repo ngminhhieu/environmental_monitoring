@@ -2,6 +2,8 @@ from pandas import read_csv
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
+import matplotlib.pyplot as plt
+import seaborn as sns; sns.set()
 
 def mean_data():
     var = ['wind_speed', 'wind_dir', 'temp', 'rh', 'barometer', 'inner_temp', 'pm_10', 'pm_2.5', 'pm_1']
@@ -10,29 +12,7 @@ def mean_data():
     # replace by median values 
     monitoring_data.fillna(monitoring_data.mean(), inplace=True)
     print(monitoring_data.isnull().sum())
-    # np.savez('data/mean_data.npz', monitoring_data = monitoring_data)
-
-
-def random_forest_data():
-    predicted_var = ['pm_10', 'pm_2.5', 'pm_1']
-    dependent_var = ['wind_speed', 'wind_dir', 'temp', 'rh', 'barometer', 'inner_temp']
-    original_data = read_csv('data/original_monitoring.csv')
-    
-    for i in range(len(predicted_var)):
-        with_pm = original_data[pd.isnull(original_data[predicted_var[i]]) == False]
-        without_pm = original_data[pd.isnull(original_data[predicted_var[i]])]
-        # fill missing values
-        rfModel= RandomForestRegressor()
-        rfModel.fit(with_pm[dependent_var], with_pm[predicted_var[i]])
-
-        generated_values = rfModel.predict(X = without_pm[dependent_var])
-        without_pm[predicted_var[i]] = generated_values.astype(float)
-        data = with_pm.append(without_pm)
-        data.sort_index(inplace=True)
-        original_data[predicted_var[i]] = data[predicted_var[i]]
-        original_data.to_csv('data/predicted_data_2.csv', encoding='utf-8', index=False)
-    
-    np.savez('data/predicted_data_2.npz', monitoring_data = original_data)
+    np.savez('data/mean_data.npz', monitoring_data = monitoring_data)
 
 def comparison_data():
     cols = ['PM10', 'PM2.5', 'RH', 'WIND_DIREC', 'WIND_SPEED']
@@ -56,13 +36,25 @@ def comparison_data():
     np.savez('data/comparison_data.npz', monitoring_data = switch_data)
     
 
-def test():
-    var = ['wind_speed', 'wind_dir', 'temp', 'rh', 'barometer', 'inner_temp', 'pm_10', 'pm_2.5', 'pm_1']
-    monitoring_data = read_csv('data/original_monitoring.csv', usecols=var)
-    print(monitoring_data['pm_10'].isnull().sum())
+def generate_data():
+    predicted_var = ['PM10', 'PM2.5']
+    dependent_var = ['AMB_TEMP', 'RH', 'WD_HR', 'WIND_DIREC']
+    cols = ['time', 'wind_speed', 'temp', 'inner_temp', 'pm_10', 'pm_2.5', 'pm_1']
+    monitoring_data = read_csv('data/original_monitoring.csv', usecols=cols)
+    monitoring_data['time'] = pd.to_datetime(monitoring_data['time'])
+    monitoring_data['time'] = pd.to_timedelta(monitoring_data['time'])
+    monitoring_data['time'] = monitoring_data['time'] / pd.offsets.Minute(1)
+    monitoring_data.fillna(monitoring_data.mean(), inplace=True)
+    np.savez('data/corr_data_radiation.npz', monitoring_data = monitoring_data)
+
+def generate_comparison_data():
+    cols = ['time', 'AMB_TEMP', 'RH', 'WD_HR', 'WIND_DIREC', 'PM10', 'PM2.5']
+    comparison_data = read_csv('data/full_comparison_data.csv', usecols=cols)
+    comparison_data['time'] = pd.to_datetime(comparison_data['time'])
+    comparison_data['time'] = pd.to_timedelta(comparison_data['time'])
+    comparison_data['time'] = comparison_data['time'] / pd.offsets.Minute(1)
+    np.savez('data/comparison_data_corr.npz', monitoring_data = comparison_data)
+
 
 if __name__ == "__main__":
-    # mean_data()
-    # random_forest_data()
-    comparison_data()
-    # test()
+    generate_comparison_data()
