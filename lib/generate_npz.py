@@ -5,7 +5,7 @@ from sklearn.ensemble import RandomForestRegressor
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set()
 
-def mean_data():
+def generate_mean_data():
     var = ['wind_speed', 'wind_dir', 'temp', 'rh', 'barometer', 'inner_temp', 'pm_10', 'pm_2.5', 'pm_1']
     monitoring_data = read_csv('data/original_monitoring.csv', usecols=var)
     print(monitoring_data.isnull().sum())
@@ -14,7 +14,7 @@ def mean_data():
     print(monitoring_data.isnull().sum())
     np.savez('data/mean_data.npz', monitoring_data = monitoring_data)
 
-def comparison_data():
+def generate_comparison_data_uncorr():
     cols = ['PM10', 'PM2.5', 'RH', 'WIND_DIREC', 'WIND_SPEED']
     comparison_data = read_csv('data/comparison_data.csv', usecols=[i for i in range(2,26)])
     # convert dataframe to numeric to define whether values are a number or not
@@ -47,7 +47,7 @@ def generate_data():
     monitoring_data.fillna(monitoring_data.mean(), inplace=True)
     np.savez('data/corr_data_radiation.npz', monitoring_data = monitoring_data)
 
-def generate_comparison_data():
+def generate_comparison_data_corr():
     cols = ['time', 'AMB_TEMP', 'RH', 'WD_HR', 'WIND_DIREC', 'PM10', 'PM2.5']
     comparison_data = read_csv('data/full_comparison_data.csv', usecols=cols)
     comparison_data['time'] = pd.to_datetime(comparison_data['time'])
@@ -57,4 +57,4 @@ def generate_comparison_data():
 
 
 if __name__ == "__main__":
-    generate_comparison_data()
+    generate_comparison_data_corr()
