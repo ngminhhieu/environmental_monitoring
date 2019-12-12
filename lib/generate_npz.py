@@ -55,6 +55,14 @@ def generate_comparison_data_corr():
     comparison_data['time'] = comparison_data['time'] / pd.offsets.Minute(1)
     np.savez('data/comparison_data_corr.npz', monitoring_data = comparison_data)
 
+def generate_comparison_data_fi_xgboost():
+    cols = ['AMB_TEMP', 'CO', 'O3', 'SO2', 'WS_HR', 'PM10', 'PM2.5']
+    comparison_data = read_csv('data/full_comparison_data.csv', usecols=cols)
+    comparison_data['time'] = pd.to_datetime(comparison_data['time'])
+    comparison_data['time'] = pd.to_timedelta(comparison_data['time'])
+    comparison_data['time'] = comparison_data['time'] / pd.offsets.Minute(1)
+    np.savez('data/comparison_data_fi_xgboost.npz', monitoring_data = comparison_data)
+
 
 if __name__ == "__main__":
-    generate_comparison_data_corr()
+    generate_comparison_data_fi_xgboost()
