@@ -7,9 +7,6 @@ import yaml
 import random as rn
 from model.supervisor import EncoderDecoder
 
-config = tf.ConfigProto()
-session = tf.Session(config=config)
-
 def seed():
     # The below is necessary for starting Numpy generated random numbers
     # in a well-defined initial state.
