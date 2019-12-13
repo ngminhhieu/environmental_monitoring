@@ -89,13 +89,13 @@ def correlation(data, file_name):
     data['time'] = pd.to_datetime(data['time'])
     data['time'] = data['time'].values.astype(float)
     corrmat_pearson = data.corr(method='pearson')
-    corrmat_pearson.to_csv('data/csv/{}_corr_mat_pearson.csv'.format(file_name), encoding='utf-8', index=True)
+    # corrmat_pearson.to_csv('data/csv/{}_corr_mat_pearson.csv'.format(file_name), encoding='utf-8', index=True)
 
     corrmat_kendall = data.corr(method='kendall')
-    corrmat_kendall.to_csv('data/csv/{}_corr_mat_kendall.csv'.format(file_name), encoding='utf-8', index=True)
+    # corrmat_kendall.to_csv('data/csv/{}_corr_mat_kendall.csv'.format(file_name), encoding='utf-8', index=True)
     print(corrmat_kendall)
     corrmat_spearman = data.corr(method='spearman')
-    corrmat_spearman.to_csv('data/csv/{}_corr_mat_spearman.csv'.format(file_name), encoding='utf-8', index=True)
+    # corrmat_spearman.to_csv('data/csv/{}_corr_mat_spearman.csv'.format(file_name), encoding='utf-8', index=True)
 
     plt.figure(figsize=(10,5))
     sns.heatmap(corrmat_pearson, vmin=-1, vmax=1)
@@ -112,3 +112,6 @@ if __name__ == "__main__":
     cols_feature = ['time','wind_speed','wind_dir','temp','rh','barometer','radiation','inner_temp','pm_10','pm_2.5','pm_1']    
     dataset = pd.read_csv('data/csv/full_mean_data.csv')
     feature_importances_xgboost(dataset, cols_feature)
+    # dataset = pd.read_csv('data/csv/full_mean_data.csv')
+    # correlation(dataset,'asd')
+

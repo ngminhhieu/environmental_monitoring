@@ -56,6 +56,14 @@ def generate_data():
     monitoring_data.fillna(monitoring_data.mean(), inplace=True)
     np.savez('data/corr_data_radiation.npz', monitoring_data = monitoring_data)
 
+def generate_data_xgboost():
+    cols = ['time','wind_speed','wind_dir','temp','barometer','radiation','inner_temp','pm_10','pm_2.5','pm_1']
+    data = read_csv('data/csv/original_monitoring.csv', usecols=cols)
+    data['time'] = pd.to_datetime(data['time'])
+    data['time'] = data['time'].values.astype(float)
+    data.fillna(data.mean(), inplace=True)
+    np.savez('data/ori_data_xgboost.npz', monitoring_data = data)
+
 def generate_comparison_data_corr():
     cols = ['time', 'AMB_TEMP', 'RH', 'WD_HR', 'WIND_DIREC', 'PM10', 'PM2.5']
     comparison_data = read_csv('data/csv/full_comparison_data.csv', usecols=cols)
@@ -75,4 +83,5 @@ def generate_comparison_data_fi_xgboost():
 
 if __name__ == "__main__":
     # generate_comparison_data_fi_xgboost()
-    generate_mean_data_2()
+    # generate_mean_data_2()
+    generate_data_xgboost()
