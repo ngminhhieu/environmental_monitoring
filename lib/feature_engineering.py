@@ -17,15 +17,13 @@ from sklearn.metrics import accuracy_score, mean_absolute_error
 from sklearn.feature_selection import SelectFromModel
 # load data
 
-def feature_importances_xgboost():
-    cols_feature = ['time','AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR']    
-    dataset = pd.read_csv('data/full_comparison_data.csv')
+def feature_importances_xgboost(dataset, cols_feature):
     dataset['time'] = pd.to_datetime(dataset['time'])
     dataset['time'] = dataset['time'].values.astype(float)
     dataset = dataset.to_numpy()
     # split data into X and y
-    X = dataset[:,0:13]
-    Y = dataset[:,14]
+    X = dataset[:,0:8]
+    Y = dataset[:,9]
     # split data into train and test sets
     train_size = int(len(dataset)*0.8)
     X_train = X[0:train_size]
@@ -65,7 +63,7 @@ def feature_importances_xgboost():
         print("Thresh=%.5f, n=%d, MAE: %.2f" % (thresh, select_X_train.shape[1], mae))
 
 def feature_importances_random_forest():
-    df_train = pd.read_csv("data/predicted_data.csv")
+    df_train = pd.read_csv("data/csv/predicted_data.csv")
 
     df_train['time'] = pd.to_datetime(df_train['time'])
     df_train['time'] = pd.to_timedelta(df_train['time'])
@@ -91,13 +89,13 @@ def correlation(data, file_name):
     data['time'] = pd.to_datetime(data['time'])
     data['time'] = data['time'].values.astype(float)
     corrmat_pearson = data.corr(method='pearson')
-    # corrmat_pearson.to_csv('data/{}_corr_mat_pearson.csv'.format(file_name), encoding='utf-8', index=True)
+    corrmat_pearson.to_csv('data/csv/{}_corr_mat_pearson.csv'.format(file_name), encoding='utf-8', index=True)
 
     corrmat_kendall = data.corr(method='kendall')
-    # corrmat_kendall.to_csv('data/{}_corr_mat_kendall.csv'.format(file_name), encoding='utf-8', index=True)
+    corrmat_kendall.to_csv('data/csv/{}_corr_mat_kendall.csv'.format(file_name), encoding='utf-8', index=True)
     print(corrmat_kendall)
     corrmat_spearman = data.corr(method='spearman')
-    # corrmat_spearman.to_csv('data/{}_corr_mat_spearman.csv'.format(file_name), encoding='utf-8', index=True)
+    corrmat_spearman.to_csv('data/csv/{}_corr_mat_spearman.csv'.format(file_name), encoding='utf-8', index=True)
 
     plt.figure(figsize=(10,5))
     sns.heatmap(corrmat_pearson, vmin=-1, vmax=1)
@@ -108,7 +106,9 @@ def correlation(data, file_name):
     plt.show()
 
 if __name__ == "__main__":
-    # comparison_data = pd.read_csv('data/full_comparison_data.csv')
-    # print(comparison_data)
-    # correlation(comparison_data, 'comparison')
-    feature_importances_xgboost()
+    # cols_feature = ['time','AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR']    
+    # dataset = pd.read_csv('data/csv/full_comparison_data.csv')
+
+    cols_feature = ['time','wind_speed','wind_dir','temp','rh','barometer','radiation','inner_temp','pm_10','pm_2.5','pm_1']    
+    dataset = pd.read_csv('data/csv/full_mean_data.csv')
+    feature_importances_xgboost(dataset, cols_feature)

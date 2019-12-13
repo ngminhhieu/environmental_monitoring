@@ -5,7 +5,7 @@ import pandas as pd
 def preprocessing_comparison_data():
     cols = ['AMB_TEMP', 'CO','NO', 'NO2', 'NOx', 'O3', 'PM10', 'PM2.5', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR']
     len_cols = len(cols)    
-    comparison_data = read_csv('data/20141_201909.csv', usecols=[i for i in range(0,26)])
+    comparison_data = read_csv('data/csv/20141_201909.csv', usecols=[i for i in range(0,26)])
     comparison_data = comparison_data.drop(columns=['factor'])
     
     # Fill NAN to mean data
@@ -35,7 +35,7 @@ def preprocessing_comparison_data():
     columnsTitles = ['time','AMB_TEMP', 'CO','NO', 'NO2', 'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10', 'PM2.5']
     dataset=dataset.reindex(columns=columnsTitles)
     print(dataset)
-    dataset.to_csv('data/full_comparison_data.csv', encoding='utf-8', index=False)
+    dataset.to_csv('data/csv/full_comparison_data.csv', encoding='utf-8', index=False)
 
 if __name__ == "__main__":
     preprocessing_comparison_data()

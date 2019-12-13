@@ -8,7 +8,7 @@ from sklearn.ensemble import RandomForestRegressor
 def random_forest_data():
     predicted_var = ['pm_10', 'pm_2.5', 'pm_1']
     dependent_var = ['time', 'wind_speed', 'temp', 'inner_temp']
-    original_data = read_csv('data/original_monitoring.csv', usecols=dependent_var + predicted_var)
+    original_data = read_csv('data/csv/original_monitoring.csv', usecols=dependent_var + predicted_var)
     original_data['time'] = pd.to_datetime(original_data['time'])
     original_data['time'] = pd.to_timedelta(original_data['time'])
     original_data['time'] = original_data['time'] / pd.offsets.Minute(1)
@@ -25,7 +25,7 @@ def random_forest_data():
         data = with_pm.append(without_pm)
         data.sort_index(inplace=True)
         original_data[predicted_var[i]] = data[predicted_var[i]]
-        original_data.to_csv('data/corr_data.csv', encoding='utf-8', index=False)
+        original_data.to_csv('data/csv/corr_data.csv', encoding='utf-8', index=False)
     
     np.savez('data/corr_data.npz', monitoring_data = original_data)
 

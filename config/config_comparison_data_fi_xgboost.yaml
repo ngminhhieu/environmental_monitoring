@@ -1,6 +1,6 @@
 ---
 alg: seq2seq
-base_dir: log/seq2seq/comparison_data_fi_xgboost_1
+base_dir: log/seq2seq/comparison_data_fi_xgboost
 log_level: INFO
 gpu: 0
 data:
@@ -21,7 +21,7 @@ model:
   verified_percentage: 1
 train:
   dropout: 0
-  epochs: 20
+  epochs: 300
   optimizer: adam
   patience: 20
 test:
