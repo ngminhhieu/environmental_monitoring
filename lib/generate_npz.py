@@ -7,8 +7,8 @@ import seaborn as sns; sns.set()
 
 def generate_original_data():
     cols = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM2.5']
-    dataset = read_csv('data/csv/full_comparison_data_mean.csv')
-    np.savez('data/npz/full_original_data_mean.npz', monitoring_data = dataset)
+    dataset = read_csv('data/csv/full_original_data_mean.csv')
+    np.savez('data/npz/original_data_mean.npz', monitoring_data = dataset)
 
 def generate_comparison_data():
     cols = ['WIND_DIREC', 'WIND_SPEED', 'AMB_TEMP','RH','PM10', 'PM2.5']
