@@ -169,9 +169,9 @@ class EncoderDecoder():
 
     def _test(self):
         scaler = self._data['scaler']
-        data_test = self._data['test_data_norm']
-        weather_data = data_test[:, 0:7].copy()
-        pm_data = data_test[:, 7:].copy()
+        data_test = self._data['test_data_norm'].copy()
+        weather_data = data_test[:, 0:(self._input_dim-1)].copy()
+        pm_data = data_test[:, -1].copy()
         T = len(data_test)
         l = self._seq_len
         h = self._horizon
@@ -189,8 +189,7 @@ class EncoderDecoder():
                 iterator.close()
                 break
             input = np.zeros(shape=(self._test_batch_size, l, self._input_dim))
-            input[0, :, 0:7] = weather_data[i:i + l].copy()
-            input[0, :, 7:] = pm_data[i:i + l].copy()
+            input[0, :, :] = data_test[i:i+l].copy()
             yhats = self._predict(input)
             _pd[i + l:i + l + h] = yhats
 

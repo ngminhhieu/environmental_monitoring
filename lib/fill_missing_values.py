@@ -7,11 +7,11 @@ from sklearn.ensemble import RandomForestRegressor
 
 def random_forest_data():
     predicted_var = ['pm_10', 'pm_2.5', 'pm_1']
-    dependent_var = ['time', 'wind_speed', 'temp', 'inner_temp']
+    dependent_var = ['TIME', 'wind_speed', 'temp', 'inner_temp']
     original_data = read_csv('data/csv/original_monitoring.csv', usecols=dependent_var + predicted_var)
-    original_data['time'] = pd.to_datetime(original_data['time'])
-    original_data['time'] = pd.to_timedelta(original_data['time'])
-    original_data['time'] = original_data['time'] / pd.offsets.Minute(1)
+    original_data['TIME'] = pd.to_datetime(original_data['TIME'])
+    original_data['TIME'] = pd.to_timedelta(original_data['TIME'])
+    original_data['TIME'] = original_data['TIME'] / pd.offsets.Minute(1)
     
     for i in range(len(predicted_var)):
         with_pm = original_data[pd.isnull(original_data[predicted_var[i]]) == False]

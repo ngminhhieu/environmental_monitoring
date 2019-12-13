@@ -85,33 +85,24 @@ def feature_importances_random_forest():
     sorted_feature_importance = sorted(zip(importances, list(training_input)), reverse=True)
     print(sorted_feature_importance)
 
-def correlation(data, file_name):
-    data['time'] = pd.to_datetime(data['time'])
-    data['time'] = data['time'].values.astype(float)
-    corrmat_pearson = data.corr(method='pearson')
-    # corrmat_pearson.to_csv('data/csv/{}_corr_mat_pearson.csv'.format(file_name), encoding='utf-8', index=True)
+def correlation(data, file_name, method):
+    """ 
+    3 methods: pearson, kendall, spearman
+    """
+    corrmat = data.corr(method=method)
+    print(corrmat)
+    corrmat.to_csv('data/csv/{}_corr_mat_{}.csv'.format(file_name, method), encoding='utf-8', index=True)
 
-    corrmat_kendall = data.corr(method='kendall')
-    # corrmat_kendall.to_csv('data/csv/{}_corr_mat_kendall.csv'.format(file_name), encoding='utf-8', index=True)
-    print(corrmat_kendall)
-    corrmat_spearman = data.corr(method='spearman')
-    # corrmat_spearman.to_csv('data/csv/{}_corr_mat_spearman.csv'.format(file_name), encoding='utf-8', index=True)
-
-    plt.figure(figsize=(10,5))
-    sns.heatmap(corrmat_pearson, vmin=-1, vmax=1)
-    plt.show()
-    sns.heatmap(corrmat_kendall, vmin=-1, vmax=1)
-    plt.show()
-    sns.heatmap(corrmat_spearman, vmin=-1, vmax=1)
-    plt.show()
+    # plot corr mat
+    # plt.figure(figsize=(10,5))
+    # sns.heatmap(corrmat, vmin=-1, vmax=1)
+    # plt.show()
 
 if __name__ == "__main__":
-    # cols_feature = ['time','AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR']    
-    # dataset = pd.read_csv('data/csv/full_comparison_data.csv')
-
-    cols_feature = ['time','wind_speed','wind_dir','temp','rh','barometer','radiation','inner_temp','pm_10','pm_2.5','pm_1']    
-    dataset = pd.read_csv('data/csv/full_mean_data.csv')
-    feature_importances_xgboost(dataset, cols_feature)
-    # dataset = pd.read_csv('data/csv/full_mean_data.csv')
-    # correlation(dataset,'asd')
+    cols_feature_comparison_data = ['TIME','AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR', 'PM10', 'PM2.5']    
+    dataset_comparison = pd.read_csv('data/csv/full_comparison_data_mean.csv')
+    correlation(dataset_comparison,'comparison', 'spearman')
+    cols_feature_original_data = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM10','PM2.5']    
+    dataset_original = pd.read_csv('data/csv/full_original_data_mean.csv')
+    correlation(dataset_original,'original', 'spearman')
 
