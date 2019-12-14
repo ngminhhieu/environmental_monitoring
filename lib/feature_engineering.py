@@ -88,17 +88,17 @@ def correlation(data, file_name, method):
     corrmat.to_csv('data/csv/{}_corr_mat_{}.csv'.format(file_name, method), encoding='utf-8', index=True)
 
     # plot corr mat
-    plt.figure(figsize=(10,5))
-    sns.heatmap(corrmat, vmin=-1, vmax=1)
-    plt.show()
+    # plt.figure(figsize=(10,5))
+    # sns.heatmap(corrmat, vmin=-1, vmax=1)
+    # plt.show()
 
 if __name__ == "__main__":
     cols_feature_comparison_data = ['TIME','AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR', 'PM10', 'PM2.5']    
     dataset_comparison = pd.read_csv('data/csv/full_comparison_data_mean.csv')
-    # correlation(dataset_comparison,'comparison', 'spearman')
-    feature_importances_xgboost(dataset_comparison, cols_feature_comparison_data)
+    correlation(dataset_comparison,'comparison', 'spearman')
+    # feature_importances_xgboost(dataset_comparison, cols_feature_comparison_data)
     cols_feature_original_data = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM10','PM2.5']    
     dataset_original = pd.read_csv('data/csv/full_original_data_mean.csv')
-    # correlation(dataset_original,'original', 'spearman')
-    feature_importances_xgboost(dataset_original, cols_feature_original_data)
+    correlation(dataset_original,'original', 'spearman')
+    # feature_importances_xgboost(dataset_original, cols_feature_original_data)
 
