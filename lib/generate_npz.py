@@ -16,7 +16,8 @@ def generate_comparison_data():
     np.savez('data/npz/comparison_data_mean.npz', monitoring_data = dataset)
 
 def generate_original_data_fi_xgboost():
-    cols = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM2.5']
+    # cols = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM2.5']
+    cols = ['TEMP', 'PM2.5']
     data = read_csv('data/csv/full_original_data_mean.csv', usecols=cols)
     np.savez('data/npz/original_data_fi_xgboost_mean.npz', monitoring_data = data)
 
