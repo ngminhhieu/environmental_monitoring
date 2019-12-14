@@ -18,12 +18,10 @@ from sklearn.feature_selection import SelectFromModel
 # load data
 
 def feature_importances_xgboost(dataset, cols_feature):
-    dataset['time'] = pd.to_datetime(dataset['time'])
-    dataset['time'] = dataset['time'].values.astype(float)
     dataset = dataset.to_numpy()
     # split data into X and y
-    X = dataset[:,0:8]
-    Y = dataset[:,8]
+    X = dataset[:,0:(len(cols_feature)-2)]
+    Y = dataset[:,-1:]
     # split data into train and test sets
     train_size = int(len(dataset)*0.8)
     X_train = X[0:train_size]
@@ -65,13 +63,9 @@ def feature_importances_xgboost(dataset, cols_feature):
 def feature_importances_random_forest():
     df_train = pd.read_csv("data/csv/predicted_data.csv")
 
-    df_train['time'] = pd.to_datetime(df_train['time'])
-    df_train['time'] = pd.to_timedelta(df_train['time'])
-    df_train['time'] = df_train['time'] / pd.offsets.Minute(1)
-
     model = RandomForestRegressor()
-    training_score_y = df_train['pm_2.5'].copy()
-    training_input = df_train.drop(['pm_2.5'], axis=1).copy()
+    training_score_y = df_train['PM2.5'].copy()
+    training_input = df_train.drop(['PM2.5'], axis=1).copy()
 
 
     print(utils.multiclass.type_of_target(training_input))
@@ -94,15 +88,17 @@ def correlation(data, file_name, method):
     corrmat.to_csv('data/csv/{}_corr_mat_{}.csv'.format(file_name, method), encoding='utf-8', index=True)
 
     # plot corr mat
-    # plt.figure(figsize=(10,5))
-    # sns.heatmap(corrmat, vmin=-1, vmax=1)
-    # plt.show()
+    plt.figure(figsize=(10,5))
+    sns.heatmap(corrmat, vmin=-1, vmax=1)
+    plt.show()
 
 if __name__ == "__main__":
     cols_feature_comparison_data = ['TIME','AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR', 'PM10', 'PM2.5']    
     dataset_comparison = pd.read_csv('data/csv/full_comparison_data_mean.csv')
-    correlation(dataset_comparison,'comparison', 'spearman')
+    # correlation(dataset_comparison,'comparison', 'spearman')
+    feature_importances_xgboost(dataset_comparison, cols_feature_comparison_data)
     cols_feature_original_data = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM10','PM2.5']    
     dataset_original = pd.read_csv('data/csv/full_original_data_mean.csv')
-    correlation(dataset_original,'original', 'spearman')
+    # correlation(dataset_original,'original', 'spearman')
+    feature_importances_xgboost(dataset_original, cols_feature_original_data)
 
