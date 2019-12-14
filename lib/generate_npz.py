@@ -39,7 +39,7 @@ def generate_comparison_data_corr():
 if __name__ == "__main__":
     generate_original_data()
     generate_comparison_data()
-    # generate_original_data_fi_xgboost()
-    # generate_comparison_data_fi_xgboost()
+    generate_original_data_fi_xgboost()
+    generate_comparison_data_fi_xgboost()
     generate_original_data_corr()
     generate_comparison_data_corr()
