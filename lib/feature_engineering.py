@@ -20,8 +20,8 @@ from sklearn.feature_selection import SelectFromModel
 def feature_importances_xgboost(dataset, cols_feature):
     dataset = dataset.to_numpy()
     # split data into X and y
-    X = dataset[:,0:(len(cols_feature)-2)]
-    Y = dataset[:,-1:]
+    X = dataset[:,0:(len(cols_feature))]
+    Y = dataset[:,-1]
     # split data into train and test sets
     train_size = int(len(dataset)*0.8)
     X_train = X[0:train_size]
