@@ -284,6 +284,8 @@ class EncoderDecoder():
         from matplotlib import pyplot as plt
         preds = np.load(self._log_dir+'pd.npy')
         gt = np.load(self._log_dir+'gt.npy')
+        pd.DataFrame(preds).to_csv(self._log_dir + "prediction_values.csv", header=['PM2.5'], index=False)
+        pd.DataFrame(gt).to_csv(self._log_dir + "grouthtruth_values.csv", header=['PM2.5'], index=False)
 
         for i in range(preds.shape[1]):
             plt.plot(preds[:, i], label='preds')

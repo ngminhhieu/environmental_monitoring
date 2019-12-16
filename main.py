@@ -71,7 +71,7 @@ def train_lstm_ed(config):
 def test_lstm_ed(config):
     with tf.device('/device:GPU:{}'.format(config['gpu'])):
         model = EncoderDecoder(is_training=False, **config)
-        model.test()
+        # model.test()
         model.plot_series()
 
 
