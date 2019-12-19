@@ -11,8 +11,8 @@ data:
   valid_size: 0.2
 model:
   type: bilstm_ed
-  seq_len: 24
-  horizon: 1
+  seq_len: 48
+  horizon: 6
   input_dim: 4
   l1_decay: 0
   output_dim: 2

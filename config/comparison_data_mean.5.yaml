@@ -1,0 +1,28 @@
+---
+alg: seq2seq
+base_dir: log/seq2seq/comparison_data_mean
+log_level: INFO
+gpu: 0
+data:
+  batch_size: 200
+  test_batch_size: 1
+  dataset: data/npz/comparison_data_mean.npz
+  test_size: 0.2
+  valid_size: 0.2
+model:
+  type: bilstm_ed
+  seq_len: 48
+  horizon: 5
+  input_dim: 6
+  l1_decay: 0
+  output_dim: 2
+  rnn_units: 100
+  rnn_layers: 1
+  verified_percentage: 1
+train:
+  dropout: 0
+  epochs: 300
+  optimizer: adam
+  patience: 20
+test:
+  run_times: 1
