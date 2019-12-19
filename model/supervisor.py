@@ -197,12 +197,10 @@ class EncoderDecoder():
             _gt = pm_data[i + l:i + l + h].copy()
             _bm = bm[i + l:i + l + h].copy()
             pd[i + l:i + l + h] = yhats * (1.0 - _bm) + _gt * _bm
-        # save metrics when still be scaled
-        gt = data_test[0:_pd.shape[0], -self._output_dim:].copy()
-        error_list_scaled = utils.cal_error(gt.flatten(), _pd.flatten())
-        utils.save_metrics(error_list_scaled, self._log_dir, self._alg_name)
         
         # rescale metrics
+        residual_row = len(weather_data)-len(_pd)
+        weather_data = np.delete(weather_data, np.s_[-residual_row:], axis=0)
         inverse_pred_data = scaler.inverse_transform(np.concatenate((weather_data,_pd), axis=1))
         predicted_data = inverse_pred_data[:,-self._output_dim:]
         inverse_actual_data = scaler.inverse_transform(data_test[:predicted_data.shape[0]])
