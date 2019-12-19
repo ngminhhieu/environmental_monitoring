@@ -95,7 +95,7 @@ if __name__ == '__main__':
     with open(args.config_file) as f:
         config = yaml.load(f)
 
-    print_lstm_info(args.mode, config)
+    # print_lstm_info(args.mode, config)
 
     if args.mode == 'train':
         train_lstm_ed(config)
