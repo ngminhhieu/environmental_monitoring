@@ -200,7 +200,8 @@ class EncoderDecoder():
         
         # rescale metrics
         residual_row = len(weather_data)-len(_pd)
-        weather_data = np.delete(weather_data, np.s_[-residual_row:], axis=0)
+        if residual_row != 0:
+            weather_data = np.delete(weather_data, np.s_[-residual_row:], axis=0)
         inverse_pred_data = scaler.inverse_transform(np.concatenate((weather_data,_pd), axis=1))
         predicted_data = inverse_pred_data[:,-self._output_dim:]
         inverse_actual_data = scaler.inverse_transform(data_test[:predicted_data.shape[0]])
