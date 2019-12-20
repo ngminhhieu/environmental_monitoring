@@ -171,7 +171,7 @@ class EncoderDecoder():
         scaler = self._data['scaler']
         data_test = self._data['test_data_norm'].copy()
         weather_data = data_test[:, 0:(self._input_dim-2)].copy()
-        pm_data = data_test[:, -2:].copy()
+        pm_data = data_test[:, -self._output_dim:].copy()
         T = len(data_test)
         l = self._seq_len
         h = self._horizon
