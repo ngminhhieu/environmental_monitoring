@@ -170,7 +170,8 @@ class EncoderDecoder():
     def _test(self):
         scaler = self._data['scaler']
         data_test = self._data['test_data_norm'].copy()
-        weather_data = data_test[:, 0:(self._input_dim-2)].copy()
+        # this is the meterogical data
+        other_features_data = data_test[:, 0:(self._input_dim-self._output_dim)].copy()
         pm_data = data_test[:, -self._output_dim:].copy()
         T = len(data_test)
         l = self._seq_len
@@ -199,10 +200,10 @@ class EncoderDecoder():
             pd[i + l:i + l + h] = yhats * (1.0 - _bm) + _gt * _bm
         
         # rescale metrics
-        residual_row = len(weather_data)-len(_pd)
+        residual_row = len(other_features_data)-len(_pd)
         if residual_row != 0:
-            weather_data = np.delete(weather_data, np.s_[-residual_row:], axis=0)
-        inverse_pred_data = scaler.inverse_transform(np.concatenate((weather_data,_pd), axis=1))
+            other_features_data = np.delete(other_features_data, np.s_[-residual_row:], axis=0)
+        inverse_pred_data = scaler.inverse_transform(np.concatenate((other_features_data,_pd), axis=1))
         predicted_data = inverse_pred_data[:,-self._output_dim:]
         inverse_actual_data = scaler.inverse_transform(data_test[:predicted_data.shape[0]])
         ground_truth = inverse_actual_data[:, -self._output_dim:]
@@ -283,8 +284,12 @@ class EncoderDecoder():
         from matplotlib import pyplot as plt
         preds = np.load(self._log_dir+'pd.npy')
         gt = np.load(self._log_dir+'gt.npy')
-        pd.DataFrame(preds).to_csv(self._log_dir + "prediction_values.csv", header=['PM10','PM2.5'], index=False)
-        pd.DataFrame(gt).to_csv(self._log_dir + "grouthtruth_values.csv", header=['PM10','PM2.5'], index=False)
+        if preds.shape[1] == 1 and gt.shape[1] == 1:
+            pd.DataFrame(preds).to_csv(self._log_dir + "prediction_values.csv", header=['PM2.5'], index=False)
+            pd.DataFrame(gt).to_csv(self._log_dir + "grouthtruth_values.csv", header=['PM2.5'], index=False)
+        else:
+            pd.DataFrame(preds).to_csv(self._log_dir + "prediction_values.csv", header=['PM10','PM2.5'], index=False)
+            pd.DataFrame(gt).to_csv(self._log_dir + "grouthtruth_values.csv", header=['PM10','PM2.5'], index=False)
 
         for i in range(preds.shape[1]):
             plt.plot(preds[:, i], label='preds')
