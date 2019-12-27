@@ -288,8 +288,14 @@ class EncoderDecoder():
         pd.DataFrame(gt).to_csv(self._log_dir + "grouthtruth_values.csv", header=['PM10','PM2.5'], index=False)
 
         for i in range(preds.shape[1]):
-            plt.plot(preds[:, i], label='preds')
-            plt.plot(gt[:, i], label='gt')
-            plt.legend()
+            plt.title("Prediction Values and Ground Truth Comparison")
+            plt.plot(preds[0:1000, i], label='prediction_values')
+            plt.plot(gt[0:1000, i], label='grouth_truth')
+            plt.legend(loc=9)
+            plt.xlabel('Time Steps')
+            if i == 0:
+                plt.ylabel('PM10 (µg/m3)')
+            else:
+                plt.ylabel('PM2.5 (µg/m3)')
             plt.savefig(self._log_dir + '[result_predict]output_dim_{}.png'.format(str(i+1)))
             plt.close()
