@@ -36,20 +36,23 @@ def feature_importances_xgboost(dataset, cols_feature):
     # plot feature importance
     for col,score in zip(cols_feature,model.feature_importances_):
         print(col,score)
-    plot_importance(model)
-    plt.show()
+    # plot_importance(model)
+    # plt.show()
+    feature_importances = list(zip(cols_feature,model.feature_importances_))
+    feature_importances = sorted(feature_importances, key=lambda x: x[1])
+
     # make predictions for test data and evaluate
     y_pred = model.predict(X_test)
     predictions = [round(value) for value in y_pred]
     mae = mean_absolute_error(y_test, predictions)
-    print("MAE: %.2f" % (mae))
+    print("MAE: %.3f" % (mae))
+    # this var to get the lowest mae 
+    temp_mae = float("inf")
     # Fit model using each importance as a threshold
-    thresholds = sort(model.feature_importances_)
-    for thresh in thresholds:
+    for _, thresh in feature_importances:
         # select features using threshold
         selection = SelectFromModel(model, threshold=thresh, prefit=True)
         select_X_train = selection.transform(X_train)
-        print(select_X_train[0,:])
         # train model
         selection_model = XGBRegressor(learning_rate=0.01, max_depth=3, min_child_weight=1.5, n_estimators=10000, seed=42) 
         selection_model.fit(select_X_train, y_train)
@@ -58,7 +61,12 @@ def feature_importances_xgboost(dataset, cols_feature):
         y_pred = selection_model.predict(select_X_test)
         predictions = [round(value) for value in y_pred]
         mae = mean_absolute_error(y_test, predictions)
-        print("Thresh=%.5f, n=%d, MAE: %.2f" % (thresh, select_X_train.shape[1], mae))
+        if mae < temp_mae:
+            # get feature that being important
+            features = [feature for (feature,threshold) in feature_importances if threshold > thresh]
+            np.savez('data/npz/feature_engineering/compare_xgboost.npz', features = features)
+        temp_mae = mae
+        print("Thresh=%.3f, n=%d, MAE: %.3f" % (thresh, select_X_train.shape[1], mae))
 
 def feature_importances_random_forest():
     df_train = pd.read_csv("data/csv/predicted_data.csv")
