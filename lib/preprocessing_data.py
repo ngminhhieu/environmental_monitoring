@@ -8,7 +8,7 @@ def preprocessing_original_data():
     dataset['TIME'] = dataset['TIME'].values.astype(float)
     # replace by median values 
     dataset.fillna(dataset.mean(), inplace=True)
-    dataset.to_csv('data/csv/full_original_data_mean.csv', index=False)
+    dataset.to_csv('data/csv/hanoi_data_mean.csv', index=False)
 
 def preprocessing_comparison_data():
     cols = ['AMB_TEMP', 'CO','NO', 'NO2', 'NOx', 'O3', 'PM10', 'PM2.5', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR']
@@ -44,7 +44,7 @@ def preprocessing_comparison_data():
     dataset=dataset.reindex(columns=columnsTitles)
     dataset['TIME'] = pd.to_datetime(dataset['TIME'])
     dataset['TIME'] = dataset['TIME'].values.astype(float)
-    dataset.to_csv('data/csv/full_comparison_data_mean.csv', encoding='utf-8', index=False)
+    dataset.to_csv('data/csv/taiwan_data_mean.csv', encoding='utf-8', index=False)
 
 if __name__ == "__main__":
     preprocessing_original_data()

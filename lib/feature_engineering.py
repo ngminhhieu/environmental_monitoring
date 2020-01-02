@@ -1,23 +1,11 @@
-from sklearn.datasets import load_boston
-from sklearn.ensemble import RandomForestRegressor
 import numpy as np; np.random.seed(0)
 import pandas as pd
-from sklearn import preprocessing
-from sklearn import utils
-import seaborn as sns; sns.set()
-import matplotlib.pyplot as plt
-
-# use feature importance for feature selection
-from numpy import loadtxt
 from numpy import sort
-from xgboost import XGBClassifier, XGBRegressor, XGBRFRegressor
-from xgboost import plot_importance
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, mean_absolute_error
+from xgboost import XGBRegressor
+from sklearn.metrics import mean_absolute_error
 from sklearn.feature_selection import SelectFromModel
-# load data
 
-def feature_importances_xgboost(dataset, cols_feature):
+def feature_importances_xgboost(dataset, cols_feature, name):
     dataset = dataset.to_numpy()
     # split data into X and y
     X = dataset[:,0:(len(cols_feature)-2)]
@@ -36,8 +24,6 @@ def feature_importances_xgboost(dataset, cols_feature):
     # plot feature importance
     for col,score in zip(cols_feature,model.feature_importances_):
         print(col,score)
-    # plot_importance(model)
-    # plt.show()
     feature_importances = list(zip(cols_feature,model.feature_importances_))
     feature_importances = sorted(feature_importances, key=lambda x: x[1])
 
@@ -64,49 +50,18 @@ def feature_importances_xgboost(dataset, cols_feature):
         if mae < temp_mae:
             # get feature that being important
             features = [feature for (feature,threshold) in feature_importances if threshold > thresh]
-            np.savez('data/npz/feature_engineering/compare_xgboost.npz', features = features)
+            np.savez('data/npz/feature_engineering/{}_xgboost.npz'.format(name), features = features)
         temp_mae = mae
         print("Thresh=%.3f, n=%d, MAE: %.3f" % (thresh, select_X_train.shape[1], mae))
 
-def feature_importances_random_forest():
-    df_train = pd.read_csv("data/csv/predicted_data.csv")
-
-    model = RandomForestRegressor()
-    training_score_y = df_train['PM2.5'].copy()
-    training_input = df_train.drop(['PM2.5'], axis=1).copy()
-
-
-    print(utils.multiclass.type_of_target(training_input))
-    print(utils.multiclass.type_of_target(training_score_y))
-
-    model.fit(training_input, training_score_y)
-
-    importances = model.feature_importances_
-    #Sort it
-    print ("Sorted Feature Importance:")
-    sorted_feature_importance = sorted(zip(importances, list(training_input)), reverse=True)
-    print(sorted_feature_importance)
-
-def correlation(data, file_name, method):
-    """ 
-    3 methods: pearson, kendall, spearman
-    """
-    corrmat = data.corr(method=method)
-    print(corrmat)
-    corrmat.to_csv('data/csv/{}_corr_mat_{}.csv'.format(file_name, method), encoding='utf-8', index=True)
-
-    # plot corr mat
-    # plt.figure(figsize=(10,5))
-    # sns.heatmap(corrmat, vmin=-1, vmax=1)
-    # plt.show()
-
 if __name__ == "__main__":
-    cols_feature_comparison_data = ['TIME','AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR', 'PM10', 'PM2.5']    
-    dataset_comparison = pd.read_csv('data/csv/full_comparison_data_mean.csv')
-    # correlation(dataset_comparison,'comparison', 'spearman')
-    feature_importances_xgboost(dataset_comparison, cols_feature_comparison_data)
-    cols_feature_original_data = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM10','PM2.5']    
-    dataset_original = pd.read_csv('data/csv/full_original_data_mean.csv')
-    # correlation(dataset_original,'original', 'spearman')
-    feature_importances_xgboost(dataset_original, cols_feature_original_data)
+    # taiwan
+    cols_taiwan = ['TIME','AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR', 'PM10', 'PM2.5']    
+    taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv')
+    feature_importances_xgboost(taiwan_dataset, cols_taiwan, 'taiwan_data')
+
+    # ha noi
+    cols_hanoi = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM10','PM2.5']    
+    hanoi_dataset = pd.read_csv('data/csv/hanoi_data_mean.csv')
+    feature_importances_xgboost(hanoi_dataset, cols_hanoi, 'hanoi_data')
 

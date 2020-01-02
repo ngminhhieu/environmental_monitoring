@@ -9,7 +9,6 @@ from tqdm import tqdm
 from lib import utils
 from keras.utils import plot_model
 from model.bilstm_ed_construction import bilstm_ed_model_construction
-from model.lstm_layers_ed_construction import lstm_layers_ed_model_construction
 from model.lstm_ed_construction import lstm_ed_model_construction
 from datetime import datetime
 
@@ -96,13 +95,7 @@ class EncoderDecoder():
             else:
                 self.model, self.encoder_model, self.decoder_model = bilstm_ed_model_construction(self._input_dim, self._output_dim, self._rnn_units, self._dropout,
                                                         self._optimizer, self._log_dir, is_training=is_training)
-        elif self._type == 'lstm_layers_ed':
-            if is_training:
-                self.model = lstm_layers_ed_model_construction(self._input_dim, self._output_dim, self._rnn_units, self._dropout,
-                                                        self._optimizer, self._log_dir, self._rnn_layers, is_training=is_training)
-            else:
-                self.model, self.encoder_model, self.decoder_model = lstm_layers_ed_model_construction(self._input_dim, self._output_dim, self._rnn_units, self._dropout,
-                                                        self._optimizer, self._log_dir, self._rnn_layers, is_training=is_training)
+                                                        
         elif self._type == 'lstm_ed':
             if is_training:
                 self.model = lstm_ed_model_construction(self._input_dim, self._output_dim, self._rnn_units, self._dropout,

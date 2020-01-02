@@ -1,50 +1,49 @@
 from pandas import read_csv
 import numpy as np
-import pandas as pd
-from sklearn.ensemble import RandomForestRegressor
-import matplotlib.pyplot as plt
-import seaborn as sns; sns.set()
 
-def generate_original_data():
+def generate_hanoi_data():
     cols = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM10', 'PM2.5']
-    dataset = read_csv('data/csv/full_original_data_mean.csv', usecols=cols)
-    np.savez('data/npz/original_data_mean.npz', monitoring_data = dataset)
+    dataset = read_csv('data/csv/hanoi_data_mean.csv', usecols=cols)
+    np.savez('data/npz/hanoi_data.npz', monitoring_data = dataset)
 
-def generate_comparison_data():
+def generate_taiwan_data():
     cols = ['WIND_DIREC', 'WIND_SPEED', 'AMB_TEMP','RH','PM10', 'PM2.5']
-    dataset = read_csv('data/csv/full_comparison_data_mean.csv', usecols=cols)
-    np.savez('data/npz/comparison_data_mean.npz', monitoring_data = dataset)
+    dataset = read_csv('data/csv/taiwan_data_mean.csv', usecols=cols)
+    np.savez('data/npz/taiwan_data.npz', monitoring_data = dataset)
 
-def generate_original_data_fi_xgboost():
+def generate_hanoi_data_fi_xgboost():
+    features = np.load('data/npz/feature_engineering/hanoi_data_xgboost.npz')
+    cols = features['features']
+    cols = np.append(cols, ['PM10', 'PM2.5'])
+    print(cols)
     # cols = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM2.5']
-    cols = ['TEMP', 'PM10', 'PM2.5']
-    data = read_csv('data/csv/full_original_data_mean.csv', usecols=cols)
-    np.savez('data/npz/original_data_fi_xgboost_mean.npz', monitoring_data = data)
+    # cols = ['TEMP', 'PM10', 'PM2.5']
+    set_input_dim(len(cols))
+    dataset = read_csv('data/csv/hanoi_data_mean.csv', usecols=cols)
+    np.savez('data/npz/hanoi_data_xgboost.npz', monitoring_data = dataset)
 
-def generate_comparison_data_fi_xgboost():
-    # features = np.load('data/npz/feature_engineering/compare_xgboost.npz')
-    # cols = features['features']
-    # cols = np.append(cols, ['PM10', 'PM2.5'])
-    # print(cols)
-    cols = ['AMB_TEMP', 'CO', 'O3', 'SO2', 'WS_HR', 'PM10', 'PM2.5']
-    comparison_data = read_csv('data/csv/full_comparison_data_mean.csv', usecols=cols)
-    np.savez('data/npz/comparison_data_fi_xgboost_mean.npz', monitoring_data = comparison_data)
+def generate_taiwan_data_fi_xgboost():
+    features = np.load('data/npz/feature_engineering/taiwan_data_xgboost.npz')
+    cols = features['features']
+    cols = np.append(cols, ['PM10', 'PM2.5'])
+    print(cols)
+    # cols = ['AMB_TEMP', 'CO', 'O3', 'SO2', 'WS_HR', 'PM10', 'PM2.5']
+    set_input_dim(len(cols))
+    dataset = read_csv('data/csv/taiwan_data_mean.csv', usecols=cols)
+    np.savez('data/npz/taiwan_data_xgboost.npz', monitoring_data = dataset)
 
-def generate_original_data_corr():
-    cols = ['TIME','WIND_SPEED','TEMP','INNER_TEMP','PM10', 'PM2.5']
-    monitoring_data = read_csv('data/csv/full_original_data_mean.csv', usecols=cols)
-    np.savez('data/npz/original_data_corr_mean.npz', monitoring_data = monitoring_data)
+def set_input_dim(number_of_input_dim):
+    for i in range(6):
+        with open('horizon_{}_xgboost.yaml'.format(str(i)), 'r') as f:
+            config = yaml.load(f)
 
-def generate_comparison_data_corr():
-    # cols = ['time', 'AMB_TEMP', 'RH', 'WD_HR', 'WIND_DIREC', 'PM2.5']
-    cols = ['AMB_TEMP', 'RH', 'PM10', 'PM2.5']
-    comparison_data = read_csv('data/csv/full_comparison_data_mean.csv', usecols=cols)
-    np.savez('data/npz/comparison_data_corr_mean.npz', monitoring_data = comparison_data)
+        config['model']['input_dim'] = number_of_input_dim
+
+        with open('horizon_{}_xgboost.yaml'.format(str(i)), 'w') as f:
+            yaml.dump(config, f)
 
 if __name__ == "__main__":
-    generate_original_data()
-    generate_comparison_data()
-    generate_original_data_fi_xgboost()
-    generate_comparison_data_fi_xgboost()
-    generate_original_data_corr()
-    generate_comparison_data_corr()
+    generate_hanoi_data()
+    generate_taiwan_data()
+    generate_hanoi_data_fi_xgboost()
+    generate_taiwan_data_fi_xgboost()
