@@ -22,11 +22,11 @@ def generate_original_data_fi_xgboost():
     np.savez('data/npz/original_data_fi_xgboost_mean.npz', monitoring_data = data)
 
 def generate_comparison_data_fi_xgboost():
-    features = np.load('data/npz/feature_engineering/compare_xgboost.npz')
-    cols = features['features']
-    cols = np.append(cols, ['PM10', 'PM2.5'])
-    print(cols)
-    # cols = ['AMB_TEMP', 'CO', 'O3', 'SO2', 'WS_HR', 'PM10', 'PM2.5']
+    # features = np.load('data/npz/feature_engineering/compare_xgboost.npz')
+    # cols = features['features']
+    # cols = np.append(cols, ['PM10', 'PM2.5'])
+    # print(cols)
+    cols = ['AMB_TEMP', 'CO', 'O3', 'SO2', 'WS_HR', 'PM10', 'PM2.5']
     comparison_data = read_csv('data/csv/full_comparison_data_mean.csv', usecols=cols)
     np.savez('data/npz/comparison_data_fi_xgboost_mean.npz', monitoring_data = comparison_data)
 
