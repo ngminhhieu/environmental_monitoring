@@ -1,5 +1,6 @@
 from pandas import read_csv
 import numpy as np
+import yaml
 
 def generate_hanoi_data():
     cols = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM10', 'PM2.5']
