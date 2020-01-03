@@ -33,7 +33,7 @@ def generate_taiwan_data_fi_xgboost():
     np.savez('data/npz/taiwan_data_xgboost.npz', monitoring_data = dataset)
 
 def set_input_dim(number_of_input_dim):
-    for i in range(6):
+    for i in range(1,7):
         with open('horizon_{}_xgboost.yaml'.format(str(i)), 'r') as f:
             config = yaml.load(f)
 
