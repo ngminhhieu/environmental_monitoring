@@ -50,7 +50,10 @@ def feature_importances_xgboost(dataset, cols_feature, name):
         if mae < temp_mae:
             # get feature that being important
             features = [feature for (feature,threshold) in feature_importances if threshold > thresh]
-            np.savez('data/npz/feature_engineering/{}_xgboost.npz'.format(name), features = features)
+            if name == "taiwan_data":
+                np.savez('data/npz/feature_engineering/taiwan_data_xgboost.npz', features = features)
+            else:
+                np.savez('data/npz/feature_engineering/hanoi_data_xgboost.npz', features = features)
         temp_mae = mae
         print("Thresh=%.3f, n=%d, MAE: %.3f" % (thresh, select_X_train.shape[1], mae))
 
