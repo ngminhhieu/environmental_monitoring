@@ -35,6 +35,7 @@ def generate_taiwan_data_fi_xgboost():
 
 def set_input_dim(number_of_input_dim,name):
     if name == 'hanoi':
+        # update config for inputdim = 24
         with open('config/hanoi/horizon_1_xgboost.yaml', 'r') as f:
             config = yaml.load(f)
 
@@ -43,6 +44,16 @@ def set_input_dim(number_of_input_dim,name):
         with open('config/hanoi/horizon_1_xgboost.yaml', 'w') as f:
             yaml.dump(config, f)
     else:
+        # update config for inputdim = 24
+        with open('config/taiwan/l_24_horizon_1_xgboost.yaml', 'r') as f:
+            config = yaml.load(f)
+
+        config['model']['input_dim'] = number_of_input_dim
+
+        with open('config/taiwan/l_24_horizon_1_xgboost.yaml', 'w') as f:
+            yaml.dump(config, f)
+        
+        # update config for inputdim = 48
         for i in range(1,7):
             with open('config/{}/horizon_{}_xgboost.yaml'.format(name, str(i)), 'r') as f:
                 config = yaml.load(f)
