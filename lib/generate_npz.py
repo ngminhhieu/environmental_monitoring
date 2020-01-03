@@ -40,7 +40,7 @@ def set_input_dim(number_of_input_dim,name):
 
         config['model']['input_dim'] = number_of_input_dim
 
-        with open('config/hanoi/horizon_1_xgboost.yaml'.format(name, str(i)), 'w') as f:
+        with open('config/hanoi/horizon_1_xgboost.yaml', 'w') as f:
             yaml.dump(config, f)
     else:
         for i in range(1,7):
