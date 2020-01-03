@@ -6,7 +6,7 @@ gpu: 0
 data:
   batch_size: 200
   test_batch_size: 1
-  dataset: data/npz/hanoi_data_xgboost_mean.npz
+  dataset: data/npz/hanoi_data_xgboost.npz
   test_size: 0.2
   valid_size: 0.2
 model:
@@ -21,7 +21,7 @@ model:
   verified_percentage: 1
 train:
   dropout: 0
-  epochs: 300
+  epochs: 2
   optimizer: adam
   patience: 20
 test:

@@ -21,7 +21,7 @@ model:
   verified_percentage: 1
 train:
   dropout: 0
-  epochs: 300
+  epochs: 2
   optimizer: adam
   patience: 20
 test:
