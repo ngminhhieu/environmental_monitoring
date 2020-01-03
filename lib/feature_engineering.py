@@ -49,7 +49,7 @@ def feature_importances_xgboost(dataset, cols_feature, name):
         mae = mean_absolute_error(y_test, predictions)
         if mae < temp_mae:
             # get feature that being important
-            features = [feature for (feature,threshold) in feature_importances if threshold > thresh]
+            features = [feature for (feature,threshold) in feature_importances if threshold >= thresh]
             if name == "taiwan_data":
                 np.savez('data/npz/feature_engineering/taiwan_data_xgboost.npz', features = features)
             else:
