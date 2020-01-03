@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 def preprocessing_original_data():
-    dataset = read_csv('data/csv/original_monitoring.csv')
+    dataset = read_csv('data/csv/raw_hanoi_data.csv')
     dataset['TIME'] = pd.to_datetime(dataset['TIME'])
     dataset['TIME'] = dataset['TIME'].values.astype(float)
     # replace by median values 
@@ -13,7 +13,7 @@ def preprocessing_original_data():
 def preprocessing_comparison_data():
     cols = ['AMB_TEMP', 'CO','NO', 'NO2', 'NOx', 'O3', 'PM10', 'PM2.5', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR']
     len_cols = len(cols)    
-    comparison_data = read_csv('data/csv/20141_201909.csv', usecols=[i for i in range(0,26)])
+    comparison_data = read_csv('data/csv/raw_taiwan_data.csv', usecols=[i for i in range(0,26)])
     comparison_data = comparison_data.drop(columns=['factor'])
     
     # Fill NAN to mean data
