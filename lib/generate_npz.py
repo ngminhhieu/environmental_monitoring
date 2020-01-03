@@ -34,14 +34,23 @@ def generate_taiwan_data_fi_xgboost():
     np.savez('data/npz/taiwan_data_xgboost.npz', monitoring_data = dataset)
 
 def set_input_dim(number_of_input_dim,name):
-    for i in range(1,7):
-        with open('config/{}/horizon_{}_xgboost.yaml'.format(name, str(i)), 'r') as f:
-            config = yaml.load(f)
+    if name == 'hanoi':
+        with open('config/hanoi/horizon_1_xgboost.yaml', 'r') as f:
+        config = yaml.load(f)
 
         config['model']['input_dim'] = number_of_input_dim
 
-        with open('config/{}/horizon_{}_xgboost.yaml'.format(name, str(i)), 'w') as f:
+        with open('config/hanoi/horizon_1_xgboost.yaml'.format(name, str(i)), 'w') as f:
             yaml.dump(config, f)
+    else:
+        for i in range(1,7):
+            with open('config/{}/horizon_{}_xgboost.yaml'.format(name, str(i)), 'r') as f:
+                config = yaml.load(f)
+
+            config['model']['input_dim'] = number_of_input_dim
+
+            with open('config/{}/horizon_{}_xgboost.yaml'.format(name, str(i)), 'w') as f:
+                yaml.dump(config, f)
 
 if __name__ == "__main__":
     generate_hanoi_data()
