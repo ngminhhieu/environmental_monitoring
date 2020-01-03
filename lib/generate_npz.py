@@ -36,7 +36,7 @@ def generate_taiwan_data_fi_xgboost():
 def set_input_dim(number_of_input_dim,name):
     if name == 'hanoi':
         with open('config/hanoi/horizon_1_xgboost.yaml', 'r') as f:
-        config = yaml.load(f)
+            config = yaml.load(f)
 
         config['model']['input_dim'] = number_of_input_dim
 
