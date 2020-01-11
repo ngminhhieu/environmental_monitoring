@@ -1,15 +1,15 @@
 alg: seq2seq
-base_dir: log/seq2seq/taiwan_xgboost
+base_dir: log/seq2seq/taiwan_xgboost/yilan/dongshan
 data:
   batch_size: 200
-  dataset: data/npz/taiwan_data_xgboost.npz
+  dataset: data/npz/taiwan_yilan_dongshan_data_xgboost.npz
   test_batch_size: 1
   test_size: 0.2
   valid_size: 0.2
 gpu: 0
 log_level: INFO
 model:
-  horizon: 6
+  horizon: 1
   input_dim: 7
   l1_decay: 0
   output_dim: 1

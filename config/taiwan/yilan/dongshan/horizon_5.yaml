@@ -1,18 +1,18 @@
 ---
 alg: seq2seq
-base_dir: log/seq2seq/taiwan
+base_dir: log/seq2seq/taiwan/yilan/dongshan
 log_level: INFO
 gpu: 0
 data:
   batch_size: 200
   test_batch_size: 1
-  dataset: data/npz/taiwan_data.npz
+  dataset: data/npz/taiwan_yilan_dongshan_data.npz
   test_size: 0.2
   valid_size: 0.2
 model:
   type: bilstm_ed
   seq_len: 48
-  horizon: 1
+  horizon: 5
   input_dim: 6
   l1_decay: 0
   output_dim: 1

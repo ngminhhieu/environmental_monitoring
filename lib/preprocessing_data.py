@@ -2,18 +2,16 @@ from pandas import read_csv
 import numpy as np
 import pandas as pd
 
-def preprocessing_original_data():
-    dataset = read_csv('data/csv/raw_hanoi_data.csv')
+def preprocessing_hanoi_data():
+    dataset = read_csv('data/csv/raw_hanoi.csv')
     dataset['TIME'] = pd.to_datetime(dataset['TIME'])
     dataset['TIME'] = dataset['TIME'].values.astype(float)
     # replace by median values 
     dataset.fillna(dataset.mean(), inplace=True)
     dataset.to_csv('data/csv/hanoi_data_mean.csv', index=False)
 
-def preprocessing_comparison_data():
-    cols = ['AMB_TEMP', 'CO','NO', 'NO2', 'NOx', 'O3', 'PM10', 'PM2.5', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR']
+def preprocessing_taiwan_data(comparison_data, cols, output_name):
     len_cols = len(cols)    
-    comparison_data = read_csv('data/csv/raw_taiwan_data.csv', usecols=[i for i in range(0,26)])
     comparison_data = comparison_data.drop(columns=['factor'])
     
     # Fill NAN to mean data
@@ -44,8 +42,20 @@ def preprocessing_comparison_data():
     dataset=dataset.reindex(columns=columnsTitles)
     dataset['TIME'] = pd.to_datetime(dataset['TIME'])
     dataset['TIME'] = dataset['TIME'].values.astype(float)
-    dataset.to_csv('data/csv/taiwan_data_mean.csv', encoding='utf-8', index=False)
+    dataset.to_csv('data/csv/{}.csv'.format(output_name), encoding='utf-8', index=False)
 
 if __name__ == "__main__":
-    preprocessing_original_data()
-    preprocessing_comparison_data()
+    # hanoi data
+    preprocessing_hanoi_data()
+
+    # factors used in taiwan dataset
+    cols = ['AMB_TEMP', 'CO','NO', 'NO2', 'NOx', 'O3', 'PM10', 'PM2.5', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR']
+    
+    # taiwan yilan yilan
+    dataset_yilan_yilan = read_csv('data/csv/raw_taiwan_yilan_yilan.csv', usecols=[i for i in range(0,26)])
+    preprocessing_taiwan_data(dataset_yilan_yilan, cols, "taiwan_yilan_yilan_mean")
+
+    # taiwan yilan dongshan
+    dataset_yilan_dongshan = read_csv('data/csv/raw_taiwan_yilan_dongshan.csv', usecols=[i for i in range(0,26)])
+    preprocessing_taiwan_data(dataset_yilan_dongshan, cols, "taiwan_yilan_dongshan_mean")
+

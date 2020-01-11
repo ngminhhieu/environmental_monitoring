@@ -1,28 +1,27 @@
----
 alg: seq2seq
-base_dir: log/seq2seq/taiwan
-log_level: INFO
-gpu: 0
+base_dir: log/seq2seq/taiwan_xgboost/yilan/dongshan
 data:
   batch_size: 200
+  dataset: data/npz/taiwan_yilan_dongshan_data_xgboost.npz
   test_batch_size: 1
-  dataset: data/npz/taiwan_data.npz
   test_size: 0.2
   valid_size: 0.2
+gpu: 0
+log_level: INFO
 model:
-  type: bilstm_ed
-  seq_len: 48
-  horizon: 3
-  input_dim: 6
+  horizon: 4
+  input_dim: 7
   l1_decay: 0
   output_dim: 1
-  rnn_units: 100
   rnn_layers: 1
+  rnn_units: 100
+  seq_len: 48
+  type: bilstm_ed
   verified_percentage: 1
+test:
+  run_times: 1
 train:
   dropout: 0
   epochs: 300
   optimizer: adam
   patience: 20
-test:
-  run_times: 1
