@@ -15,7 +15,7 @@ model:
   output_dim: 1
   rnn_layers: 1
   rnn_units: 100
-  seq_len: 24
+  seq_len: 96
   type: bilstm_ed
   verified_percentage: 1
 test:
