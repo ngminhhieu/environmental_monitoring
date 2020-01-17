@@ -10,7 +10,7 @@ data:
   test_size: 0.2
   valid_size: 0.2
 model:
-  type: lstm_ed
+  type: gru_ed
   seq_len: 24
   horizon: 1
   input_dim: 10
