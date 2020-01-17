@@ -10,6 +10,7 @@ from lib import utils
 from keras.utils import plot_model
 from model.bilstm_ed_construction import bilstm_ed_model_construction
 from model.lstm_ed_construction import lstm_ed_model_construction
+from model.gru_ed_construction import gru_ed_model_construction
 from datetime import datetime
 
 
