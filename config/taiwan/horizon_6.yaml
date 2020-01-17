@@ -10,7 +10,7 @@ data:
   test_size: 0.2
   valid_size: 0.2
 model:
-  type: lstm
+  type: lstm_ed
   seq_len: 48
   horizon: 6
   input_dim: 6
