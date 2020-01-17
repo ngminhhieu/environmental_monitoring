@@ -15,8 +15,8 @@ model:
   output_dim: 1
   rnn_layers: 1
   rnn_units: 100
-  seq_len: 48
-  type: gru
+  seq_len: 24
+  type: lstm
   verified_percentage: 1
 test:
   run_times: 1
