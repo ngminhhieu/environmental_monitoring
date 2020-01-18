@@ -105,7 +105,7 @@ class EncoderDecoder():
                 self.model, self.encoder_model, self.decoder_model = lstm_ed_model_construction(self._input_dim, self._output_dim, self._rnn_units, self._dropout,
                                                         self._optimizer, self._log_dir, is_training=is_training)
         
-        elif self._type == 'gru':
+        elif self._type == 'gru_ed':
             if is_training:
                 self.model = gru_ed_model_construction(self._input_dim, self._output_dim, self._rnn_units, self._dropout,
                                                         self._optimizer, self._log_dir, is_training=is_training)
