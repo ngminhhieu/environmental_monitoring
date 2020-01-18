@@ -6,13 +6,13 @@ def gru_ed_model_construction(input_dim, output_dim, rnn_units, dropout, optimiz
         # Model
         encoder_inputs = Input(shape=(None, input_dim), name='encoder_input')
         encoder = GRU(rnn_units, return_state=True, dropout=dropout)
-        encoder_outputs, state_h, state_c = encoder(encoder_inputs)
+        encoder_outputs, state = encoder(encoder_inputs)
 
-        encoder_states = [state_h, state_c]
+        encoder_states = [state]
 
         decoder_inputs = Input(shape=(None, output_dim), name='decoder_input')
         decoder_gru = GRU(rnn_units, return_sequences=True, return_state=True, dropout=dropout)
-        decoder_outputs, decoder_state_h, decoder_state_c = decoder_gru(decoder_inputs, initial_state=encoder_states)
+        decoder_outputs, decoder_state = decoder_gru(decoder_inputs, initial_state=encoder_states)
 
         decoder_dense = Dense(output_dim, activation='relu')
         decoder_outputs = decoder_dense(decoder_outputs)
@@ -29,14 +29,12 @@ def gru_ed_model_construction(input_dim, output_dim, rnn_units, dropout, optimiz
             encoder_model = Model(encoder_inputs, encoder_states)
 
             # Inference decoder_model
-            decoder_state_input_h = Input(shape=(rnn_units,))
-            decoder_state_input_c = Input(shape=(rnn_units,))
-            decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
-            decoder_outputs, state_h, state_c = decoder_gru(decoder_inputs, initial_state=decoder_states_inputs)
-            decoder_states = [state_h, state_c]
+            decoder_state_input = Input(shape=(rnn_units,))
+            decoder_outputs, state = decoder_gru(decoder_inputs, initial_state=decoder_state_input)
+            decoder_states = [state]
             decoder_outputs = decoder_dense(decoder_outputs)
 
-            decoder_model = Model([decoder_inputs] + decoder_states_inputs, [decoder_outputs] + decoder_states)
+            decoder_model = Model([decoder_inputs] + decoder_state_input, [decoder_outputs] + decoder_states)
 
             plot_model(model=encoder_model, to_file=log_dir + '/encoder.png', show_shapes=True)
             plot_model(model=decoder_model, to_file=log_dir + '/decoder.png', show_shapes=True)
