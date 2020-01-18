@@ -9,7 +9,7 @@ data:
 gpu: 0
 log_level: INFO
 model:
-  horizon: 1
+  horizon: 4
   input_dim: 3
   l1_decay: 0
   output_dim: 1
