@@ -50,6 +50,7 @@ class EncoderDecoder():
 
         # Model's Args
         self._type = self._model_kwargs.get('type')
+        self._index_feature = self._model_kwargs.get('index_feature')
         self._rnn_units = self._model_kwargs.get('rnn_units')
         self._seq_len = self._model_kwargs.get('seq_len')
         self._horizon = self._model_kwargs.get('horizon')
@@ -72,7 +73,7 @@ class EncoderDecoder():
                                                     input_dim=self._input_dim, output_dim=self._output_dim,
                                                     dataset=self._dataset,
                                                     test_size=self._test_size, valid_size=self._valid_size,
-                                                    verified_percentage=self._verified_percentage)
+                                                    verified_percentage=self._verified_percentage, index_feature = self._index_feature)
 
         self.callbacks_list = []
 

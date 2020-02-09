@@ -40,12 +40,12 @@ def prepare_train_valid_test_2d(data, test_size, valid_size):
     return train_set, valid_set, test_set
 
 
-def create_data(data, seq_len, input_dim, output_dim, horizon, verified_percentage):
-    T = data.shape[0]
-    K = data.shape[1]
-    bm = binary_matrix(verified_percentage, T, K)
+def create_data(data, seq_len, input_dim, output_dim, horizon, verified_percentage, index_feature):
     _data = data.copy()
-    _std = np.std(data)
+    T = _data.shape[0]
+    K = _data.shape[1]
+    bm = binary_matrix(verified_percentage, T, K)
+    _std = np.std(_data)
     _data[bm == 0] = np.random.uniform(_data[bm == 0] - _std, _data[bm == 0] + _std)
     # only take pm10 and pm2.5 to predict
     pm_data = _data[:, -output_dim:].copy()
@@ -64,9 +64,15 @@ def create_data(data, seq_len, input_dim, output_dim, horizon, verified_percenta
     return en_x, de_x, de_y
 
 
-def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, valid_size, verified_percentage):
+def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, valid_size, verified_percentage, index_feature):
     raw_data = np.load(dataset)['monitoring_data']
-
+    if input_dim == 1:
+        raw_data = raw_data[:, -1]
+    elif input_dim == 2:
+        raw_data = raw_data[:, [index_feature, -1]]
+    else:
+        raise RuntimeError("Wrong input!!!")
+    
     print('|--- Splitting train-test set.')
     train_data2d, valid_data2d, test_data2d = prepare_train_valid_test_2d(data=raw_data, test_size=test_size, valid_size=valid_size)
     print('|--- Normalizing the train set.')
@@ -83,19 +89,22 @@ def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, va
                                                                                          input_dim=input_dim,
                                                                                          output_dim=output_dim,
                                                                                          horizon=horizon,
-                                                                                         verified_percentage=verified_percentage)
+                                                                                         verified_percentage=verified_percentage,
+                                                                                         index_feature=index_feature)
     encoder_input_val, decoder_input_val, decoder_target_val = create_data(valid_data2d_norm,
                                                                                    seq_len=seq_len,
                                                                                    input_dim=input_dim,
                                                                                    output_dim=output_dim,
                                                                                    horizon=horizon,
-                                                                                   verified_percentage=verified_percentage)
+                                                                                   verified_percentage=verified_percentage,
+                                                                                   index_feature=index_feature)
     encoder_input_eval, decoder_input_eval, decoder_target_eval = create_data(test_data2d_norm,
                                                                                       seq_len=seq_len,
                                                                                       input_dim=input_dim,
                                                                                       output_dim=output_dim,
                                                                                       horizon=horizon,
-                                                                                      verified_percentage=verified_percentage)
+                                                                                      verified_percentage=verified_percentage,
+                                                                                      index_feature=index_feature)
 
     for cat in ["train", "val", "eval"]:
         e_x, d_x, d_y = locals()["encoder_input_" + cat], locals()[
