@@ -1,6 +1,6 @@
 ---
 alg: seq2seq
-base_dir: log/seq2seq/hanoi/feature
+base_dir: log/seq2seq/hanoi/feature/pm10
 log_level: INFO
 gpu: 0
 data:
