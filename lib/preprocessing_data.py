@@ -48,4 +48,4 @@ def preprocessing_comparison_data():
 
 if __name__ == "__main__":
     preprocessing_original_data()
-    preprocessing_comparison_data()
+    # preprocessing_comparison_data()

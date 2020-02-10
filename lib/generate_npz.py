@@ -65,6 +65,6 @@ def set_input_dim(number_of_input_dim,name):
 
 if __name__ == "__main__":
     generate_hanoi_data()
-    generate_taiwan_data()
-    generate_hanoi_data_fi_xgboost()
-    generate_taiwan_data_fi_xgboost()
+    # generate_taiwan_data()
+    # generate_hanoi_data_fi_xgboost()
+    # generate_taiwan_data_fi_xgboost()
