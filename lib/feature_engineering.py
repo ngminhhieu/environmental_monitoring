@@ -8,7 +8,7 @@ from sklearn.feature_selection import SelectFromModel
 def feature_importances_xgboost(dataset, cols_feature, name):
     dataset = dataset.to_numpy()
     # split data into X and y
-    X = dataset[:,0:(len(cols_feature)-2)]
+    X = dataset[:,0:(len(cols_feature)-1)]
     Y = dataset[:,-1]
     # split data into train and test sets
     train_size = int(len(dataset)*0.8)
@@ -59,9 +59,9 @@ def feature_importances_xgboost(dataset, cols_feature, name):
 
 if __name__ == "__main__":
     # taiwan
-    cols_taiwan = ['TIME','AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR', 'PM10', 'PM2.5']    
-    taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv')
-    feature_importances_xgboost(taiwan_dataset, cols_taiwan, 'taiwan_data')
+    # cols_taiwan = ['TIME','AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR', 'PM10', 'PM2.5']    
+    # taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv')
+    # feature_importances_xgboost(taiwan_dataset, cols_taiwan, 'taiwan_data')
 
     # ha noi
     cols_hanoi = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM10','PM2.5']    

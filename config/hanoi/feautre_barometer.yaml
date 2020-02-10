@@ -1,27 +1,29 @@
+---
 alg: seq2seq
-base_dir: log/seq2seq/hanoi_xgboost
+base_dir: log/seq2seq/hanoi/feature/barometer
+log_level: INFO
+gpu: 0
 data:
   batch_size: 200
-  dataset: data/npz/hanoi_data_xgboost.npz
   test_batch_size: 1
+  dataset: data/npz/hanoi_data.npz
   test_size: 0.2
   valid_size: 0.2
-gpu: 0
-log_level: INFO
 model:
+  type: bilstm_ed
+  index_feature: 5
+  seq_len: 48
   horizon: 1
-  input_dim: 3
+  input_dim: 2
   l1_decay: 0
   output_dim: 1
-  rnn_layers: 1
   rnn_units: 100
-  seq_len: 48
-  type: lstm_ed
+  rnn_layers: 1
   verified_percentage: 1
-test:
-  run_times: 1
 train:
   dropout: 0
   epochs: 300
   optimizer: adam
-  patience: 20
+  patience: 50
+test:
+  run_times: 1
