@@ -66,12 +66,12 @@ def create_data(data, seq_len, input_dim, output_dim, horizon, verified_percenta
 
 def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, valid_size, verified_percentage, index_feature):
     raw_data = np.load(dataset)['monitoring_data']
-    if input_dim == 1:
-        raw_data = raw_data[:, -1]
-    elif input_dim == 2:
-        raw_data = raw_data[:, [index_feature, -1]]
-    else:
-        raise RuntimeError("Wrong input!!!")
+    # if input_dim == 1:
+    #     raw_data = raw_data[:, -1]
+    # elif input_dim == 2:
+    #     raw_data = raw_data[:, [index_feature, -1]]
+    # else:
+    #     raise RuntimeError("Wrong input!!!")
     
     print('|--- Splitting train-test set.')
     train_data2d, valid_data2d, test_data2d = prepare_train_valid_test_2d(data=raw_data, test_size=test_size, valid_size=valid_size)

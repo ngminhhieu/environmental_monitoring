@@ -2,10 +2,9 @@ from pandas import read_csv
 import numpy as np
 import yaml
 
-def generate_hanoi_data():
-    cols = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM10', 'PM2.5']
-    dataset = read_csv('data/csv/hanoi_data_mean.csv', usecols=cols)
-    np.savez('data/npz/hanoi_data.npz', monitoring_data = dataset)
+def generate_hanoi_data(cols, dataset, output_dir):
+    dataset = read_csv(dataset, usecols=cols)
+    np.savez(output_dir, monitoring_data = dataset)
 
 def generate_taiwan_data():
     cols = ['WIND_DIREC', 'WIND_SPEED', 'AMB_TEMP','RH','PM10', 'PM2.5']
@@ -64,7 +63,51 @@ def set_input_dim(number_of_input_dim,name):
                 yaml.dump(config, f)
 
 if __name__ == "__main__":
-    generate_hanoi_data()
-    # generate_taiwan_data()
-    # generate_hanoi_data_fi_xgboost()
-    # generate_taiwan_data_fi_xgboost()
+    dataset = 'data/csv/hanoi_data_mean.csv'    
+
+    cols = ['WIND_SPEED', 'RADIATION', 'PM10', 'PM2.5']    
+    output_dir = 'data/npz/random_search/1.npz'
+    generate_hanoi_data(cols, dataset, output_dir)
+
+    cols = ['TIME', 'WIND_SPEED', 'TEMP', 'BAROMETER', 'INNER_TEMP', 'PM10', 'PM2.5']    
+    output_dir = 'data/npz/random_search/2.npz'
+    generate_hanoi_data(cols, dataset, output_dir)
+    
+    cols = ['TEMP', 'BAROMETER', 'RADIATION','INNER_TEMP','PM10', 'PM2.5']    
+    output_dir = 'data/npz/random_search/3.npz'
+    generate_hanoi_data(cols, dataset, output_dir)
+
+    cols = ['WIND_SPEED', 'TEMP', 'RADIATION','INNER_TEMP', 'PM2.5']    
+
+    output_dir = 'data/npz/random_search/4.npz'
+    generate_hanoi_data(cols, dataset, output_dir)
+
+    cols = ['TIME', 'WIND_DIR', 'TEMP', 'RADIATION', 'PM10', 'PM2.5']    
+    output_dir = 'data/npz/random_search/5.npz'
+    generate_hanoi_data(cols, dataset, output_dir)
+
+    cols = ['TIME','WIND_SPEED','WIND_DIR','TEMP', 'RADIATION', 'INNER_TEMP','PM10', 'PM2.5']    
+    dataset = 'data/csv/hanoi_data_mean.csv'
+    output_dir = 'data/npz/random_search/6.npz'
+    generate_hanoi_data(cols, dataset, output_dir)
+
+    cols = ['WIND_DIR', 'TEMP', 'RH','BAROMETER', 'INNER_TEMP', 'PM2.5']    
+    output_dir = 'data/npz/random_search/7.npz'
+    generate_hanoi_data(cols, dataset, output_dir)
+
+    cols = ['TIME','WIND_SPEED', 'RH', 'BAROMETER','RADIATION', 'PM2.5']    
+    dataset = 'data/csv/hanoi_data_mean.csv'
+    output_dir = 'data/npz/random_search/8.npz'
+    generate_hanoi_data(cols, dataset, output_dir)
+
+    cols = ['WIND_SPEED','WIND_DIR','TEMP','RH', 'PM10', 'PM2.5']    
+    output_dir = 'data/npz/random_search/9.npz'
+    generate_hanoi_data(cols, dataset, output_dir)
+
+    cols = ['RH', 'RADIATION', 'INNER_TEMP', 'PM2.5']    
+    output_dir = 'data/npz/random_search/10.npz'
+    generate_hanoi_data(cols, dataset, output_dir)
+
+    cols = ['PM2.5']    
+    output_dir = 'data/npz/random_search/11.npz'
+    generate_hanoi_data(cols, dataset, output_dir)
