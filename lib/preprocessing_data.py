@@ -2,13 +2,12 @@ from pandas import read_csv
 import numpy as np
 import pandas as pd
 
-def preprocessing_original_data():
-    dataset = read_csv('data/csv/raw_hanoi_data.csv')
+def preprocessing_original_data(dataset, output_dir):
     dataset['TIME'] = pd.to_datetime(dataset['TIME'])
     dataset['TIME'] = dataset['TIME'].values.astype(float)
     # replace by median values 
     dataset.fillna(dataset.mean(), inplace=True)
-    dataset.to_csv('data/csv/hanoi_data_mean.csv', index=False)
+    dataset.to_csv(output_dir, index=False)
 
 def preprocessing_comparison_data():
     cols = ['AMB_TEMP', 'CO','NO', 'NO2', 'NOx', 'O3', 'PM10', 'PM2.5', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR']
@@ -47,5 +46,46 @@ def preprocessing_comparison_data():
     dataset.to_csv('data/csv/taiwan_data_mean.csv', encoding='utf-8', index=False)
 
 if __name__ == "__main__":
-    preprocessing_original_data()
-    # preprocessing_comparison_data()
+    dataset = read_csv('data/csv/raw_monthly_check/raw_train_data.csv')
+    output_dir = 'data/csv/monthly_check/train_data.csv'
+    preprocessing_original_data(dataset, output_dir)
+
+    dataset = read_csv('data/csv/raw_monthly_check/raw_test_data_3.csv')
+    output_dir = 'data/csv/monthly_check/test_data_3.csv'
+    preprocessing_original_data(dataset, output_dir)
+
+    dataset = read_csv('data/csv/raw_monthly_check/raw_test_data_4.csv')
+    output_dir = 'data/csv/monthly_check/test_data_4.csv'
+    preprocessing_original_data(dataset, output_dir)
+
+    dataset = read_csv('data/csv/raw_monthly_check/raw_test_data_5.csv')
+    output_dir = 'data/csv/monthly_check/test_data_5.csv'
+    preprocessing_original_data(dataset, output_dir)
+
+    dataset = read_csv('data/csv/raw_monthly_check/raw_test_data_6.csv')
+    output_dir = 'data/csv/monthly_check/test_data_6.csv'
+    preprocessing_original_data(dataset, output_dir)
+
+    dataset = read_csv('data/csv/raw_monthly_check/raw_test_data_7.csv')
+    output_dir = 'data/csv/monthly_check/test_data_7.csv'
+    preprocessing_original_data(dataset, output_dir)
+
+    dataset = read_csv('data/csv/raw_monthly_check/raw_test_data_8.csv')
+    output_dir = 'data/csv/monthly_check/test_data_8.csv'
+    preprocessing_original_data(dataset, output_dir)
+
+    dataset = read_csv('data/csv/raw_monthly_check/raw_test_data_9.csv')
+    output_dir = 'data/csv/monthly_check/test_data_9.csv'
+    preprocessing_original_data(dataset, output_dir)
+
+    dataset = read_csv('data/csv/raw_monthly_check/raw_test_data_10.csv')
+    output_dir = 'data/csv/monthly_check/test_data_10.csv'
+    preprocessing_original_data(dataset, output_dir)
+
+    dataset = read_csv('data/csv/raw_monthly_check/raw_test_data_11.csv')
+    output_dir = 'data/csv/monthly_check/test_data_11.csv'
+    preprocessing_original_data(dataset, output_dir)
+
+    dataset = read_csv('data/csv/raw_monthly_check/raw_test_data_12.csv')
+    output_dir = 'data/csv/monthly_check/test_data_12.csv'
+    preprocessing_original_data(dataset, output_dir)

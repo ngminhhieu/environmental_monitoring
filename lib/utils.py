@@ -49,7 +49,6 @@ def create_data(data, seq_len, input_dim, output_dim, horizon, verified_percenta
     _data[bm == 0] = np.random.uniform(_data[bm == 0] - _std, _data[bm == 0] + _std)
     # only take pm10 and pm2.5 to predict
     pm_data = _data[:, -output_dim:].copy()
-    
     en_x = np.zeros(shape=((T - seq_len - horizon), seq_len, input_dim))
     de_x = np.zeros(shape=((T - seq_len - horizon), horizon, output_dim))
     de_y = np.zeros(shape=((T - seq_len - horizon), horizon, output_dim))
@@ -66,55 +65,72 @@ def create_data(data, seq_len, input_dim, output_dim, horizon, verified_percenta
 
 def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, valid_size, verified_percentage, index_feature):
     raw_data = np.load(dataset)['monitoring_data']
-    # if input_dim == 1:
-    #     raw_data = raw_data[:, -1]
-    # elif input_dim == 2:
-    #     raw_data = raw_data[:, [index_feature, -1]]
-    # else:
-    #     raise RuntimeError("Wrong input!!!")
+
+    # to check each feature
+    if input_dim == 1:
+        raw_data = raw_data[:, -1]
+    elif input_dim == 2:
+        raw_data = raw_data[:, [index_feature, -1]]
+    else:
+        raise RuntimeError("Wrong input!!!")
     
     print('|--- Splitting train-test set.')
     train_data2d, valid_data2d, test_data2d = prepare_train_valid_test_2d(data=raw_data, test_size=test_size, valid_size=valid_size)
     print('|--- Normalizing the train set.')
     data = {}
     scaler = MinMaxScaler(copy=True, feature_range=(0, 1))
-    scaler.fit(train_data2d)
-    train_data2d_norm = scaler.transform(train_data2d)
-    valid_data2d_norm = scaler.transform(valid_data2d)
-    test_data2d_norm = scaler.transform(test_data2d)
-    
+    if test_size != 1:
+        scaler.fit(train_data2d)
+        train_data2d_norm = scaler.transform(train_data2d)
+        valid_data2d_norm = scaler.transform(valid_data2d)
+        test_data2d_norm = scaler.transform(test_data2d)
+    else:
+        scaler.fit(test_data2d)
+        test_data2d_norm = scaler.transform(test_data2d)
+
     data['test_data_norm'] = test_data2d_norm.copy()
-    encoder_input_train, decoder_input_train, decoder_target_train = create_data(train_data2d_norm,
-                                                                                         seq_len=seq_len,
-                                                                                         input_dim=input_dim,
-                                                                                         output_dim=output_dim,
-                                                                                         horizon=horizon,
-                                                                                         verified_percentage=verified_percentage,
-                                                                                         index_feature=index_feature)
-    encoder_input_val, decoder_input_val, decoder_target_val = create_data(valid_data2d_norm,
-                                                                                   seq_len=seq_len,
-                                                                                   input_dim=input_dim,
-                                                                                   output_dim=output_dim,
-                                                                                   horizon=horizon,
-                                                                                   verified_percentage=verified_percentage,
-                                                                                   index_feature=index_feature)
-    encoder_input_eval, decoder_input_eval, decoder_target_eval = create_data(test_data2d_norm,
-                                                                                      seq_len=seq_len,
-                                                                                      input_dim=input_dim,
-                                                                                      output_dim=output_dim,
-                                                                                      horizon=horizon,
-                                                                                      verified_percentage=verified_percentage,
-                                                                                      index_feature=index_feature)
-
-    for cat in ["train", "val", "eval"]:
-        e_x, d_x, d_y = locals()["encoder_input_" + cat], locals()[
+    if test_size != 1:
+        
+        encoder_input_train, decoder_input_train, decoder_target_train = create_data(train_data2d_norm,
+                                                                                            seq_len=seq_len,
+                                                                                            input_dim=input_dim,
+                                                                                            output_dim=output_dim,
+                                                                                            horizon=horizon,
+                                                                                            verified_percentage=verified_percentage,
+                                                                                            index_feature=index_feature)
+        encoder_input_val, decoder_input_val, decoder_target_val = create_data(valid_data2d_norm,
+                                                                                    seq_len=seq_len,
+                                                                                    input_dim=input_dim,
+                                                                                    output_dim=output_dim,
+                                                                                    horizon=horizon,
+                                                                                    verified_percentage=verified_percentage,
+                                                                                    index_feature=index_feature)
+        for cat in ["train", "val"]:
+            e_x, d_x, d_y = locals()["encoder_input_" + cat], locals()[
             "decoder_input_" + cat], locals()["decoder_target_" + cat]
-        print(cat, "e_x: ", e_x.shape, "d_x: ", d_x.shape, "d_y: ", d_y.shape)
-        data["encoder_input_" + cat] = e_x
-        data["decoder_input_" + cat] = d_x
-        data["decoder_target_" + cat] = d_y
-    data['scaler'] = scaler
+            print(cat, "e_x: ", e_x.shape, "d_x: ", d_x.shape, "d_y: ", d_y.shape)
+            data["encoder_input_" + cat] = e_x
+            data["decoder_input_" + cat] = d_x
+            data["decoder_target_" + cat] = d_y
+        
+    if test_size != 0:
+        encoder_input_eval, decoder_input_eval, decoder_target_eval = create_data(test_data2d_norm,
+                                                                                        seq_len=seq_len,
+                                                                                        input_dim=input_dim,
+                                                                                        output_dim=output_dim,
+                                                                                        horizon=horizon,
+                                                                                        verified_percentage=verified_percentage,
+                                                                                        index_feature=index_feature)
 
+        for cat in ["eval"]:
+            e_x, d_x, d_y = locals()["encoder_input_" + cat], locals()[
+            "decoder_input_" + cat], locals()["decoder_target_" + cat]
+            print(cat, "e_x: ", e_x.shape, "d_x: ", d_x.shape, "d_y: ", d_y.shape)
+            data["encoder_input_" + cat] = e_x
+            data["decoder_input_" + cat] = d_x
+            data["decoder_target_" + cat] = d_y
+    
+    data['scaler'] = scaler
     return data
 
 

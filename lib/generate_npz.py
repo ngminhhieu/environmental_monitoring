@@ -65,49 +65,58 @@ def set_input_dim(number_of_input_dim,name):
 if __name__ == "__main__":
     dataset = 'data/csv/hanoi_data_mean.csv'    
 
-    cols = ['WIND_SPEED', 'RADIATION', 'PM10', 'PM2.5']    
-    output_dir = 'data/npz/random_search/1.npz'
-    generate_hanoi_data(cols, dataset, output_dir)
+    # cols = ['WIND_SPEED', 'RADIATION', 'PM10', 'PM2.5']    
+    # output_dir = 'data/npz/random_search/1.npz'
+    # generate_hanoi_data(cols, dataset, output_dir)
 
-    cols = ['TIME', 'WIND_SPEED', 'TEMP', 'BAROMETER', 'INNER_TEMP', 'PM10', 'PM2.5']    
-    output_dir = 'data/npz/random_search/2.npz'
-    generate_hanoi_data(cols, dataset, output_dir)
+    # cols = ['TIME', 'WIND_SPEED', 'TEMP', 'BAROMETER', 'INNER_TEMP', 'PM10', 'PM2.5']    
+    # output_dir = 'data/npz/random_search/2.npz'
+    # generate_hanoi_data(cols, dataset, output_dir)
     
-    cols = ['TEMP', 'BAROMETER', 'RADIATION','INNER_TEMP','PM10', 'PM2.5']    
-    output_dir = 'data/npz/random_search/3.npz'
-    generate_hanoi_data(cols, dataset, output_dir)
+    # cols = ['TEMP', 'BAROMETER', 'RADIATION','INNER_TEMP','PM10', 'PM2.5']    
+    # output_dir = 'data/npz/random_search/3.npz'
+    # generate_hanoi_data(cols, dataset, output_dir)
 
-    cols = ['WIND_SPEED', 'TEMP', 'RADIATION','INNER_TEMP', 'PM2.5']    
+    # cols = ['WIND_SPEED', 'TEMP', 'RADIATION','INNER_TEMP', 'PM2.5']    
 
-    output_dir = 'data/npz/random_search/4.npz'
-    generate_hanoi_data(cols, dataset, output_dir)
+    # output_dir = 'data/npz/random_search/4.npz'
+    # generate_hanoi_data(cols, dataset, output_dir)
 
-    cols = ['TIME', 'WIND_DIR', 'TEMP', 'RADIATION', 'PM10', 'PM2.5']    
-    output_dir = 'data/npz/random_search/5.npz'
-    generate_hanoi_data(cols, dataset, output_dir)
+    # cols = ['TIME', 'WIND_DIR', 'TEMP', 'RADIATION', 'PM10', 'PM2.5']    
+    # output_dir = 'data/npz/random_search/5.npz'
+    # generate_hanoi_data(cols, dataset, output_dir)
 
-    cols = ['TIME','WIND_SPEED','WIND_DIR','TEMP', 'RADIATION', 'INNER_TEMP','PM10', 'PM2.5']    
-    dataset = 'data/csv/hanoi_data_mean.csv'
-    output_dir = 'data/npz/random_search/6.npz'
-    generate_hanoi_data(cols, dataset, output_dir)
+    # cols = ['TIME','WIND_SPEED','WIND_DIR','TEMP', 'RADIATION', 'INNER_TEMP','PM10', 'PM2.5']    
+    # dataset = 'data/csv/hanoi_data_mean.csv'
+    # output_dir = 'data/npz/random_search/6.npz'
+    # generate_hanoi_data(cols, dataset, output_dir)
 
-    cols = ['WIND_DIR', 'TEMP', 'RH','BAROMETER', 'INNER_TEMP', 'PM2.5']    
-    output_dir = 'data/npz/random_search/7.npz'
-    generate_hanoi_data(cols, dataset, output_dir)
+    # cols = ['WIND_DIR', 'TEMP', 'RH','BAROMETER', 'INNER_TEMP', 'PM2.5']    
+    # output_dir = 'data/npz/random_search/7.npz'
+    # generate_hanoi_data(cols, dataset, output_dir)
 
-    cols = ['TIME','WIND_SPEED', 'RH', 'BAROMETER','RADIATION', 'PM2.5']    
-    dataset = 'data/csv/hanoi_data_mean.csv'
-    output_dir = 'data/npz/random_search/8.npz'
-    generate_hanoi_data(cols, dataset, output_dir)
+    # cols = ['TIME','WIND_SPEED', 'RH', 'BAROMETER','RADIATION', 'PM2.5']    
+    # dataset = 'data/csv/hanoi_data_mean.csv'
+    # output_dir = 'data/npz/random_search/8.npz'
+    # generate_hanoi_data(cols, dataset, output_dir)
 
-    cols = ['WIND_SPEED','WIND_DIR','TEMP','RH', 'PM10', 'PM2.5']    
-    output_dir = 'data/npz/random_search/9.npz'
-    generate_hanoi_data(cols, dataset, output_dir)
+    # cols = ['WIND_SPEED','WIND_DIR','TEMP','RH', 'PM10', 'PM2.5']    
+    # output_dir = 'data/npz/random_search/9.npz'
+    # generate_hanoi_data(cols, dataset, output_dir)
 
-    cols = ['RH', 'RADIATION', 'INNER_TEMP', 'PM2.5']    
-    output_dir = 'data/npz/random_search/10.npz'
-    generate_hanoi_data(cols, dataset, output_dir)
+    # cols = ['RH', 'RADIATION', 'INNER_TEMP', 'PM2.5']    
+    # output_dir = 'data/npz/random_search/10.npz'
+    # generate_hanoi_data(cols, dataset, output_dir)
 
-    cols = ['PM2.5']    
-    output_dir = 'data/npz/random_search/11.npz'
+    # cols = ['PM2.5']    
+    # output_dir = 'data/npz/random_search/11.npz'
+    # generate_hanoi_data(cols, dataset, output_dir)
+
+    dataset = 'data/csv/monthly_check/train_data.csv' 
+    cols = ['TIME', 'WIND_SPEED', 'WIND_DIR', 'TEMP', 'RH', 'BAROMETER', 'RADIATION', 'INNER_TEMP', 'PM10', 'PM2.5']    
+    output_dir = 'data/npz/monthly_check/train_data.npz'
     generate_hanoi_data(cols, dataset, output_dir)
+    for i in range(3,13):
+        dataset = 'data/csv/monthly_check/test_data_{}.csv'.format(str(i))
+        output_dir = 'data/npz/monthly_check/test_data_{}.npz'.format(str(i))
+        generate_hanoi_data(cols, dataset, output_dir)
