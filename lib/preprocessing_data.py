@@ -3,8 +3,8 @@ import numpy as np
 import pandas as pd
 
 def preprocessing_original_data(dataset, output_dir):
-    dataset['TIME'] = pd.to_datetime(dataset['TIME'])
-    dataset['TIME'] = dataset['TIME'].values.astype(float)
+    # dataset['TIME'] = pd.to_datetime(dataset['TIME'])
+    # dataset['TIME'] = dataset['TIME'].values.astype(float)
     # replace by median values 
     dataset.fillna(dataset.mean(), inplace=True)
     dataset.to_csv(output_dir, index=False)

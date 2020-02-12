@@ -41,7 +41,7 @@ if __name__ == "__main__":
     src = 'config/random_search/sample.yaml'
     dataset = 'data/csv/monthly_check/train_data.csv'
     times_random_search = 10
-    features = ['TIME', 'WIND_SPEED', 'WIND_DIR', 'TEMP', 'RH', 'BAROMETER', 'RADIATION', 'INNER_TEMP', 'PM10']
+    features = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'WIND_SPEED', 'WIND_DIR', 'TEMP', 'RH', 'BAROMETER', 'RADIATION', 'INNER_TEMP', 'PM10']
     input_features = ['PM2.5']
     for time in range(12, 12+times_random_search):
         # find input_features by random search

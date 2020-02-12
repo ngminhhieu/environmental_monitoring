@@ -1,4 +1,4 @@
-# ['PM2.5', 'TIME', 'TEMP', 'RH', 'PM10']
+# ['PM2.5', 'MONTH', 'DAY', 'TEMP', 'BAROMETER']
 alg: seq2seq
 base_dir: log/seq2seq/random_search/15
 data:

@@ -1,4 +1,4 @@
-# ['PM2.5', 'WIND_DIR', 'TEMP', 'RADIATION', 'PM10']
+# ['PM2.5', 'DAY', 'HOUR', 'BAROMETER']
 alg: seq2seq
 base_dir: log/seq2seq/random_search/12
 data:
@@ -11,7 +11,7 @@ gpu: 0
 log_level: INFO
 model:
   horizon: 1
-  input_dim: 5
+  input_dim: 4
   l1_decay: 0
   output_dim: 1
   rnn_layers: 1
