@@ -38,12 +38,23 @@ def set_input_dim(number_of_input_dim,name):
                 yaml.dump(config, f)
 
 if __name__ == "__main__":
+    
     src = 'config/random_search/sample.yaml'
     dataset = 'data/csv/monthly_check/train_data.csv'
     times_random_search = 10
     features = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'WIND_SPEED', 'WIND_DIR', 'TEMP', 'RH', 'BAROMETER', 'RADIATION', 'INNER_TEMP', 'PM10']
+
+    # generate train npz for only pm2.5
+    # also genereate test npz 
     input_features = ['PM2.5']
-    for time in range(12, 12+times_random_search):
+    output_dir = 'data/npz/random_search/pm25.npz'
+    generate_hanoi_data(input_features, dataset, output_dir)
+    for i in range(3,13):
+            dataset = 'data/csv/monthly_check/test_data_{}.csv'.format(str(i))
+            output_dir = 'data/npz/monthly_check/test_data_{}.npz'.format(str(i))
+            generate_hanoi_data(input_features, dataset, output_dir)
+    
+    for time in range(1, 1+times_random_search):
         # find input_features by random search
         binary_features = np.random.randint(2, size=9)
         for index, value in enumerate(binary_features, start=0):
@@ -74,10 +85,6 @@ if __name__ == "__main__":
         input_features = ['PM2.5']
 
         # update npz test for each month from March to December 2017
-        for i in range(3,13):
-            dataset = 'data/csv/monthly_check/test_data_{}.csv'.format(str(i))
-            output_dir = 'data/npz/monthly_check/test_data_{}.npz'.format(str(i))
-            generate_hanoi_data(input_features, dataset, output_dir)
 
         
                 
