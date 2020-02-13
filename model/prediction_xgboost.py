@@ -10,11 +10,11 @@ def predict(dataset, cols_feature):
     Y = dataset.iloc[:,-1]
     # split data into train and test sets
     train_size = int(len(dataset)*0.8)
-    X_train = X.iloc[0:train_size, :]
-    y_train = Y.iloc[0:train_size, :]
+    X_train = X.iloc[0:train_size]
+    y_train = Y.iloc[0:train_size]
     
-    X_test = X.iloc[train_size:, :]
-    y_test = Y.iloc[train_size:, :]
+    X_test = X.iloc[train_size:]
+    y_test = Y.iloc[train_size:]
 
     # fit model on all training data
     model = XGBRegressor(
