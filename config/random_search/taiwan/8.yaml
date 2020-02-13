@@ -1,4 +1,4 @@
-# ['PM2.5', 'MONTH', 'HOUR', 'AMB_TEMP', 'NO', 'NO2', 'O3', 'RH', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED']
+# ['PM2.5', 'YEAR', 'RH', 'SO2', 'WIND_SPEED', 'WS_HR', 'PM10']
 alg: seq2seq
 base_dir: log/seq2seq/random_search/taiwan/8
 data:
@@ -11,7 +11,7 @@ gpu: 0
 log_level: INFO
 model:
   horizon: 1
-  input_dim: 11
+  input_dim: 7
   l1_decay: 0
   output_dim: 1
   rnn_layers: 1
@@ -21,6 +21,7 @@ model:
   verified_percentage: 1
 test:
   run_times: 1
+  test_monthly: true
 train:
   dropout: 0
   epochs: 300

@@ -26,3 +26,4 @@ train:
   patience: 30
 test:
   run_times: 1
+  test_monthly: true

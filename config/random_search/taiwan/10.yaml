@@ -1,4 +1,4 @@
-# ['PM2.5', 'MONTH', 'NO2', 'NOx', 'O3', 'RH', 'SO2', 'WD_HR']
+# ['PM2.5', 'YEAR', 'AMB_TEMP', 'NO', 'O3', 'SO2', 'WD_HR', 'PM10']
 alg: seq2seq
 base_dir: log/seq2seq/random_search/taiwan/10
 data:
@@ -21,6 +21,7 @@ model:
   verified_percentage: 1
 test:
   run_times: 1
+  test_monthly: true
 train:
   dropout: 0
   epochs: 300

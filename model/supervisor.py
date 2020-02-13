@@ -67,6 +67,7 @@ class EncoderDecoder():
 
         # Test's args
         self._run_times = self._test_kwargs.get('run_times')
+        self._test_monthly = self._test_kwargs.get('test_monthly')
 
         # Load data
         if is_training:
@@ -168,75 +169,75 @@ class EncoderDecoder():
         pass
 
     def test(self):
-        for time in range(self._run_times):
-            print('TIME: ', time+1)
-            self._test()
+        if self._test_monthly:
+            self._test_month()
+        else:
+            self._test(load_dataset=True)
 
-    def _test(self):
+    def _test_month(self):
         # load data
         test_size = 1
         valid_size = 0
-        for i in range (3,13):
-            dataset = 'data/npz/monthly_check/test_data_{}.npz'.format(i)
+        for i in range (1,12):
+            self._dataset = 'data/npz/monthly_check_taiwan/test_data_{}.npz'.format(i)
             self._data = utils.load_dataset(seq_len=self._seq_len, horizon=self._horizon,
                                             input_dim=self._input_dim, output_dim=self._output_dim,
-                                            dataset=dataset,
+                                            dataset=self._dataset,
                                             test_size=test_size, valid_size=valid_size,
                                             verified_percentage=self._verified_percentage, index_feature = self._index_feature)
-            scaler = self._data['scaler']
-            data_test = self._data['test_data_norm'].copy()
-            # this is the meterogical data
-            other_features_data = data_test[:, 0:(self._input_dim-self._output_dim)].copy()
-            pm_data = data_test[:, -self._output_dim:].copy()
-            T = len(data_test)
-            l = self._seq_len
-            h = self._horizon
-            bm = utils.binary_matrix(self._verified_percentage, len(data_test), pm_data.shape[1])
-            pd = np.zeros(shape=(T, self._output_dim), dtype='float32')
-            pd[:l] = pm_data[:l]
-            _pd = np.zeros(shape=(T, self._output_dim), dtype='float32')
-            _pd[:l] = pm_data[:l]
-            iterator = tqdm(range(0, T - l - h, h))
-            for i in iterator:
-                if i+l+h > T-h:
-                    # trimm all zero lines
-                    pd = pd[~np.all(pd==0, axis=1)]
-                    _pd = _pd[~np.all(_pd==0, axis=1)]
-                    iterator.close()
-                    break
-                input = np.zeros(shape=(self._test_batch_size, l, self._input_dim))
-                input[0, :, :] = data_test[i:i+l].copy()
-                yhats = self._predict(input)
-                _pd[i + l:i + l + h] = yhats
+            self._test(load_dataset=False)
 
-                # update y
-                _gt = pm_data[i + l:i + l + h].copy()
-                _bm = bm[i + l:i + l + h].copy()
-                pd[i + l:i + l + h] = yhats * (1.0 - _bm) + _gt * _bm
-            
-            # rescale metrics
-            residual_row = len(other_features_data)-len(_pd)
-            if residual_row != 0:
-                other_features_data = np.delete(other_features_data, np.s_[-residual_row:], axis=0)
-            inverse_pred_data = scaler.inverse_transform(np.concatenate((other_features_data,_pd), axis=1))
-            predicted_data = inverse_pred_data[:,-self._output_dim:]
-            inverse_actual_data = scaler.inverse_transform(data_test[:predicted_data.shape[0]])
-            ground_truth = inverse_actual_data[:, -self._output_dim:]
-            np.save(self._log_dir+'pd', predicted_data)
-            np.save(self._log_dir+'gt', ground_truth)
-            # save metrics to log dir
-            error_list = utils.cal_error(ground_truth.flatten(), predicted_data.flatten())
-            utils.save_metrics(error_list, self._log_dir, self._alg_name)
+    def _test(self, load_dataset):
+        if load_dataset:
+            self._data = utils.load_dataset(seq_len=self._seq_len, horizon=self._horizon,
+                                                input_dim=self._input_dim, output_dim=self._output_dim,
+                                                dataset=self._dataset,
+                                                test_size=self._test_size, valid_size=self._valid_size,
+                                                verified_percentage=self._verified_percentage, index_feature = self._index_feature)
+        scaler = self._data['scaler']
+        data_test = self._data['test_data_norm'].copy()
+        # this is the meterogical data
+        other_features_data = data_test[:, 0:(self._input_dim-self._output_dim)].copy()
+        pm_data = data_test[:, -self._output_dim:].copy()
+        T = len(data_test)
+        l = self._seq_len
+        h = self._horizon
+        bm = utils.binary_matrix(self._verified_percentage, len(data_test), pm_data.shape[1])
+        pd = np.zeros(shape=(T, self._output_dim), dtype='float32')
+        pd[:l] = pm_data[:l]
+        _pd = np.zeros(shape=(T, self._output_dim), dtype='float32')
+        _pd[:l] = pm_data[:l]
+        iterator = tqdm(range(0, T - l - h, h))
+        for i in iterator:
+            if i+l+h > T-h:
+                # trimm all zero lines
+                pd = pd[~np.all(pd==0, axis=1)]
+                _pd = _pd[~np.all(_pd==0, axis=1)]
+                iterator.close()
+                break
+            input = np.zeros(shape=(self._test_batch_size, l, self._input_dim))
+            input[0, :, :] = data_test[i:i+l].copy()
+            yhats = self._predict(input)
+            _pd[i + l:i + l + h] = yhats
 
-    def _predict_2(self, input):
-        target_seq = np.zeros((self._test_batch_size, 1, self._output_dim))
-        yhat = np.zeros(shape=(self._horizon, self._output_dim),
-                        dtype='float32')
-
-        output_tokens = self.model.predict([input, target_seq])
-        yhat = output_tokens
-
-        return yhat
+            # update y
+            _gt = pm_data[i + l:i + l + h].copy()
+            _bm = bm[i + l:i + l + h].copy()
+            pd[i + l:i + l + h] = yhats * (1.0 - _bm) + _gt * _bm
+        
+        # rescale metrics
+        residual_row = len(other_features_data)-len(_pd)
+        if residual_row != 0:
+            other_features_data = np.delete(other_features_data, np.s_[-residual_row:], axis=0)
+        inverse_pred_data = scaler.inverse_transform(np.concatenate((other_features_data,_pd), axis=1))
+        predicted_data = inverse_pred_data[:,-self._output_dim:]
+        inverse_actual_data = scaler.inverse_transform(data_test[:predicted_data.shape[0]])
+        ground_truth = inverse_actual_data[:, -self._output_dim:]
+        np.save(self._log_dir+'pd', predicted_data)
+        np.save(self._log_dir+'gt', ground_truth)
+        # save metrics to log dir
+        error_list = utils.cal_error(ground_truth.flatten(), predicted_data.flatten())
+        utils.save_metrics(error_list, self._log_dir, self._alg_name)
 
     def _predict(self, source):
         states_value = self.encoder_model.predict(source)

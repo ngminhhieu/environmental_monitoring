@@ -51,7 +51,7 @@ if __name__ == "__main__":
     output_dir = 'data/npz/random_search/taiwan/pm25.npz'
     generate_hanoi_data(input_features, dataset, output_dir)
     # update npz test for each month from March to December 2017
-    for i in range(3,13):
+    for i in range(1,12):
             dataset = 'data/csv/monthly_check_taiwan/test_data_{}.csv'.format(str(i))
             output_dir = 'data/npz/monthly_check_taiwan/test_data_{}.npz'.format(str(i))
             generate_hanoi_data(input_features, dataset, output_dir)
