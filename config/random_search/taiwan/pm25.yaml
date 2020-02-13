@@ -7,7 +7,7 @@ data:
   batch_size: 200
   test_batch_size: 1
   dataset: data/npz/random_search/taiwan/pm25.npz
-  test_size: 0
+  test_size: 0.2
   valid_size: 0.15
 model:
   type: bilstm_ed
@@ -26,3 +26,4 @@ train:
   patience: 30
 test:
   run_times: 1
+  test_monthly: false

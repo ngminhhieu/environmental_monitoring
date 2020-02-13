@@ -5,7 +5,7 @@ data:
   batch_size: 200
   dataset: data/npz/random_search/taiwan/10.npz
   test_batch_size: 1
-  test_size: 0
+  test_size: 0.2
   valid_size: 0.15
 gpu: 0
 log_level: INFO
@@ -21,7 +21,7 @@ model:
   verified_percentage: 1
 test:
   run_times: 1
-  test_monthly: true
+  test_monthly: false
 train:
   dropout: 0
   epochs: 300
