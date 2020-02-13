@@ -79,16 +79,23 @@ def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, va
     print('|--- Normalizing the train set.')
     data = {}
     scaler = MinMaxScaler(copy=True, feature_range=(0, 1))
-    if test_size != 1:
+    if test_size != 1 and test_size != 0:
         scaler.fit(train_data2d)
         train_data2d_norm = scaler.transform(train_data2d)
         valid_data2d_norm = scaler.transform(valid_data2d)
         test_data2d_norm = scaler.transform(test_data2d)
+        data['test_data_norm'] = test_data2d_norm.copy()
+        
+    elif test_size !=1 and test_size == 0:
+        scaler.fit(train_data2d)
+        train_data2d_norm = scaler.transform(train_data2d)
+        valid_data2d_norm = scaler.transform(valid_data2d)
     else:
         scaler.fit(test_data2d)
         test_data2d_norm = scaler.transform(test_data2d)
+        data['test_data_norm'] = test_data2d_norm.copy()
+        
 
-    data['test_data_norm'] = test_data2d_norm.copy()
     if test_size != 1:
         
         encoder_input_train, decoder_input_train, decoder_target_train = create_data(train_data2d_norm,
