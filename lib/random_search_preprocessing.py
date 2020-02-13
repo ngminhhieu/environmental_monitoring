@@ -56,7 +56,7 @@ if __name__ == "__main__":
     
     for time in range(1, 1+times_random_search):
         # find input_features by random search
-        binary_features = np.random.randint(2, size=9)
+        binary_features = np.random.randint(2, size=12)
         for index, value in enumerate(binary_features, start=0):
             if value == 1:
                 input_features.append(features[index])
