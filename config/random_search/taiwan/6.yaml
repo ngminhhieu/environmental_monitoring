@@ -21,7 +21,7 @@ model:
   verified_percentage: 1
 test:
   run_times: 1
-  test_monthly: false
+  test_monthly: true
 train:
   dropout: 0
   epochs: 300
