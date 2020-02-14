@@ -4,11 +4,11 @@ data:
   batch_size: 200
   dataset: data/npz/random_search/taiwan/2.npz
   test_batch_size: 1
-  test_size: 0.2
-  valid_size: 0.15
+  test_size: 0.27
+  valid_size: 0.13
 gpu: 0
-input_features: '[''PM2.5'', ''DAY'', ''HOUR'', ''CO'', ''O3'', ''SO2'', ''WIND_DIREC'',
-  ''PM10'']'
+input_features: '[''PM2.5'', ''DAY'', ''YEAR'', ''HOUR'', ''NOx'', ''RH'', ''SO2'',
+  ''WIND_DIREC'']'
 log_level: INFO
 model:
   horizon: 1

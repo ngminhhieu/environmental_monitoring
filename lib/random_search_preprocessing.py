@@ -34,7 +34,7 @@ def set_config():
 
 def random_search():
     src = 'config/random_search/sample.yaml'
-    dataset_train = 'data/csv/monthly_check_taiwan/train_data.csv'
+    dataset_train = 'data/csv/taiwan_data_mean.csv'
     times_random_search = 10
     features = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP', 'CO', 'NO', 'NO2',
     'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']

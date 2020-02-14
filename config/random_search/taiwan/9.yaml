@@ -4,15 +4,15 @@ data:
   batch_size: 200
   dataset: data/npz/random_search/taiwan/9.npz
   test_batch_size: 1
-  test_size: 0.2
-  valid_size: 0.15
+  test_size: 0.27
+  valid_size: 0.13
 gpu: 0
-input_features: '[''PM2.5'', ''MONTH'', ''DAY'', ''YEAR'', ''AMB_TEMP'', ''CO'', ''NO'',
-  ''NO2'', ''NOx'', ''SO2'', ''WD_HR'', ''WIND_DIREC'', ''WS_HR'']'
+input_features: '[''PM2.5'', ''AMB_TEMP'', ''NO'', ''NOx'', ''O3'', ''RH'', ''WD_HR'',
+  ''WIND_DIREC'', ''WIND_SPEED'', ''WS_HR'']'
 log_level: INFO
 model:
   horizon: 1
-  input_dim: 13
+  input_dim: 10
   l1_decay: 0
   output_dim: 1
   rnn_layers: 1
