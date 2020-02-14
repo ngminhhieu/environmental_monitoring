@@ -6,6 +6,7 @@ from numpy import sort
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_absolute_error
 import plotly_express as px
+import os
 
 def predict(dataset, cols_feature):
     # split data into X and y
@@ -53,11 +54,13 @@ def predict(dataset, cols_feature):
     print("MAE: %.3f" % (mae))
     return [mae]
 
-def write_log(input_features, error):
+def write_log(path, input_features, error):
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     error.insert(0, dt_string)
-    with open("log/xgboost/metrics.csv", 'a') as file:
+    if os.path.exists(path) == False:
+        os.makedirs(path)
+    with open(path + "metrics.csv", 'a') as file:
         writer = csv.writer(file)
         writer.writerow(error)
         writer.writerow(input_features)
@@ -69,7 +72,7 @@ if __name__ == "__main__":
     input_features = []
 
     # random search
-    times_random_search = 20    
+    times_random_search = 1    
     for time in range(1, 1+times_random_search):
         # find input_features by random search
         binary_features = np.random.randint(2, size=len(features))
@@ -82,7 +85,8 @@ if __name__ == "__main__":
         error_mae = predict(taiwan_dataset, input_features)
 
         # reset input_features
-        write_log(input_features, error_mae)        
+        path = "log/xgboost/"
+        write_log(path, input_features, error_mae)        
         input_features = []
         
     
