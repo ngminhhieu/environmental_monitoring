@@ -178,7 +178,7 @@ class EncoderDecoder():
         # load data
         test_size = 1
         valid_size = 0
-        for i in range (1,12):
+        for i in range (1,13):
             self._dataset = 'data/npz/monthly_check_taiwan/test_data_{}.npz'.format(i)
             self._data = utils.load_dataset(seq_len=self._seq_len, horizon=self._horizon,
                                             input_dim=self._input_dim, output_dim=self._output_dim,

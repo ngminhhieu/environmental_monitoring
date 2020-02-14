@@ -1,4 +1,3 @@
-# ['PM2.5', 'HOUR', 'AMB_TEMP', 'NO2', 'NOx', 'SO2', 'WD_HR', 'WIND_DIREC']
 alg: seq2seq
 base_dir: log/seq2seq/random_search/taiwan/2
 data:
@@ -8,6 +7,8 @@ data:
   test_size: 0.2
   valid_size: 0.15
 gpu: 0
+input_features: '[''PM2.5'', ''DAY'', ''HOUR'', ''CO'', ''O3'', ''SO2'', ''WIND_DIREC'',
+  ''PM10'']'
 log_level: INFO
 model:
   horizon: 1
