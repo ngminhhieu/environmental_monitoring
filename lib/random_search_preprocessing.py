@@ -11,6 +11,14 @@ def generate_hanoi_data(cols, dataset, output_dir):
     np.savez(output_dir, monitoring_data = dataset)
 
 def set_config():
+    with open('config/random_search/taiwan/pm25.yaml', 'r') as f:
+        config = yaml.load(f)
+
+    config['test']['test_monthly'] = False
+
+    with open(des, 'w') as f:
+        yaml.dump(config, f)
+        
     for index in range(1,11):
         des = 'config/random_search/taiwan/{}.yaml'.format(str(index))
         # update config
@@ -21,6 +29,8 @@ def set_config():
 
         with open(des, 'w') as f:
             yaml.dump(config, f)
+
+    
 
 def random_search():
     src = 'config/random_search/sample.yaml'
