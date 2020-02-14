@@ -16,9 +16,9 @@ def set_config():
 
     config['test']['test_monthly'] = False
 
-    with open(des, 'w') as f:
+    with open('config/random_search/taiwan/pm25.yaml', 'w') as f:
         yaml.dump(config, f)
-        
+
     for index in range(1,11):
         des = 'config/random_search/taiwan/{}.yaml'.format(str(index))
         # update config
