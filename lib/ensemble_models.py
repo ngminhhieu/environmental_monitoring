@@ -81,19 +81,19 @@ if __name__ == "__main__":
     models = utils.get_models("Lasso", "ElasticNet", "KernelRidge", "GradientBoostingRegressor")
 
     ### Stacking 
-    # Avergage models
-    # averaged_models = AveragingModels(models = (models["ElasticNet"], models["GradientBoostingRegressor"],
-    #                                             models["KernelRidge"], models["Lasso"]))
+    Avergage models
+    averaged_models = AveragingModels(models = (models["ElasticNet"], models["GradientBoostingRegressor"],
+                                                models["KernelRidge"], models["Lasso"]))
 
-    # score = utils.mae_cv(averaged_models, X_train, y_train) 
-    # print(" Averaged base models score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
+    score = utils.mae_cv(averaged_models, X_train, y_train) 
+    print(" Averaged base models score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
 
-    # # Stacked average models
-    # stacked_averaged_models = StackingAveragedModels(base_models = (models["ElasticNet"], models["GradientBoostingRegressor"],
-    #                                                   models["KernelRidge"]),
-    #                                     meta_model = models["Lasso"])
-    # score = utils.mae_cv(stacked_averaged_models, X_train, y_train)
-    # print("Stacking Averaged models score: {:.4f} ({:.4f})".format(score.mean(), score.std()))
+    # Stacked average models
+    stacked_averaged_models = StackingAveragedModels(base_models = (models["ElasticNet"], models["GradientBoostingRegressor"],
+                                                      models["KernelRidge"]),
+                                        meta_model = models["Lasso"])
+    score = utils.mae_cv(stacked_averaged_models, X_train, y_train)
+    print("Stacking Averaged models score: {:.4f} ({:.4f})".format(score.mean(), score.std()))
 
     utils.test_models(X_train, y_train)
 
