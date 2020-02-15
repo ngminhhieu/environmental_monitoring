@@ -1,173 +1,129 @@
-import logging
-import os
-import csv
-import sys
-import random
-import numpy as np
-from sklearn.metrics import mean_squared_error, mean_absolute_error
-from sklearn.preprocessing import MinMaxScaler
-from datetime import datetime
+from sklearn.metrics import mean_absolute_error
 
-def get_logger(log_dir, name, log_filename='info.log', level=logging.INFO):
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    # Add file handler and stdout handler
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    file_handler = logging.FileHandler(os.path.join(log_dir, log_filename))
-    file_handler.setFormatter(formatter)
-    # Add console handler.
-    console_formatter = logging.Formatter(
-        '%(asctime)s - %(levelname)s - %(message)s')
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setFormatter(console_formatter)
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
-    # Add google cloud log handler
-    logger.info('Log directory: %s', log_dir)
-    return logger
+# models
+from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor, GradientBoostingRegressor, ExtraTreesRegressor
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.linear_model import LogisticRegression, ElasticNet, Lasso,  BayesianRidge, LassoLarsIC
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.neural_network import MLPRegressor
+from sklearn.svm import SVR
+from sklearn.kernel_ridge import KernelRidge
+from xgboost import XGBRegressor
 
+# support for models
+from sklearn.preprocessing import RobustScaler
+from sklearn.pipeline import make_pipeline
+from sklearn.model_selection import KFold, GridSearchCV, cross_val_score
 
-def prepare_train_valid_test_2d(data, test_size, valid_size):
+# plot
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set(style='white', context='notebook', palette='deep')
 
-    train_len = int(data.shape[0] * (1 - test_size - valid_size))
-    valid_len = int(data.shape[0] * valid_size)
+error_invalid_model = "Invalid Models"
 
-    train_set = data[0:train_len]
-    valid_set = data[train_len: train_len + valid_len]
-    test_set = data[train_len + valid_len:]
+def mae(y, y_pred):
+    return mean_absolute_error(y, y_pred)
 
-    return train_set, valid_set, test_set
+# Cross validation
+def mae_cv(model, X_train, Y_train, n_folds = 10):
+    kf = KFold(n_folds, shuffle=True, random_state=42).get_n_splits(X_train)
+    mae= -cross_val_score(model, X_train, Y_train, scoring="neg_mean_absolute_error", cv=kf)
+    return(mae)
 
+def split_data(dataset, cols_feature, train_per, valid_per):
+    # split data into X and y
+    X = dataset.iloc[:,0:(len(cols_feature)-1)]
+    Y = dataset.iloc[:,-1]
+    # split data into train and test sets
+    train_size = int(len(dataset)*train_per)
+    valid_size = int(len(dataset)*valid_per)
+    X_train = X.iloc[0:train_size]
+    y_train = Y.iloc[0:train_size]
 
-def create_data(data, seq_len, input_dim, output_dim, horizon, verified_percentage, index_feature):
-    _data = data.copy()
-    T = _data.shape[0]
-    K = _data.shape[1]
-    bm = binary_matrix(verified_percentage, T, K)
-    _std = np.std(_data)
-    _data[bm == 0] = np.random.uniform(_data[bm == 0] - _std, _data[bm == 0] + _std)
-    # only take pm10 and pm2.5 to predict
-    pm_data = _data[:, -output_dim:].copy()
-    en_x = np.zeros(shape=((T - seq_len - horizon), seq_len, input_dim))
-    de_x = np.zeros(shape=((T - seq_len - horizon), horizon, output_dim))
-    de_y = np.zeros(shape=((T - seq_len - horizon), horizon, output_dim))
-
-    for i in range(T - seq_len - horizon):
-        en_x[i, :, :] = _data[i:i + seq_len]
-
-        de_x[i, :, :] = pm_data[i + seq_len - 1:i + seq_len + horizon - 1]
-        de_x[i, 0, :] = 0
-        de_y[i, :, :] = pm_data[i + seq_len:i + seq_len + horizon]
-
-    return en_x, de_x, de_y
-
-
-def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, valid_size, verified_percentage, index_feature):
-    raw_data = np.load(dataset)['monitoring_data']
-
-    # to check each feature
-    # if input_dim == 1:
-    #     raw_data = raw_data[:, -1]
-    # elif input_dim == 2:
-    #     raw_data = raw_data[:, [index_feature, -1]]
-    # else:
-    #     raise RuntimeError("Wrong input!!!")
+    X_valid = X.iloc[train_size:train_size+valid_size]
+    y_valid = Y.iloc[train_size:train_size+valid_size]
     
-    print('|--- Splitting train-test set.')
-    train_data2d, valid_data2d, test_data2d = prepare_train_valid_test_2d(data=raw_data, test_size=test_size, valid_size=valid_size)
-    print('|--- Normalizing the train set.')
-    data = {}
-    scaler = MinMaxScaler(copy=True, feature_range=(0, 1))
-    if test_size != 1 and test_size != 0:
-        scaler.fit(train_data2d)
-        train_data2d_norm = scaler.transform(train_data2d)
-        valid_data2d_norm = scaler.transform(valid_data2d)
-        test_data2d_norm = scaler.transform(test_data2d)
-        data['test_data_norm'] = test_data2d_norm.copy()
-        
-    elif test_size !=1 and test_size == 0:
-        scaler.fit(train_data2d)
-        train_data2d_norm = scaler.transform(train_data2d)
-        valid_data2d_norm = scaler.transform(valid_data2d)
-    else:
-        scaler.fit(test_data2d)
-        test_data2d_norm = scaler.transform(test_data2d)
-        data['test_data_norm'] = test_data2d_norm.copy()
-        
+    X_test = X.iloc[train_size:train_size+valid_size:]
+    y_test = Y.iloc[train_size:train_size+valid_size:]
 
-    if test_size != 1:
-        
-        encoder_input_train, decoder_input_train, decoder_target_train = create_data(train_data2d_norm,
-                                                                                            seq_len=seq_len,
-                                                                                            input_dim=input_dim,
-                                                                                            output_dim=output_dim,
-                                                                                            horizon=horizon,
-                                                                                            verified_percentage=verified_percentage,
-                                                                                            index_feature=index_feature)
-        encoder_input_val, decoder_input_val, decoder_target_val = create_data(valid_data2d_norm,
-                                                                                    seq_len=seq_len,
-                                                                                    input_dim=input_dim,
-                                                                                    output_dim=output_dim,
-                                                                                    horizon=horizon,
-                                                                                    verified_percentage=verified_percentage,
-                                                                                    index_feature=index_feature)
-        for cat in ["train", "val"]:
-            e_x, d_x, d_y = locals()["encoder_input_" + cat], locals()[
-            "decoder_input_" + cat], locals()["decoder_target_" + cat]
-            print(cat, "e_x: ", e_x.shape, "d_x: ", d_x.shape, "d_y: ", d_y.shape)
-            data["encoder_input_" + cat] = e_x
-            data["decoder_input_" + cat] = d_x
-            data["decoder_target_" + cat] = d_y
-        
-    if test_size != 0:
-        encoder_input_eval, decoder_input_eval, decoder_target_eval = create_data(test_data2d_norm,
-                                                                                        seq_len=seq_len,
-                                                                                        input_dim=input_dim,
-                                                                                        output_dim=output_dim,
-                                                                                        horizon=horizon,
-                                                                                        verified_percentage=verified_percentage,
-                                                                                        index_feature=index_feature)
+    return X_train, y_train, X_valid, y_valid, X_test, y_test
 
-        for cat in ["eval"]:
-            e_x, d_x, d_y = locals()["encoder_input_" + cat], locals()[
-            "decoder_input_" + cat], locals()["decoder_target_" + cat]
-            print(cat, "e_x: ", e_x.shape, "d_x: ", d_x.shape, "d_y: ", d_y.shape)
-            data["encoder_input_" + cat] = e_x
-            data["decoder_input_" + cat] = d_x
-            data["decoder_target_" + cat] = d_y
+def test_models(X_train, Y_train):
+    # Modeling step Test differents algorithms 
+    random_state = 42
+    regressors = []
+    regressors.append(SVR())
+    regressors.append(DecisionTreeRegressor(random_state=random_state))
+    regressors.append(AdaBoostRegressor(DecisionTreeRegressor(random_state=random_state),random_state=random_state,learning_rate=0.1))
+    regressors.append(RandomForestRegressor(random_state=random_state))
+    regressors.append(ExtraTreesRegressor(random_state=random_state))
+    regressors.append(GradientBoostingRegressor(random_state=random_state))
+    regressors.append(XGBRegressor(random_state=random_state))
+    regressors.append(MLPRegressor(random_state=random_state))
+    regressors.append(KNeighborsRegressor())
+    # regressors.append(LogisticRegression(random_state = random_state))
+    # regressors.append(LinearDiscriminantAnalysis())
+    regressors.append(make_pipeline(RobustScaler(), Lasso(random_state=random_state)))
+    regressors.append(make_pipeline(RobustScaler(), ElasticNet(random_state=random_state)))
+    regressors.append(KernelRidge())
+
+    cv_results = []
+    for regressor in regressors :
+        # print(regressor)
+        cv_results.append(mae_cv(regressor, X_train, Y_train))
+
+    cv_means = []
+    cv_std = []
+    for cv_result in cv_results:
+        cv_means.append(cv_result.mean())
+        cv_std.append(cv_result.std())
     
-    data['scaler'] = scaler
-    return data
+    cv_res = pd.DataFrame({"CrossValMeans":cv_means,"CrossValerrors": cv_std,"Algorithm":["SVR","DecisionTree","AdaBoost",
+    "RandomForest","ExtraTrees","GradientBoosting", "XGBoost", "MultipleLayerPerceptron","KNeighboors", "Lasso", "ElasticNet", "KernelRidge"]})
+    # "LogisticRegression",
+    # "LinearDiscriminantAnalysis"
+    g = sns.barplot("CrossValMeans","Algorithm",data = cv_res, palette="Set3",orient = "h",**{'xerr':cv_std})
+    g.set_xlabel("Mean Accuracy")
+    g = g.set_title("Cross validation scores")
+    plt.show()
 
+def switch_model(model):
+    lasso = make_pipeline(RobustScaler(), Lasso(alpha =0.0005, random_state=1))
 
-def cal_error(test_arr, prediction_arr):
-    with np.errstate(divide='ignore', invalid='ignore'):
-        # cal mse
-        error_mae = mean_absolute_error(test_arr, prediction_arr)
-        print('MAE: %.3f' % error_mae)
+    ENet = make_pipeline(RobustScaler(), ElasticNet(alpha=0.0005, l1_ratio=.9, random_state=3))
 
-        # cal rmse
-        error_mse = mean_squared_error(test_arr, prediction_arr)
-        error_rmse = np.sqrt(error_mse)
-        print('RMSE: %.3f' % error_rmse)
+    KRR = KernelRidge(alpha=0.6, kernel='polynomial', degree=2, coef0=2.5)
 
-        # cal mape
-        y_true, y_pred = np.array(test_arr), np.array(prediction_arr)
-        error_mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
-        print('MAPE: %.3f' % error_mape)
-        error_list = [error_mae, error_rmse, error_mape]
-        return error_list
+    GBRegressor = GradientBoostingRegressor(n_estimators=3000, learning_rate=0.05,
+                                   max_depth=4, max_features='sqrt',
+                                   min_samples_leaf=15, min_samples_split=10, 
+                                   loss='huber', random_state =5)
 
-def save_metrics(error_list, log_dir, alg):
-    now = datetime.now()
-    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-    error_list.insert(0, dt_string)
-    with open(log_dir + alg + "_metrics.csv", 'a') as file:
-        writer = csv.writer(file)
-        writer.writerow(error_list)
+    switcher={
+        "SVR":'Sunday',
+        "DecisionTreeRegressor":'Monday',
+        "AdaBoostRegressor":'Tuesday',
+        "ExtraTreesRegressor":'Wednesday',
+        "GradientBoostingRegressor": GBRegressor,
+        "XGBRegressor":'Friday',
+        "MLPRegressor":'Saturday',
+        "KNeighborsRegressor": "...",
+        "Lasso": lasso,
+        "ElasticNet": ENet,
+        "KernelRidge": KRR
+    }
 
-def binary_matrix(verified_percentage, row, col):
-    tf = np.array([1, 0])
-    bm = np.random.choice(tf, size=(row, col), p=[verified_percentage, 1.0 - verified_percentage])
-    return bm
+    return switcher.get(model, error_invalid_model)
+
+def get_models(*args):
+    models = {}
+    for model_name in args:
+        model = switch_model(model_name)
+        if model == error_invalid_model:
+            continue
+        else:
+            models[model_name] = model
+    
+    return models

@@ -2,92 +2,10 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from collections import Counter
-from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor, GradientBoostingRegressor, ExtraTreesRegressor, VotingClassifier
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.linear_model import LogisticRegression, ElasticNet, Lasso,  BayesianRidge, LassoLarsIC
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.neural_network import MLPRegressor
-from sklearn.svm import SVR
-from sklearn.metrics import mean_absolute_error
-from sklearn.preprocessing import RobustScaler
 from sklearn.base import BaseEstimator, TransformerMixin, RegressorMixin, clone
-from sklearn.kernel_ridge import KernelRidge
-from sklearn.pipeline import make_pipeline
-from xgboost import XGBRegressor
-from sklearn.model_selection import KFold, GridSearchCV, cross_val_score, StratifiedKFold, learning_curve
-sns.set(style='white', context='notebook', palette='deep')
 
-def mae(y, y_pred):
-    return mean_absolute_error(y, y_pred)
-
-def split_data(dataset, cols_feature, train_per, valid_per):
-    # split data into X and y
-    X = dataset.iloc[:,0:(len(cols_feature)-1)]
-    Y = dataset.iloc[:,-1]
-    # split data into train and test sets
-    train_size = int(len(dataset)*train_per)
-    valid_size = int(len(dataset)*valid_per)
-    X_train = X.iloc[0:train_size]
-    y_train = Y.iloc[0:train_size]
-
-    X_valid = X.iloc[train_size:train_size+valid_size]
-    y_valid = Y.iloc[train_size:train_size+valid_size]
-    
-    X_test = X.iloc[train_size:train_size+valid_size:]
-    y_test = Y.iloc[train_size:train_size+valid_size:]
-
-    return X_train, y_train, X_valid, y_valid, X_test, y_test
-
-def test_model(X_train, Y_train):
-    # kfold = StratifiedKFold(n_splits=10)
-
-    # Modeling step Test differents algorithms 
-    random_state = 2
-    regressors = []
-    regressors.append(SVR())
-    regressors.append(DecisionTreeRegressor(random_state=random_state))
-    regressors.append(AdaBoostRegressor(DecisionTreeRegressor(random_state=random_state),random_state=random_state,learning_rate=0.1))
-    regressors.append(RandomForestRegressor(random_state=random_state))
-    regressors.append(ExtraTreesRegressor(random_state=random_state))
-    regressors.append(GradientBoostingRegressor(random_state=random_state))
-    regressors.append(XGBRegressor(random_state=random_state))
-    regressors.append(MLPRegressor(random_state=random_state))
-    regressors.append(KNeighborsRegressor())
-    # regressors.append(LogisticRegression(random_state = random_state))
-    # regressors.append(LinearDiscriminantAnalysis())
-    regressors.append(make_pipeline(RobustScaler(), Lasso(random_state=random_state)))
-    regressors.append(make_pipeline(RobustScaler(), ElasticNet(random_state=random_state)))
-    regressors.append(KernelRidge())
-
-    cv_results = []
-    for regressor in regressors :
-        # print(regressor)
-        cv_results.append(mae_cv(regressor, X_train, Y_train))
-
-    cv_means = []
-    cv_std = []
-    for cv_result in cv_results:
-        cv_means.append(cv_result.mean())
-        cv_std.append(cv_result.std())
-    
-    cv_res = pd.DataFrame({"CrossValMeans":cv_means,"CrossValerrors": cv_std,"Algorithm":["SVR","DecisionTree","AdaBoost",
-    "RandomForest","ExtraTrees","GradientBoosting", "XGBoost", "MultipleLayerPerceptron","KNeighboors", "Lasso", "ElasticNet", "KernelRidge"]})
-    # "LogisticRegression",
-    # "LinearDiscriminantAnalysis"
-    g = sns.barplot("CrossValMeans","Algorithm",data = cv_res, palette="Set3",orient = "h",**{'xerr':cv_std})
-    g.set_xlabel("Mean Accuracy")
-    g = g.set_title("Cross validation scores")
-    plt.show()
-
-#Validation function
-def mae_cv(model, X_train, Y_train, n_folds = 10):
-    kf = KFold(n_folds, shuffle=True, random_state=42).get_n_splits(X_train)
-    mae= -cross_val_score(model, X_train, Y_train, scoring="neg_mean_absolute_error", cv=kf)
-    return(mae)
+# import utils
+import utils
 
 class AveragingModels(BaseEstimator, RegressorMixin, TransformerMixin):
     def __init__(self, models):
@@ -146,33 +64,36 @@ class StackingAveragedModels(BaseEstimator, RegressorMixin, TransformerMixin):
         return self.meta_model_.predict(meta_features)
 
 if __name__ == "__main__":
+    
+    # get dataset
     features = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP', 'CO', 'NO', 'NO2',
     'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']
-    # change later    
+    # change later
+    print("--Split data--")    
     taiwan_dataset = pd.read_csv('data/csv/taiwan_test.csv', usecols=features)
-    X_train, y_train, X_valid, y_valid, X_test, y_test = split_data(taiwan_dataset, features, 0.8, 0.2)
+    X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(taiwan_dataset, features, 0.8, 0.2)
 
-    lasso = make_pipeline(RobustScaler(), Lasso(alpha =0.0005, random_state=1))
+    # print("--Starting test models")
+    # utils.test_models(X_train, y_train)
+    # print("--Done test models")
+    # get models
+    print("--Starting get models--")
+    models = utils.get_models("Lasso", "ElasticNet", "KernelRidge", "GradientBoostingRegressor")
 
-    ENet = make_pipeline(RobustScaler(), ElasticNet(alpha=0.0005, l1_ratio=.9, random_state=3))
+    ### Stacking
+    avergage models
+    averaged_models = AveragingModels(models = (models["ElasticNet"], models["GradientBoostingRegressor"],
+                                                models["KernelRidge"], models["Lasso"]))
 
-    KRR = KernelRidge(alpha=0.6, kernel='polynomial', degree=2, coef0=2.5)
-
-    GBoost = GradientBoostingRegressor(n_estimators=3000, learning_rate=0.05,
-                                   max_depth=4, max_features='sqrt',
-                                   min_samples_leaf=15, min_samples_split=10, 
-                                   loss='huber', random_state =5)
-
-    # avergage models
-    averaged_models = AveragingModels(models = (ENet, GBoost, KRR, lasso))
-
-    score = mae_cv(averaged_models, X_train, y_train) 
+    score = utils.mae_cv(averaged_models, X_train, y_train) 
     print(" Averaged base models score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
 
-    # stacked average models
-    stacked_averaged_models = StackingAveragedModels(base_models = (ENet, GBoost, KRR),
-                                                 meta_model = lasso)
-    score = mae_cv(stacked_averaged_models, X_train, y_train)
+    # # stacked average models
+    stacked_averaged_models = 
+                StackingAveragedModels(base_models = (models["ElasticNet"], models["GradientBoostingRegressor"],
+                                                      models["KernelRidge"]),
+                                        meta_model = models["Lasso"])
+    score = utils.mae_cv(stacked_averaged_models, X_train, y_train)
     print("Stacking Averaged models score: {:.4f} ({:.4f})".format(score.mean(), score.std()))
 
     # stacked_averaged_models.fit(train.values, y_train)
