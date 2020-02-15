@@ -89,8 +89,7 @@ if __name__ == "__main__":
     print(" Averaged base models score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
 
     # Stacked average models
-    stacked_averaged_models = 
-                StackingAveragedModels(base_models = (models["ElasticNet"], models["GradientBoostingRegressor"],
+    stacked_averaged_models = StackingAveragedModels(base_models = (models["ElasticNet"], models["GradientBoostingRegressor"],
                                                       models["KernelRidge"]),
                                         meta_model = models["Lasso"])
     score = utils.mae_cv(stacked_averaged_models, X_train, y_train)
