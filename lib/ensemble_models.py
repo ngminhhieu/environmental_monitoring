@@ -95,7 +95,7 @@ if __name__ == "__main__":
     score = utils.mae_cv(stacked_averaged_models, X_train, y_train)
     print("Stacking Averaged models score: {:.4f} ({:.4f})".format(score.mean(), score.std()))
 
-    utils.test_models(X_train, y_train)
+    # utils.test_models(X_train, y_train)
 
     # stacked_averaged_models.fit(train.values, y_train)
     # stacked_train_pred = stacked_averaged_models.predict(train.values)
