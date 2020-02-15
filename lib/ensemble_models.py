@@ -99,20 +99,20 @@ if __name__ == "__main__":
     print("Stacking Averaged models score: {:.4f} ({:.4f})".format(score.mean(), score.std()))
 
 
-    stacked_averaged_models.fit(train.values, y_train)
-    stacked_train_pred = stacked_averaged_models.predict(train.values)
-    stacked_pred = np.expm1(stacked_averaged_models.predict(test.values))
+    stacked_averaged_models.fit(X_train, y_train)
+    stacked_train_pred = stacked_averaged_models.predict(X_train)
+    stacked_pred = np.expm1(stacked_averaged_models.predict(X_test))
     print(utils.mae(y_train, stacked_train_pred))
 
-    model_xgb.fit(train, y_train)
-    xgb_train_pred = model_xgb.predict(train)
-    xgb_pred = np.expm1(model_xgb.predict(test))
-    print(utils.mae(y_train, xgb_train_pred))
+    model_xgb.fit(X_train, y_train)
+    xgb_train_pred = model_xgb.predict(X_train)
+    xgb_pred = np.expm1(model_xgb.predict(X_test))
+    print(utils.mae(y_test, xgb_pred))
 
-    model_lgb.fit(train, y_train)
-    lgb_train_pred = model_lgb.predict(train)
-    lgb_pred = np.expm1(model_lgb.predict(test.values))
-    print(utils.mae(y_train, lgb_train_pred))
+    model_lgb.fit(X_train, y_train)
+    lgb_train_pred = model_lgb.predict(X_train)
+    lgb_pred = np.expm1(model_lgb.predict(X_test))
+    print(utils.mae(y_test, lgb_pred))
 
     '''MAE on the entire Train data when averaging'''
 
