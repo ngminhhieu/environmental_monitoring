@@ -80,15 +80,15 @@ if __name__ == "__main__":
     print("--Starting get models--")
     models = utils.get_models("Lasso", "ElasticNet", "KernelRidge", "GradientBoostingRegressor")
 
-    ### Stacking
-    avergage models
+    ### Stacking 
+    # Avergage models
     averaged_models = AveragingModels(models = (models["ElasticNet"], models["GradientBoostingRegressor"],
                                                 models["KernelRidge"], models["Lasso"]))
 
     score = utils.mae_cv(averaged_models, X_train, y_train) 
     print(" Averaged base models score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
 
-    # # stacked average models
+    # Stacked average models
     stacked_averaged_models = 
                 StackingAveragedModels(base_models = (models["ElasticNet"], models["GradientBoostingRegressor"],
                                                       models["KernelRidge"]),
