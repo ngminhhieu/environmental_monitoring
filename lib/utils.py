@@ -82,6 +82,9 @@ def test_models(X_train, Y_train):
         cv_means.append(cv_result.mean())
         cv_std.append(cv_result.std())
     
+    print(cv_means)
+    print(cv_std)
+
     cv_res = pd.DataFrame({"CrossValMeans":cv_means,"CrossValerrors": cv_std,"Algorithm":["SVR","DecisionTree","AdaBoost",
     "RandomForest","ExtraTrees","GradientBoosting", "XGBoost", "MultipleLayerPerceptron","KNeighboors", "Lasso", "ElasticNet", "KernelRidge"]})
     # "LogisticRegression",
