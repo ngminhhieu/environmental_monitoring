@@ -20,7 +20,6 @@ from sklearn.model_selection import KFold, GridSearchCV, cross_val_score
 
 # plot
 import matplotlib.pyplot as plt
-%matplotlib inline
 import seaborn as sns
 sns.set(style='white', context='notebook', palette='deep')
 
