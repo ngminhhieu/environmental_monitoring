@@ -20,6 +20,7 @@ from sklearn.model_selection import KFold, GridSearchCV, cross_val_score
 
 # plot
 import matplotlib.pyplot as plt
+%matplotlib inline
 import seaborn as sns
 sns.set(style='white', context='notebook', palette='deep')
 
@@ -63,7 +64,7 @@ def test_models(X_train, Y_train):
     regressors.append(ExtraTreesRegressor(random_state=random_state))
     regressors.append(GradientBoostingRegressor(random_state=random_state))
     regressors.append(XGBRegressor(random_state=random_state))
-    regressors.append(MLPRegressor(random_state=random_state))
+    regressors.append(MLPRegressor(max_iter=400, random_state=random_state))
     regressors.append(KNeighborsRegressor())
     # regressors.append(LogisticRegression(random_state = random_state))
     # regressors.append(LinearDiscriminantAnalysis())
