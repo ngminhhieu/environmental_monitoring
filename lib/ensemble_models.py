@@ -73,49 +73,51 @@ if __name__ == "__main__":
     taiwan_dataset = pd.read_csv('data/csv/taiwan_test.csv', usecols=features)
     X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(taiwan_dataset, features, 0.8, 0.2)
 
-    # print("--Starting test models")
-    # utils.test_models(X_train, y_train)
-    # print("--Done test models")
     # get models
     print("--Starting get models--")
-    models = utils.get_models("Lasso", "ElasticNet", "KernelRidge", "GradientBoostingRegressor")
+    models = utils.get_models("Lasso", "ElasticNet", "KernelRidge", "GradientBoostingRegressor", "LGBMRegressor", "XGBRegressor")
+
+    ENet = models["ElasticNet"]
+    GBoost = models["GradientBoostingRegressor"]
+    KRR = models["KernelRidge"]
+    lasso = models["Lasso"]
+    model_xgb = models["XGBRegressor"]
+    models_lgb = models["LGBMRegressor"]
+    print("--Done get models!--")
 
     ### Stacking 
     # Avergage models
-    averaged_models = AveragingModels(models = (models["ElasticNet"], models["GradientBoostingRegressor"],
-                                                models["KernelRidge"], models["Lasso"]))
+    averaged_models = AveragingModels(models = (ENet, GBoost, KRR, lasso))
 
     score = utils.mae_cv(averaged_models, X_train, y_train) 
     print(" Averaged base models score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
 
     # Stacked average models
-    stacked_averaged_models = StackingAveragedModels(base_models = (models["ElasticNet"], models["GradientBoostingRegressor"],
-                                                      models["KernelRidge"]),
-                                        meta_model = models["Lasso"])
+    stacked_averaged_models = StackingAveragedModels(base_models = (ENet, GBoost, KRR),
+                                                    meta_model = lasso)
     score = utils.mae_cv(stacked_averaged_models, X_train, y_train)
     print("Stacking Averaged models score: {:.4f} ({:.4f})".format(score.mean(), score.std()))
 
-    utils.test_models(X_train, y_train)
 
-    # stacked_averaged_models.fit(train.values, y_train)
-    # stacked_train_pred = stacked_averaged_models.predict(train.values)
-    # stacked_pred = np.expm1(stacked_averaged_models.predict(test.values))
-    # print(rmsle(y_train, stacked_train_pred))
+    stacked_averaged_models.fit(train.values, y_train)
+    stacked_train_pred = stacked_averaged_models.predict(train.values)
+    stacked_pred = np.expm1(stacked_averaged_models.predict(test.values))
+    print(utils.mae(y_train, stacked_train_pred))
 
-    # model_xgb.fit(train, y_train)
-    # xgb_train_pred = model_xgb.predict(train)
-    # xgb_pred = np.expm1(model_xgb.predict(test))
-    # print(rmsle(y_train, xgb_train_pred))
+    model_xgb.fit(train, y_train)
+    xgb_train_pred = model_xgb.predict(train)
+    xgb_pred = np.expm1(model_xgb.predict(test))
+    print(utils.mae(y_train, xgb_train_pred))
 
-    # model_lgb.fit(train, y_train)
-    # lgb_train_pred = model_lgb.predict(train)
-    # lgb_pred = np.expm1(model_lgb.predict(test.values))
-    # print(rmsle(y_train, lgb_train_pred))
+    model_lgb.fit(train, y_train)
+    lgb_train_pred = model_lgb.predict(train)
+    lgb_pred = np.expm1(model_lgb.predict(test.values))
+    print(utils.mae(y_train, lgb_train_pred))
 
-    # '''RMSE on the entire Train data when averaging'''
+    '''MAE on the entire Train data when averaging'''
 
-    # print('RMSLE score on train data:')
-    # print(rmsle(y_train,stacked_train_pred*0.70 +
-    # xgb_train_pred*0.15 + lgb_train_pred*0.15 ))
+    print('MAE score on train data:')
+    print(utils.mae(y_train,stacked_train_pred*0.70 +
+    xgb_train_pred*0.15 + lgb_train_pred*0.15 ))
 
-    # ensemble = stacked_pred*0.70 + xgb_pred*0.15 + lgb_pred*0.15
+    ensemble = stacked_pred*0.70 + xgb_pred*0.15 + lgb_pred*0.15

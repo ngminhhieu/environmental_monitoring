@@ -12,6 +12,7 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.svm import SVR
 from sklearn.kernel_ridge import KernelRidge
 from xgboost import XGBRegressor
+from lightgbm import LGBMRegressor
 
 # support for models
 from sklearn.preprocessing import RobustScaler
@@ -105,6 +106,19 @@ def switch_model(model):
                                    max_depth=4, max_features='sqrt',
                                    min_samples_leaf=15, min_samples_split=10, 
                                    loss='huber', random_state =5)
+    
+    lgbm = LGBMRegressor(objective='regression',num_leaves=5,
+                              learning_rate=0.05, n_estimators=720,
+                              max_bin = 55, bagging_fraction = 0.8,
+                              bagging_freq = 5, feature_fraction = 0.2319,
+                              feature_fraction_seed=9, bagging_seed=9,
+                              min_data_in_leaf =6, min_sum_hessian_in_leaf = 11)
+    xgbregressor = XGBRegressor(colsample_bytree=0.4603, gamma=0.0468, 
+                             learning_rate=0.05, max_depth=3, 
+                             min_child_weight=1.7817, n_estimators=2200,
+                             reg_alpha=0.4640, reg_lambda=0.8571,
+                             subsample=0.5213, silent=1,
+                             random_state =7, nthread = -1)
 
     switcher={
         "SVR":'Sunday',
@@ -112,12 +126,13 @@ def switch_model(model):
         "AdaBoostRegressor":'Tuesday',
         "ExtraTreesRegressor":'Wednesday',
         "GradientBoostingRegressor": GBRegressor,
-        "XGBRegressor":'Friday',
+        "XGBRegressor":xgbregressor,
         "MLPRegressor":'Saturday',
         "KNeighborsRegressor": "...",
         "Lasso": lasso,
         "ElasticNet": ENet,
-        "KernelRidge": KRR
+        "KernelRidge": KRR,
+        "LGBMRegressor": lgbm
     }
 
     return switcher.get(model, error_invalid_model)
