@@ -81,7 +81,7 @@ if __name__ == "__main__":
     models = utils.get_models("Lasso", "ElasticNet", "KernelRidge", "GradientBoostingRegressor")
 
     ### Stacking 
-    Avergage models
+    # Avergage models
     averaged_models = AveragingModels(models = (models["ElasticNet"], models["GradientBoostingRegressor"],
                                                 models["KernelRidge"], models["Lasso"]))
 
