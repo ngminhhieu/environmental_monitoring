@@ -3,7 +3,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 import pandas as pd
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin, RegressorMixin, clone
-
+from sklearn.model_selection import KFold
 # import utils
 import utils
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']
     # change later
     print("--Split data--")    
-    taiwan_dataset = pd.read_csv('data/csv/taiwan_test.csv', usecols=features)
+    taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv', usecols=features)
     X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(taiwan_dataset, features, 0.8, 0.2)
 
     # print("--Starting test models")
@@ -94,6 +94,8 @@ if __name__ == "__main__":
                                         meta_model = models["Lasso"])
     score = utils.mae_cv(stacked_averaged_models, X_train, y_train)
     print("Stacking Averaged models score: {:.4f} ({:.4f})".format(score.mean(), score.std()))
+
+    utils.test_models(X_train, y_train)
 
     # stacked_averaged_models.fit(train.values, y_train)
     # stacked_train_pred = stacked_averaged_models.predict(train.values)
