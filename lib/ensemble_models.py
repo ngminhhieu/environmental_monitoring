@@ -70,7 +70,7 @@ if __name__ == "__main__":
     'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']
     # change later
     print("--Split data--")    
-    taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv', usecols=features)
+    taiwan_dataset = pd.read_csv('data/csv/taiwan_test.csv', usecols=features)
     X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(taiwan_dataset, features, 0.8, 0.2)
 
     # print("--Starting test models")
