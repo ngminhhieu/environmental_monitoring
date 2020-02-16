@@ -1,5 +1,7 @@
 import pandas as pd
-
+import os
+import csv
+from datetime import datetime
 from sklearn.metrics import mean_absolute_error
 
 # models
@@ -51,7 +53,7 @@ def split_data(dataset, cols_feature, train_per, valid_per):
     X_test = X.iloc[train_size:train_size+valid_size:]
     y_test = Y.iloc[train_size:train_size+valid_size:]
 
-    return X_train, y_train, X_valid, y_valid, X_test, y_test
+    return X_train.to_numpy(), y_train.to_numpy(), X_valid.to_numpy(), y_valid.to_numpy(), X_test.to_numpy(), y_test.to_numpy()
 
 def test_models(X_train, Y_train):
     # Modeling step Test differents algorithms 
@@ -96,39 +98,47 @@ def test_models(X_train, Y_train):
     plt.show()
 
 def switch_model(model):
+    svr = SVR()
+    decisionTree = DecisionTreeRegressor(criterion="mae")
+    adaBoost = AdaBoostRegressor()
+    extraTree = ExtraTreesRegressor()
+
+    GBRegressor = GradientBoostingRegressor(n_estimators=3000, learning_rate=0.05,
+                                   max_depth=4, max_features='sqrt',
+                                   min_samples_leaf=15, min_samples_split=10, 
+                                   loss='huber', random_state =5)
+
+    xgbregressor = XGBRegressor(max_depth=8, n_estimators=1000, min_child_weight=300, colsample_bytree=0.8, 
+    subsample=0.8, eta=0.3, seed=42)
+
+    mlp = MLPRegressor()
+
+    kneighbor = KNeighborsRegressor()
+
     lasso = make_pipeline(RobustScaler(), Lasso(alpha =0.0005, random_state=1))
 
     ENet = make_pipeline(RobustScaler(), ElasticNet(alpha=0.0005, l1_ratio=.9, random_state=3))
 
     KRR = KernelRidge(alpha=0.6, kernel='polynomial', degree=2, coef0=2.5)
 
-    GBRegressor = GradientBoostingRegressor(n_estimators=3000, learning_rate=0.05,
-                                   max_depth=4, max_features='sqrt',
-                                   min_samples_leaf=15, min_samples_split=10, 
-                                   loss='huber', random_state =5)
-    
     lgbm = LGBMRegressor(objective='regression',num_leaves=5,
                               learning_rate=0.05, n_estimators=720,
                               max_bin = 55, bagging_fraction = 0.8,
                               bagging_freq = 5, feature_fraction = 0.2319,
                               feature_fraction_seed=9, bagging_seed=9,
                               min_data_in_leaf =6, min_sum_hessian_in_leaf = 11)
-    xgbregressor = XGBRegressor(colsample_bytree=0.4603, gamma=0.0468, 
-                             learning_rate=0.05, max_depth=3, 
-                             min_child_weight=1.7817, n_estimators=2200,
-                             reg_alpha=0.4640, reg_lambda=0.8571,
-                             subsample=0.5213, silent=1,
-                             random_state =7, nthread = -1)
+
+    
 
     switcher={
-        "SVR":'Sunday',
-        "DecisionTreeRegressor":'Monday',
-        "AdaBoostRegressor":'Tuesday',
-        "ExtraTreesRegressor":'Wednesday',
+        "SVR": svr,
+        "DecisionTreeRegressor": decisionTree,
+        "AdaBoostRegressor": adaBoost,
+        "ExtraTreesRegressor": extraTree,
         "GradientBoostingRegressor": GBRegressor,
         "XGBRegressor":xgbregressor,
-        "MLPRegressor":'Saturday',
-        "KNeighborsRegressor": "...",
+        "MLPRegressor": mlp,
+        "KNeighborsRegressor": kneighbor,
         "Lasso": lasso,
         "ElasticNet": ENet,
         "KernelRidge": KRR,
@@ -147,3 +157,14 @@ def get_models(*args):
             models[model_name] = model
     
     return models
+
+def write_log(path, input_features, error):
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+    error.insert(0, dt_string)
+    if os.path.exists(path) == False:
+        os.makedirs(path)
+    with open(path + "metrics.csv", 'a') as file:
+        writer = csv.writer(file)
+        writer.writerow(error)
+        writer.writerow(input_features)

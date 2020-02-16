@@ -1,108 +1,104 @@
-import argparse
-import os
-import sys
-import tensorflow as tf
-import numpy as np
-import yaml
-import random as rn
-from model.supervisor import EncoderDecoder
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 import pandas as pd
+import numpy as np
+from sklearn.metrics import mean_absolute_error
+from lib import utils
+from model.ensemble_models import AveragingModels, StackingAveragedModels
 
-def seed():
-    # The below is necessary for starting Numpy generated random numbers
-    # in a well-defined initial state.
-    np.random.seed(42)
-    # The below is necessary for starting core Python generated random numbers
-    # in a well-defined state.
-    rn.seed(12345)
-    # The below tf.set_random_seed() will make random number generation
-    # in the TensorFlow backend have a well-defined initial state.
-    # For further details, see:
-    # https://www.tensorflow.org/api_docs/python/tf/set_random_seed
-    tf.set_random_seed(1234)
+if __name__ == "__main__":
+    
+    # get dataset
+    features = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP', 'CO', 'NO', 'NO2',
+    'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']
+    # change later
+    input_features = []
+
+    # random search
+    times_random_search = 1
+    for time in range(1, 1+times_random_search):
+        # find input_features by random search
+        # binary_features = np.random.randint(2, size=len(features))
+        binary_features = np.ones((17,), dtype=int)
+        for index, value in enumerate(binary_features, start=0):
+            if value == 1:
+                input_features.append(features[index])
+        print(binary_features)
+        input_features.append('PM2.5')
+        taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv', usecols=input_features)
+        X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(taiwan_dataset, input_features, 0.65, 0.15)
+        eval_set = [(X_valid, y_valid)]
+        
+        # get models
+        print("--Starting get models--")
+        models = utils.get_models("SVR", "Lasso", "ElasticNet", 
+                                "KernelRidge", "GradientBoostingRegressor", 
+                                "LGBMRegressor", "XGBRegressor",
+                                "DecisionTreeRegressor", "AdaBoostRegressor",
+                                "MLPRegressor", "KNeighborsRegressor")
+        
+        decisionTree = models["DecisionTreeRegressor"]
+        svr = models["SVR"]
+        mlp = models["MLPRegressor"]
+        ENet = models["ElasticNet"]
+        GBoost = models["GradientBoostingRegressor"]
+        KRR = models["KernelRidge"]
+        lasso = models["Lasso"]
+        model_xgb = models["XGBRegressor"]
+        model_lgb = models["LGBMRegressor"]
+        print("--Done get models!--")
+        
+        # model_xgb.fit(X_train, y_train, eval_metric="mae", eval_set=eval_set, verbose=False, early_stopping_rounds = 10)
+        # xgb_train_pred = model_xgb.predict(X_train)
+        # xgb_pred = model_xgb.predict(X_test)
+        # mae_xgb = utils.mae(y_test, xgb_pred)
+        # # write log
+        # path_xgboost = "log/xgboost/"
+        # utils.write_log(path_xgboost, input_features, [mae_xgb])  
+        
+
+        # model_lgb.fit(X_train, y_train, eval_metric="mae", eval_set=eval_set, verbose=False, early_stopping_rounds = 10)
+        # lgb_train_pred = model_lgb.predict(X_train)
+        # lgb_pred = model_lgb.predict(X_test)
+        # mae_lgb = mean_absolute_error(y_test, lgb_pred)
+        # # write log
+        # path_lgb = "log/lgb/"
+        # utils.write_log(path_lgb, input_features, [mae_lgb]) 
+
+
+        stacked_averaged_models = StackingAveragedModels(base_models = (ENet, GBoost, KRR),
+                                                    meta_model = lasso)
+        
+        stacked_averaged_models.fit(X_train, y_train)
+        stacked_train_pred = stacked_averaged_models.predict(X_train)
+        stacked_pred = stacked_averaged_models.predict(X_test)
+        mae_stacking = mean_absolute_error(y_test, stacked_pred)
+        # write log
+        path_stacked = "log/stacking/"
+        utils.write_log(path_stacked, input_features, [mae_stacking]) 
+        # reset input_features       
+        input_features = []
     
 
-def print_lstm_info(mode, config):
-    print('----------------------- INFO -----------------------')
+    ### Stacking 
+    # Avergage models
+    averaged_models = AveragingModels(models = (ENet, GBoost, KRR, lasso))
 
-    print('|--- MODE:\t{}'.format(mode))
-    print('|--- ALG:\t{}'.format(config['alg']))
-    print('|--- BASE_DIR:\t{}'.format(config['base_dir']))
-    print('|--- LOG_LEVEL:\t{}'.format(config['log_level']))
-    print('|--- GPU:\t{}'.format(config['gpu']))
+    # score = utils.mae_cv(averaged_models, X_train, y_train) 
+    # print(" Averaged base models score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
 
-    print('----------------------- DATA -----------------------')
-    print('|--- BATCH_SIZE:\t{}'.format(config['data']['batch_size']))
-    print('|--- DATASET:\t{}'.format(config['data']['dataset']))
-    print('|--- TEST_SIZE:\t{}'.format(config['data']['test_size']))
-
-    print('----------------------- MODEL -----------------------')
-    print('|--- SEQ_LEN:\t{}'.format(config['model']['seq_len']))
-    print('|--- HORIZON:\t{}'.format(config['model']['horizon']))
-    print('|--- INPUT_DIM:\t{}'.format(config['model']['input_dim']))
-    print('|--- L1_DECAY:\t{}'.format(config['model']['l1_decay']))
-    print('|--- OUTPUT_DIMS:\t{}'.format(config['model']['output_dim']))
-    print('|--- RNN_UNITS:\t{}'.format(config['model']['rnn_units']))
-    print('|--- RNN_LAYERS:\t{}'.format(config['model']['rnn_layers']))
-
-    if mode == 'train':
-        print('----------------------- TRAIN -----------------------')
-        print('|--- DROPOUT:\t{}'.format(config['train']['dropout']))
-        print('|--- EPOCHS:\t{}'.format(config['train']['epochs']))
-        print('|--- OPTIMIZER:\t{}'.format(config['train']['optimizer']))
-        print('|--- PATIENCE:\t{}'.format(config['train']['patience']))
-
-    else:
-        print('----------------------- TEST -----------------------')
-        print('|--- RUN_TIMES:\t{}'.format(config['test']['run_times']))
-
-    print('----------------------------------------------------')
-    infor_correct = input('Is the information correct? y(Yes)/n(No):')
-    if infor_correct != 'y' and infor_correct != 'yes' and infor_correct != 'YES' and infor_correct != 'Y':
-        raise RuntimeError('Information is not correct!')
+    # Stacked average models
+    
+    # score = utils.mae_cv(stacked_averaged_models, X_train, y_train)
+    # print("Stacking Averaged models score: {:.4f} ({:.4f})".format(score.mean(), score.std()))
 
 
-def train_lstm_ed(config):
-    with tf.device('/device:GPU:{}'.format(config['gpu'])):
-        model = EncoderDecoder(is_training=True, **config)
-        model.plot_models()
-        model.train()
+   
 
+    # '''MAE on the entire Train data when averaging'''
 
-def test_lstm_ed(config):
-    with tf.device('/device:GPU:{}'.format(config['gpu'])):
-        model = EncoderDecoder(is_training=False, **config)
-        model.test()
-        model.plot_series()
+    # print('MAE score on train data:')
+    # print(mean_absolute_error(y_train,stacked_train_pred*0.70 +
+    # xgb_train_pred*0.15 + lgb_train_pred*0.15 ))
 
-
-def evaluate_lstm_ed(config):
-    with tf.device('/device:GPU:{}'.format(config['gpu'])):
-        model = EncoderDecoder(is_training=False, **config)
-        model.evaluate()
-
-
-if __name__ == '__main__':
-    # np.random.seed(1)
-    sys.path.append(os.getcwd())
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--use_cpu_only', default=False, type=str, help='Whether to run tensorflow on cpu.')
-    parser.add_argument('--config_file', default='config/config.yaml', type=str,
-                        help='Config file for pretrained model.')
-    parser.add_argument('--mode', default='train', type=str,
-                        help='Run mode.')
-    args = parser.parse_args()
-
-    with open(args.config_file) as f:
-        config = yaml.load(f)
-
-    # print_lstm_info(args.mode, config)
-
-    if args.mode == 'train':
-        train_lstm_ed(config)
-    elif args.mode == 'evaluate' or args.mode == 'evaluation':
-        evaluate_lstm_ed(config)
-    elif args.mode == "test":
-        test_lstm_ed(config)
-    else:
-        raise RuntimeError("Mode needs to be train/evaluate/test!")
+    # ensemble = stacked_pred*0.70 + xgb_pred*0.15 + lgb_pred*0.15
