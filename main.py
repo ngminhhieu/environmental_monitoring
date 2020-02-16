@@ -15,11 +15,11 @@ if __name__ == "__main__":
     input_features = []
 
     # random search
-    times_random_search = 1
+    times_random_search = 5
     for time in range(1, 1+times_random_search):
         # find input_features by random search
-        # binary_features = np.random.randint(2, size=len(features))
-        binary_features = np.ones((17,), dtype=int)
+        binary_features = np.random.randint(2, size=len(features))
+        # binary_features = np.ones((17,), dtype=int)
         for index, value in enumerate(binary_features, start=0):
             if value == 1:
                 input_features.append(features[index])
@@ -33,41 +33,69 @@ if __name__ == "__main__":
         print("--Starting get models--")
         models = utils.get_models("SVR", "Lasso", "ElasticNet", 
                                 "KernelRidge", "GradientBoostingRegressor", 
-                                "LGBMRegressor", "XGBRegressor",
+                                "LGBMRegressor", "XGBRegressor", "RandomForestRegressor",
                                 "DecisionTreeRegressor", "AdaBoostRegressor",
-                                "MLPRegressor", "KNeighborsRegressor")
+                                "MLPRegressor", "KNeighborsRegressor", "ExtraTreesRegressor")
         
+        adaboost = models["AdaBoostRegressor"]
         decisionTree = models["DecisionTreeRegressor"]
-        svr = models["SVR"]
+        extraTree = models["ExtraTreesRegressor"]
         mlp = models["MLPRegressor"]
         ENet = models["ElasticNet"]
         GBoost = models["GradientBoostingRegressor"]
         KRR = models["KernelRidge"]
         lasso = models["Lasso"]
-        model_xgb = models["XGBRegressor"]
-        model_lgb = models["LGBMRegressor"]
+        kn = models["KNeighborsRegressor"]
+        randomForest = models["RandomForestRegressor"]
+        xgb = models["XGBRegressor"]
+        lgb = models["LGBMRegressor"]
         print("--Done get models!--")
+
+        adaboost.fit(X_train, y_train)
+        adaboost_pred = adaboost.predict(X_test)
+        mae_adaboost = mean_absolute_error(y_test, adaboost_pred)
+        # write log
+        path_adaboost = "log/adaboost/"
+        utils.write_log(path_adaboost, input_features, [mae_adaboost])  
+
+        decisionTree.fit(X_train, y_train)
+        decisionTree_pred = decisionTree.predict(X_test)
+        mae_decisionTree = mean_absolute_error(y_test, decisionTree_pred)
+        # write log
+        path_decisionTree = "log/decisionTree/"
+        utils.write_log(path_decisionTree, input_features, [mae_decisionTree])
+
+        extraTree.fit(X_train, y_train)
+        extraTree_pred = extraTree.predict(X_test)
+        mae_extraTree = mean_absolute_error(y_test, extraTree_pred)
+        # write log
+        path_extraTree = "log/extraTree/"
+        utils.write_log(path_extraTree, input_features, [mae_extraTree])
+
+        GBoost.fit(X_train, y_train)
+        GBoost_pred = GBoost.predict(X_test)
+        mae_GBoost = mean_absolute_error(y_test, GBoost_pred)
+        # write log
+        path_GBoost = "log/GBoost/"
+        utils.write_log(path_GBoost, input_features, [mae_GBoost])
+
+        randomForest.fit(X_train, y_train)
+        randomForest_pred = randomForest.predict(X_test)
+        mae_randomForest = mean_absolute_error(y_test, randomForest_pred)
+        # write log
+        path_randomForest = "log/randomForest/"
+        utils.write_log(path_randomForest, input_features, [mae_randomForest]) 
         
-        # model_xgb.fit(X_train, y_train, eval_metric="mae", eval_set=eval_set, verbose=False, early_stopping_rounds = 10)
-        # xgb_train_pred = model_xgb.predict(X_train)
-        # xgb_pred = model_xgb.predict(X_test)
-        # mae_xgb = utils.mae(y_test, xgb_pred)
-        # # write log
-        # path_xgboost = "log/xgboost/"
-        # utils.write_log(path_xgboost, input_features, [mae_xgb])  
+        xgb.fit(X_train, y_train, eval_metric="mae", eval_set=eval_set, verbose=False, early_stopping_rounds = 10)
+        xgb_train_pred = xgb.predict(X_train)
+        xgb_pred = xgb.predict(X_test)
+        mae_xgb = mean_absolute_error(y_test, xgb_pred)
+        # write log
+        path_xgboost = "log/xgboost/"
+        utils.write_log(path_xgboost, input_features, [mae_xgb])  
         
-
-        # model_lgb.fit(X_train, y_train, eval_metric="mae", eval_set=eval_set, verbose=False, early_stopping_rounds = 10)
-        # lgb_train_pred = model_lgb.predict(X_train)
-        # lgb_pred = model_lgb.predict(X_test)
-        # mae_lgb = mean_absolute_error(y_test, lgb_pred)
-        # # write log
-        # path_lgb = "log/lgb/"
-        # utils.write_log(path_lgb, input_features, [mae_lgb]) 
-
-
-        stacked_averaged_models = StackingAveragedModels(base_models = (ENet, GBoost, KRR),
-                                                    meta_model = lasso)
+        stacked_averaged_models = StackingAveragedModels(base_models = (GBoost, xgb, adaboost),
+                                                    meta_model = randomForest)
         
         stacked_averaged_models.fit(X_train, y_train)
         stacked_train_pred = stacked_averaged_models.predict(X_train)
@@ -76,26 +104,20 @@ if __name__ == "__main__":
         # write log
         path_stacked = "log/stacking/"
         utils.write_log(path_stacked, input_features, [mae_stacking]) 
+
+
+        averaged_models = AveragingModels(models = (GBoost, xgb, adaboost, randomForest))
+        
+        averaged_models.fit(X_train, y_train)
+        averaged_model_train_pred = averaged_models.predict(X_train)
+        averaged_model_pred = averaged_models.predict(X_test)
+        mae_averaged_model = mean_absolute_error(y_test, averaged_model_pred)
+        # write log
+        path_averaged_model = "log/averaged_model/"
+        utils.write_log(path_averaged_model, input_features, [mae_averaged_model]) 
         # reset input_features       
         input_features = []
     
-
-    ### Stacking 
-    # Avergage models
-    averaged_models = AveragingModels(models = (ENet, GBoost, KRR, lasso))
-
-    # score = utils.mae_cv(averaged_models, X_train, y_train) 
-    # print(" Averaged base models score: {:.4f} ({:.4f})\n".format(score.mean(), score.std()))
-
-    # Stacked average models
-    
-    # score = utils.mae_cv(stacked_averaged_models, X_train, y_train)
-    # print("Stacking Averaged models score: {:.4f} ({:.4f})".format(score.mean(), score.std()))
-
-
-   
-
-    # '''MAE on the entire Train data when averaging'''
 
     # print('MAE score on train data:')
     # print(mean_absolute_error(y_train,stacked_train_pred*0.70 +

@@ -28,9 +28,6 @@ sns.set(style='white', context='notebook', palette='deep')
 
 error_invalid_model = "Invalid Models"
 
-def mae(y, y_pred):
-    return mean_absolute_error(y, y_pred)
-
 # Cross validation
 def mae_cv(model, X_train, Y_train, n_folds = 10):
     kf = KFold(n_folds, shuffle=True, random_state=42).get_n_splits(X_train)
@@ -77,16 +74,14 @@ def test_models(X_train, Y_train):
     cv_results = []
     for regressor in regressors :
         # print(regressor)
-        cv_results.append(mae_cv(regressor, X_train, Y_train))
+        cv_results.append(mae_cv(regressor, X_train, Y_train, 2))
+        # cv_results.append(-cross_val_score(regressor, X_train, Y_train, scoring="neg_mean_absolute_error"))
 
     cv_means = []
     cv_std = []
     for cv_result in cv_results:
         cv_means.append(cv_result.mean())
         cv_std.append(cv_result.std())
-    
-    print(cv_means)
-    print(cv_std)
 
     cv_res = pd.DataFrame({"CrossValMeans":cv_means,"CrossValerrors": cv_std,"Algorithm":["SVR","DecisionTree","AdaBoost",
     "RandomForest","ExtraTrees","GradientBoosting", "XGBoost", "MultipleLayerPerceptron","KNeighboors", "Lasso", "ElasticNet", "KernelRidge"]})
@@ -102,6 +97,7 @@ def switch_model(model):
     decisionTree = DecisionTreeRegressor(criterion="mae")
     adaBoost = AdaBoostRegressor()
     extraTree = ExtraTreesRegressor()
+    randomForest = RandomForestRegressor()
 
     GBRegressor = GradientBoostingRegressor(n_estimators=3000, learning_rate=0.05,
                                    max_depth=4, max_features='sqrt',
@@ -132,6 +128,7 @@ def switch_model(model):
 
     switcher={
         "SVR": svr,
+        "RandomForestRegressor": randomForest,
         "DecisionTreeRegressor": decisionTree,
         "AdaBoostRegressor": adaBoost,
         "ExtraTreesRegressor": extraTree,
