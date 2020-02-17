@@ -1,3 +1,9 @@
+# run mode
+import sys
+import os
+import argparse
+
+# other...
 import warnings
 import numpy as np
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -38,7 +44,7 @@ if __name__ == "__main__":
         for index, value in enumerate(binary_features, start=0):
             if value == 1:
                 input_features.append(features[index])
-                
+
         taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv', usecols=input_features+[target_feature])
         new_dataset = utils.data_preprocessing(taiwan_dataset, input_features, target_feature)
         X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(new_dataset, 0.65, 0.15)
