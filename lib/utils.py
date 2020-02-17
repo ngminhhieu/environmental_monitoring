@@ -28,10 +28,10 @@ import seaborn as sns
 sns.set(style='white', context='notebook', palette='deep')
 
 error_invalid_model = "Invalid Models"
-
+random_state = 42
 # Cross validation
 def mae_cv(model, X_train, Y_train, n_folds = 10):
-    kf = KFold(n_folds, shuffle=True, random_state=42).get_n_splits(X_train)
+    kf = KFold(n_folds, shuffle=True, random_state=random_state).get_n_splits(X_train)
     mae= -cross_val_score(model, X_train, Y_train, scoring="neg_mean_absolute_error", cv=kf)
     return(mae)
 
@@ -57,7 +57,6 @@ def split_data(dataset, train_per, valid_per):
 
 def test_models(X_train, Y_train):
     # Modeling step Test differents algorithms 
-    random_state = 42
     regressors = []
     regressors.append(SVR())
     regressors.append(DecisionTreeRegressor(random_state=random_state))
@@ -97,26 +96,26 @@ def test_models(X_train, Y_train):
 
 def switch_model(model):
     svr = SVR()
-    decisionTree = DecisionTreeRegressor(criterion="mae")
-    adaBoost = AdaBoostRegressor()
-    extraTree = ExtraTreesRegressor()
-    randomForest = RandomForestRegressor()
+    decisionTree = DecisionTreeRegressor(random_state=random_state, criterion="mae")
+    adaBoost = AdaBoostRegressor(random_state=random_state)
+    extraTree = ExtraTreesRegressor(random_state=random_state)
+    randomForest = RandomForestRegressor(random_state=random_state)
 
     GBRegressor = GradientBoostingRegressor(n_estimators=3000, learning_rate=0.05,
                                    max_depth=4, max_features='sqrt',
                                    min_samples_leaf=15, min_samples_split=10, 
-                                   loss='huber', random_state =5)
+                                   loss='huber', random_state = random_state)
 
     xgbregressor = XGBRegressor(max_depth=8, n_estimators=1000, min_child_weight=300, colsample_bytree=0.8, 
-    subsample=0.8, eta=0.3, seed=42)
+    subsample=0.8, eta=0.3, seed=random_state)
 
     mlp = MLPRegressor()
 
     kneighbor = KNeighborsRegressor()
 
-    lasso = make_pipeline(RobustScaler(), Lasso(alpha =0.0005, random_state=1))
+    lasso = make_pipeline(RobustScaler(), Lasso(alpha =0.0005, random_state=random_state))
 
-    ENet = make_pipeline(RobustScaler(), ElasticNet(alpha=0.0005, l1_ratio=.9, random_state=3))
+    ENet = make_pipeline(RobustScaler(), ElasticNet(alpha=0.0005, l1_ratio=.9, random_state=random_state))
 
     KRR = KernelRidge(alpha=0.6, kernel='polynomial', degree=2, coef0=2.5)
 
