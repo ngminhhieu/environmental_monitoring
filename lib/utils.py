@@ -189,7 +189,6 @@ def data_preprocessing(original_dataset, input_feature, target_feature, l=48, h=
     max_feature = np.max(hour_feature, axis=1)
     max_feature = max_feature.reshape(len(max_feature), 1)
     statistical_feature = np.hstack([mean_feature, min_feature, max_feature])
-    print(statistical_feature)
 
     # drop first l rows
     dataset = original_dataset.loc[:, input_feature]
