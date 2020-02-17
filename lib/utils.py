@@ -209,9 +209,7 @@ def data_preprocessing(original_dataset, input_feature, target_feature, l=48, h=
     # new_dataset = np.concatenate((new_dataset, target_data_np), axis=1)
     
     new_dataset = np.around(new_dataset, decimals=1)
-
-    np.savetxt("foo.csv", new_dataset, delimiter=",")    
-
+    
     return new_dataset
         
     
