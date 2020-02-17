@@ -100,14 +100,14 @@ if __name__ == "__main__":
         utils.write_log(path_stacked, input_features, [mae_stacking]) 
 
 
-        averaged_models = AveragingModels(models = (GBoost, xgb, randomForest, extraTree))
+        # averaged_models = AveragingModels(models = (GBoost, xgb, randomForest, extraTree))
         
-        averaged_models.fit(X_train, y_train)
-        averaged_model_train_pred = averaged_models.predict(X_train)
-        averaged_model_pred = averaged_models.predict(X_test)
-        mae_averaged_model = mean_absolute_error(y_test, averaged_model_pred)
-        path_averaged_model = "log/averaged_model/"
-        utils.write_log(path_averaged_model, input_features, [mae_averaged_model]) 
+        # averaged_models.fit(X_train, y_train)
+        # averaged_model_train_pred = averaged_models.predict(X_train)
+        # averaged_model_pred = averaged_models.predict(X_test)
+        # mae_averaged_model = mean_absolute_error(y_test, averaged_model_pred)
+        # path_averaged_model = "log/averaged_model/"
+        # utils.write_log(path_averaged_model, input_features, [mae_averaged_model]) 
 
         # reset input_features       
         input_features = []
