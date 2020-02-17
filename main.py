@@ -8,10 +8,8 @@ from model.ensemble_models import AveragingModels, StackingAveragedModels
 
 if __name__ == "__main__":
     
-    # get dataset
     features = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP', 'CO', 'NO', 'NO2',
     'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']
-    # change later
     input_features = []
 
     # random search
@@ -51,38 +49,34 @@ if __name__ == "__main__":
         lgb = models["LGBMRegressor"]
         print("--Done get models!--")
 
+        # test each model
         adaboost.fit(X_train, y_train)
         adaboost_pred = adaboost.predict(X_test)
         mae_adaboost = mean_absolute_error(y_test, adaboost_pred)
-        # write log
         path_adaboost = "log/adaboost/"
         utils.write_log(path_adaboost, input_features, [mae_adaboost])  
 
         decisionTree.fit(X_train, y_train)
         decisionTree_pred = decisionTree.predict(X_test)
         mae_decisionTree = mean_absolute_error(y_test, decisionTree_pred)
-        # write log
         path_decisionTree = "log/decisionTree/"
         utils.write_log(path_decisionTree, input_features, [mae_decisionTree])
 
         extraTree.fit(X_train, y_train)
         extraTree_pred = extraTree.predict(X_test)
         mae_extraTree = mean_absolute_error(y_test, extraTree_pred)
-        # write log
         path_extraTree = "log/extraTree/"
         utils.write_log(path_extraTree, input_features, [mae_extraTree])
 
         GBoost.fit(X_train, y_train)
         GBoost_pred = GBoost.predict(X_test)
         mae_GBoost = mean_absolute_error(y_test, GBoost_pred)
-        # write log
         path_GBoost = "log/GBoost/"
         utils.write_log(path_GBoost, input_features, [mae_GBoost])
 
         randomForest.fit(X_train, y_train)
         randomForest_pred = randomForest.predict(X_test)
         mae_randomForest = mean_absolute_error(y_test, randomForest_pred)
-        # write log
         path_randomForest = "log/randomForest/"
         utils.write_log(path_randomForest, input_features, [mae_randomForest]) 
         
@@ -90,18 +84,16 @@ if __name__ == "__main__":
         xgb_train_pred = xgb.predict(X_train)
         xgb_pred = xgb.predict(X_test)
         mae_xgb = mean_absolute_error(y_test, xgb_pred)
-        # write log
         path_xgboost = "log/xgboost/"
         utils.write_log(path_xgboost, input_features, [mae_xgb])  
         
+        # stacking
         stacked_averaged_models = StackingAveragedModels(base_models = (GBoost, xgb, adaboost),
                                                     meta_model = randomForest)
-        
         stacked_averaged_models.fit(X_train, y_train)
         stacked_train_pred = stacked_averaged_models.predict(X_train)
         stacked_pred = stacked_averaged_models.predict(X_test)
         mae_stacking = mean_absolute_error(y_test, stacked_pred)
-        # write log
         path_stacked = "log/stacking/"
         utils.write_log(path_stacked, input_features, [mae_stacking]) 
 
@@ -112,15 +104,8 @@ if __name__ == "__main__":
         averaged_model_train_pred = averaged_models.predict(X_train)
         averaged_model_pred = averaged_models.predict(X_test)
         mae_averaged_model = mean_absolute_error(y_test, averaged_model_pred)
-        # write log
         path_averaged_model = "log/averaged_model/"
         utils.write_log(path_averaged_model, input_features, [mae_averaged_model]) 
+
         # reset input_features       
         input_features = []
-    
-
-    # print('MAE score on train data:')
-    # print(mean_absolute_error(y_train,stacked_train_pred*0.70 +
-    # xgb_train_pred*0.15 + lgb_train_pred*0.15 ))
-
-    # ensemble = stacked_pred*0.70 + xgb_pred*0.15 + lgb_pred*0.15
