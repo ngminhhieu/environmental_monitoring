@@ -16,8 +16,8 @@ if __name__ == "__main__":
     times_random_search = 5
     for time in range(1, 1+times_random_search):
         # find input_features by random search
-        binary_features = np.random.randint(2, size=len(features))
-        # binary_features = np.ones((len(features),), dtype=int)
+        # binary_features = np.random.randint(2, size=len(features))
+        binary_features = np.ones((len(features),), dtype=int)
         # binary_features = np.zeros((len(features),), dtype=int)
         for index, value in enumerate(binary_features, start=0):
             if value == 1:
