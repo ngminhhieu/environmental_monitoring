@@ -8,7 +8,7 @@ from lib import utils
 from model.ensemble_models import AveragingModels, StackingAveragedModels
 
 if __name__ == "__main__":
-    np.random.seed(1)
+    # np.random.seed(1)
     features = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP', 'CO', 'NO', 'NO2',
     'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']
     input_features = []
