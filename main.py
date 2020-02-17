@@ -14,12 +14,12 @@ if __name__ == "__main__":
     input_features = []
     target_feature = 'PM2.5'
     # random search
-    times_random_search = 5
+    times_random_search = 1
     for time in range(1, 1+times_random_search):
         # find input_features by random search
-        binary_features = np.random.randint(2, size=len(features))
+        # binary_features = np.random.randint(2, size=len(features))
         # binary_features = np.ones((len(features),), dtype=int)
-        # binary_features = np.zeros((len(features),), dtype=int)
+        binary_features = np.zeros((len(features),), dtype=int)
         for index, value in enumerate(binary_features, start=0):
             if value == 1:
                 input_features.append(features[index])
@@ -90,8 +90,8 @@ if __name__ == "__main__":
         utils.write_log(path_xgboost, input_features, [mae_xgb])  
         
         # stacking
-        stacked_averaged_models = StackingAveragedModels(base_models = (GBoost, xgb, adaboost),
-                                                    meta_model = randomForest)
+        stacked_averaged_models = StackingAveragedModels(base_models = (GBoost, xgb, randomForest),
+                                                    meta_model = extraTree)
         stacked_averaged_models.fit(X_train, y_train)
         stacked_train_pred = stacked_averaged_models.predict(X_train)
         stacked_pred = stacked_averaged_models.predict(X_test)
@@ -100,14 +100,14 @@ if __name__ == "__main__":
         utils.write_log(path_stacked, input_features, [mae_stacking]) 
 
 
-        # averaged_models = AveragingModels(models = (GBoost, xgb, adaboost, randomForest))
+        averaged_models = AveragingModels(models = (GBoost, xgb, randomForest, extraTree))
         
-        # averaged_models.fit(X_train, y_train)
-        # averaged_model_train_pred = averaged_models.predict(X_train)
-        # averaged_model_pred = averaged_models.predict(X_test)
-        # mae_averaged_model = mean_absolute_error(y_test, averaged_model_pred)
-        # path_averaged_model = "log/averaged_model/"
-        # utils.write_log(path_averaged_model, input_features, [mae_averaged_model]) 
+        averaged_models.fit(X_train, y_train)
+        averaged_model_train_pred = averaged_models.predict(X_train)
+        averaged_model_pred = averaged_models.predict(X_test)
+        mae_averaged_model = mean_absolute_error(y_test, averaged_model_pred)
+        path_averaged_model = "log/averaged_model/"
+        utils.write_log(path_averaged_model, input_features, [mae_averaged_model]) 
 
         # reset input_features       
         input_features = []
