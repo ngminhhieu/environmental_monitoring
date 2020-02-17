@@ -20,25 +20,26 @@ if __name__ == "__main__":
     'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']
     input_features = []
     target_feature = 'PM2.5'
+
     # random search
-    times_random_search = 1
+    if args.mode == 'random_search':
+        binary_features = np.random.randint(2, size=len(features))
+        times_random_search = 10
+    elif args.mode == 'ones' or args.mode == 'one':
+        binary_features = np.ones((len(features),), dtype=int)
+        times_random_search = 1
+    elif args.mode == 'zeros' or args.mode == 'zero':
+        binary_features = np.zeros((len(features),), dtype=int)
+        times_random_search = 1
+    else:
+        raise RuntimeError("Mode needs to be random_search/zeros/ones!")
+
     for time in range(1, 1+times_random_search):
-
-        # find input_features by random search
-        if args.mode == 'random_search':
-            binary_features = np.random.randint(2, size=len(features))
-        elif args.mode == 'ones' or args.mode == 'one':
-            binary_features = np.ones((len(features),), dtype=int)
-        elif args.mode == 'zeros' or args.mode == 'zero':
-            binary_features = np.zeros((len(features),), dtype=int)
-        else:
-            raise RuntimeError("Mode needs to be random_search/zeros/ones!")
-
         for index, value in enumerate(binary_features, start=0):
             if value == 1:
                 input_features.append(features[index])
+                
         taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv', usecols=input_features+[target_feature])
-
         new_dataset = utils.data_preprocessing(taiwan_dataset, input_features, target_feature)
         X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(new_dataset, 0.65, 0.15)
         eval_set = [(X_valid, y_valid)]
