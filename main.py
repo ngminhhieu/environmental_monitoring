@@ -8,6 +8,13 @@ from lib import utils
 from model.ensemble_models import AveragingModels, StackingAveragedModels
 
 if __name__ == "__main__":
+    # run mode
+    sys.path.append(os.getcwd())
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--mode', default='random_search', type=str,
+                        help='Run mode.')
+    args = parser.parse_args()  
+
     # np.random.seed(1)
     features = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP', 'CO', 'NO', 'NO2',
     'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']
@@ -16,10 +23,17 @@ if __name__ == "__main__":
     # random search
     times_random_search = 1
     for time in range(1, 1+times_random_search):
+
         # find input_features by random search
-        # binary_features = np.random.randint(2, size=len(features))
-        # binary_features = np.ones((len(features),), dtype=int)
-        binary_features = np.zeros((len(features),), dtype=int)
+        if args.mode == 'random_search':
+            binary_features = np.random.randint(2, size=len(features))
+        elif args.mode == 'ones' or args.mode == 'one':
+            binary_features = np.ones((len(features),), dtype=int)
+        elif args.mode == 'zeros' or args.mode == 'zero':
+            binary_features = np.zeros((len(features),), dtype=int)
+        else:
+            raise RuntimeError("Mode needs to be random_search/zeros/ones!")
+
         for index, value in enumerate(binary_features, start=0):
             if value == 1:
                 input_features.append(features[index])
@@ -99,15 +113,14 @@ if __name__ == "__main__":
         path_stacked = "log/stacking/"
         utils.write_log(path_stacked, input_features, [mae_stacking]) 
 
-
-        # averaged_models = AveragingModels(models = (GBoost, xgb, randomForest, extraTree))
-        
-        # averaged_models.fit(X_train, y_train)
-        # averaged_model_train_pred = averaged_models.predict(X_train)
-        # averaged_model_pred = averaged_models.predict(X_test)
-        # mae_averaged_model = mean_absolute_error(y_test, averaged_model_pred)
-        # path_averaged_model = "log/averaged_model/"
-        # utils.write_log(path_averaged_model, input_features, [mae_averaged_model]) 
+        # averaged_models
+        averaged_models = AveragingModels(models = (GBoost, xgb, randomForest, extraTree))
+        averaged_models.fit(X_train, y_train)
+        averaged_model_train_pred = averaged_models.predict(X_train)
+        averaged_model_pred = averaged_models.predict(X_test)
+        mae_averaged_model = mean_absolute_error(y_test, averaged_model_pred)
+        path_averaged_model = "log/averaged_model/"
+        utils.write_log(path_averaged_model, input_features, [mae_averaged_model]) 
 
         # reset input_features       
         input_features = []
