@@ -11,22 +11,23 @@ if __name__ == "__main__":
     features = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP', 'CO', 'NO', 'NO2',
     'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']
     input_features = []
-
+    target_feature = 'PM2.5'
     # random search
     times_random_search = 5
     for time in range(1, 1+times_random_search):
         # find input_features by random search
         binary_features = np.random.randint(2, size=len(features))
-        # binary_features = np.ones((17,), dtype=int)
+        # binary_features = np.ones((len(features),), dtype=int)
+        # binary_features = np.zeros((len(features),), dtype=int)
         for index, value in enumerate(binary_features, start=0):
             if value == 1:
                 input_features.append(features[index])
-        print(binary_features)
-        input_features.append('PM2.5')
-        taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv', usecols=input_features)
-        X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(taiwan_dataset, input_features, 0.65, 0.15)
+        taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv', usecols=input_features+[target_feature])
+
+        new_dataset = utils.data_preprocessing(taiwan_dataset, input_features, target_feature)
+        X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(new_dataset, 0.65, 0.15)
         eval_set = [(X_valid, y_valid)]
-        
+
         # get models
         print("--Starting get models--")
         models = utils.get_models("SVR", "Lasso", "ElasticNet", 

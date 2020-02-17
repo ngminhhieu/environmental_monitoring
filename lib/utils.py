@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 import csv
 from datetime import datetime
@@ -34,23 +35,25 @@ def mae_cv(model, X_train, Y_train, n_folds = 10):
     mae= -cross_val_score(model, X_train, Y_train, scoring="neg_mean_absolute_error", cv=kf)
     return(mae)
 
-def split_data(dataset, cols_feature, train_per, valid_per):
+def split_data(dataset, train_per, valid_per):
+    """dataset is a numpy array get from function data_preprocessing()"""
+
     # split data into X and y
-    X = dataset.iloc[:,0:(len(cols_feature)-1)]
-    Y = dataset.iloc[:,-1]
+    X = dataset[:, 0:-1]
+    Y = dataset[:, -1]
     # split data into train and test sets
     train_size = int(len(dataset)*train_per)
     valid_size = int(len(dataset)*valid_per)
-    X_train = X.iloc[0:train_size]
-    y_train = Y.iloc[0:train_size]
+    X_train = X[0:train_size]
+    y_train = Y[0:train_size]
 
-    X_valid = X.iloc[train_size:train_size+valid_size]
-    y_valid = Y.iloc[train_size:train_size+valid_size]
+    X_valid = X[train_size:train_size+valid_size]
+    y_valid = Y[train_size:train_size+valid_size]
     
-    X_test = X.iloc[train_size:train_size+valid_size:]
-    y_test = Y.iloc[train_size:train_size+valid_size:]
+    X_test = X[train_size:train_size+valid_size:]
+    y_test = Y[train_size:train_size+valid_size:]
 
-    return X_train.to_numpy(), y_train.to_numpy(), X_valid.to_numpy(), y_valid.to_numpy(), X_test.to_numpy(), y_test.to_numpy()
+    return X_train, y_train, X_valid, y_valid, X_test, y_test
 
 def test_models(X_train, Y_train):
     # Modeling step Test differents algorithms 
@@ -155,7 +158,7 @@ def get_models(*args):
     
     return models
 
-def write_log(path, input_features, error):
+def write_log(path, input_feature, error):
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     error.insert(0, dt_string)
@@ -164,4 +167,35 @@ def write_log(path, input_features, error):
     with open(path + "metrics.csv", 'a') as file:
         writer = csv.writer(file)
         writer.writerow(error)
-        writer.writerow(input_features)
+        writer.writerow(input_feature)
+
+def data_preprocessing(original_dataset, input_feature, target_feature, l=48, h=1):
+    target_data = original_dataset.loc[:, target_feature]
+    target_data_np = target_data.to_numpy()
+    len_dataset = len(target_data)
+
+    hour_feature = np.zeros(shape=(len_dataset-l, l))
+    
+    for i in range(len_dataset-l):
+        hour_feature[i, 0:l] = target_data_np[i:i+l]
+    
+    # drop first l rows
+    dataset = original_dataset.loc[:, input_feature]
+    dataset = dataset.to_numpy()
+    dataset = dataset[l:, ]
+
+    # drop first l rows of target_feature
+    target_data_np = target_data_np[l:]
+    target_data_np = target_data_np.reshape(len(target_data_np), 1)
+
+
+    # merge hour features
+    """Columns: Input Features - Hour Features - Target Feature"""
+    new_dataset = np.concatenate((dataset, hour_feature), axis=1)
+    new_dataset = np.concatenate((new_dataset, target_data_np), axis=1)
+    
+    new_dataset = np.around(new_dataset, decimals=1)
+
+    return new_dataset
+        
+    
