@@ -179,16 +179,16 @@ def data_preprocessing(original_dataset, input_feature, target_feature, l=48, h=
     for i in range(len_dataset-l):
         hour_feature[i, 0:l] = target_data_np[i:i+l]
     
-    # statistical features
-    mean_feature = np.mean(hour_feature, axis=1)
-    mean_feature = mean_feature.reshape(len(mean_feature), 1)
+    # # statistical features
+    # mean_feature = np.mean(hour_feature, axis=1)
+    # mean_feature = mean_feature.reshape(len(mean_feature), 1)
 
-    min_feature = np.min(hour_feature, axis=1)
-    min_feature = min_feature.reshape(len(min_feature), 1)
+    # min_feature = np.min(hour_feature, axis=1)
+    # min_feature = min_feature.reshape(len(min_feature), 1)
 
-    max_feature = np.max(hour_feature, axis=1)
-    max_feature = max_feature.reshape(len(max_feature), 1)
-    statistical_feature = np.hstack([mean_feature, min_feature, max_feature])
+    # max_feature = np.max(hour_feature, axis=1)
+    # max_feature = max_feature.reshape(len(max_feature), 1)
+    # statistical_feature = np.hstack([mean_feature, min_feature, max_feature])
 
     # drop first l rows
     dataset = original_dataset.loc[:, input_feature]
@@ -202,9 +202,7 @@ def data_preprocessing(original_dataset, input_feature, target_feature, l=48, h=
 
     # merge hour features
     """Columns: Input Features - Hour Features - Target Feature"""
-    new_dataset = np.concatenate([dataset, hour_feature, statistical_feature, target_data_np], axis=1)
-    # new_dataset = np.concatenate((dataset, hour_feature), axis=1)
-    # new_dataset = np.concatenate((new_dataset, target_data_np), axis=1)
+    new_dataset = np.concatenate([dataset, hour_feature, target_data_np], axis=1)
     
     new_dataset = np.around(new_dataset, decimals=1)
     
