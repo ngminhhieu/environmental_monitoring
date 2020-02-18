@@ -21,7 +21,6 @@ if __name__ == "__main__":
                         help='Run mode.')
     args = parser.parse_args()  
 
-    # np.random.seed(1)
     features = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP', 'CO', 'NO', 'NO2',
     'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']
     input_features = []
@@ -131,3 +130,5 @@ if __name__ == "__main__":
 
         # reset input_features       
         input_features = []
+        binary_features = np.random.randint(2, size=len(features))            
+        
