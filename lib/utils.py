@@ -157,7 +157,7 @@ def get_models(*args):
     
     return models
 
-def write_log(path, input_feature, error):
+def write_log(path, input_feature = [], error):
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     error.insert(0, dt_string)
