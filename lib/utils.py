@@ -157,13 +157,14 @@ def get_models(*args):
     
     return models
 
-def write_log(path, input_feature = [], error):
+def write_log(path, filename, error, input_feature = []):
     now = datetime.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-    error.insert(0, dt_string)
+    if isinstance(error, list):
+        error.insert(0, dt_string)
     if os.path.exists(path) == False:
         os.makedirs(path)
-    with open(path + "metrics.csv", 'a') as file:
+    with open(path + filename, 'a') as file:
         writer = csv.writer(file)
         writer.writerow(error)
         writer.writerow(input_feature)

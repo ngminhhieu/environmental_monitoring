@@ -76,42 +76,43 @@ if __name__ == "__main__":
         print("--Done get models!--")
 
         # test each model
+        filename = "metrics.csv"
         adaboost.fit(X_train, y_train)
         adaboost_pred = adaboost.predict(X_test)
         mae_adaboost = mean_absolute_error(y_test, adaboost_pred)
         path_adaboost = "log/adaboost/"
-        utils.write_log(path_adaboost, input_features, [mae_adaboost])  
+        utils.write_log(path_adaboost, filename, [mae_adaboost], input_features)  
 
         decisionTree.fit(X_train, y_train)
         decisionTree_pred = decisionTree.predict(X_test)
         mae_decisionTree = mean_absolute_error(y_test, decisionTree_pred)
         path_decisionTree = "log/decisionTree/"
-        utils.write_log(path_decisionTree, input_features, [mae_decisionTree])
+        utils.write_log(path_decisionTree, filename, [mae_decisionTree], input_features)
 
         extraTree.fit(X_train, y_train)
         extraTree_pred = extraTree.predict(X_test)
         mae_extraTree = mean_absolute_error(y_test, extraTree_pred)
-        path_extraTree = "log/extraTree/"
-        utils.write_log(path_extraTree, input_features, [mae_extraTree])
+        path_extraTree = "log/extraTree/metrics.csv"
+        utils.write_log(path_extraTree, filename, [mae_extraTree], input_features)
 
         GBoost.fit(X_train, y_train)
         GBoost_pred = GBoost.predict(X_test)
         mae_GBoost = mean_absolute_error(y_test, GBoost_pred)
-        path_GBoost = "log/GBoost/"
-        utils.write_log(path_GBoost, input_features, [mae_GBoost])
+        path_GBoost = "log/GBoost/metrics.csv"
+        utils.write_log(path_GBoost, filename, [mae_GBoost], input_features)
 
         randomForest.fit(X_train, y_train)
         randomForest_pred = randomForest.predict(X_test)
         mae_randomForest = mean_absolute_error(y_test, randomForest_pred)
-        path_randomForest = "log/randomForest/"
-        utils.write_log(path_randomForest, input_features, [mae_randomForest]) 
+        path_randomForest = "log/randomForest/metrics.csv"
+        utils.write_log(path_randomForest, filename, [mae_randomForest], input_features) 
         
         xgb.fit(X_train, y_train, eval_metric="mae", eval_set=eval_set, verbose=False, early_stopping_rounds = 10)
         xgb_train_pred = xgb.predict(X_train)
         xgb_pred = xgb.predict(X_test)
         mae_xgb = mean_absolute_error(y_test, xgb_pred)
-        path_xgboost = "log/xgboost/"
-        utils.write_log(path_xgboost, input_features, [mae_xgb])  
+        path_xgboost = "log/xgboost/metrics.csv"
+        utils.write_log(path_xgboost, filename, [mae_xgb], input_features)  
         
         # stacking
         stacked_averaged_models = StackingAveragedModels(base_models = (GBoost, xgb, randomForest),
@@ -120,8 +121,8 @@ if __name__ == "__main__":
         stacked_train_pred = stacked_averaged_models.predict(X_train)
         stacked_pred = stacked_averaged_models.predict(X_test)
         mae_stacking = mean_absolute_error(y_test, stacked_pred)
-        path_stacked = "log/stacking/"
-        utils.write_log(path_stacked, input_features, [mae_stacking]) 
+        path_stacked = "log/stacking/metrics.csv"
+        utils.write_log(path_stacked, filename, [mae_stacking], input_features) 
 
         # averaged_models
         averaged_models = AveragingModels(models = (GBoost, xgb, randomForest, extraTree))
@@ -129,8 +130,8 @@ if __name__ == "__main__":
         averaged_model_train_pred = averaged_models.predict(X_train)
         averaged_model_pred = averaged_models.predict(X_test)
         mae_averaged_model = mean_absolute_error(y_test, averaged_model_pred)
-        path_averaged_model = "log/averaged_model/"
-        utils.write_log(path_averaged_model, input_features, [mae_averaged_model]) 
+        path_averaged_model = "log/averaged_model/metrics.csv"
+        utils.write_log(path_averaged_model, filename, [mae_averaged_model], input_features) 
 
         # reset input_features       
         input_features = []
