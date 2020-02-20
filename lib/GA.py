@@ -33,7 +33,7 @@ def get_input_features(gen_array):
     return input_features
 
 def get_dataset(input_features):
-    path = 'data/csv/taiwan_test_short.csv'
+    path = 'data/csv/taiwan_data_mean.csv'
     taiwan_dataset = pd.read_csv(path, usecols=input_features+[target_feature])
     new_dataset = utils.data_preprocessing(taiwan_dataset, input_features, target_feature)
     X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(new_dataset, 0.65, 0.15)
