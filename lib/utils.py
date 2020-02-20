@@ -106,7 +106,7 @@ def switch_model(model):
                                    min_samples_leaf=15, min_samples_split=10, 
                                    loss='huber', random_state = random_state)
 
-    xgbregressor = XGBRegressor(max_depth=8, n_estimators=1000, min_child_weight=300, colsample_bytree=0.8, 
+    xgbregressor = XGBRegressor(objective ='reg:squarederror', max_depth=8, n_estimators=1000, min_child_weight=300, colsample_bytree=0.8, 
     subsample=0.8, eta=0.3, seed=random_state)
 
     mlp = MLPRegressor()

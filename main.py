@@ -1,17 +1,22 @@
+# ignore warnings
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action='ignore', category=UserWarning)
+
 # run mode
 import sys
 import os
 import argparse
 
 # other...
-import warnings
-import numpy as np
-warnings.simplefilter(action='ignore', category=FutureWarning)
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_absolute_error
 from lib import utils
 from model.ensemble_models import AveragingModels, StackingAveragedModels
+
+# build
+from lib.constant import features
 
 if __name__ == "__main__":
     # run mode
@@ -21,20 +26,19 @@ if __name__ == "__main__":
                         help='Run mode.')
     args = parser.parse_args()  
 
-    features = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP', 'CO', 'NO', 'NO2',
-    'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']
+    ori_features = features
     input_features = []
     target_feature = 'PM2.5'
 
     # random search
     if args.mode == 'random_search':
-        binary_features = np.random.randint(2, size=len(features))
+        binary_features = np.random.randint(2, size=len(ori_features))
         times_random_search = 10
     elif args.mode == 'ones' or args.mode == 'one':
-        binary_features = np.ones((len(features),), dtype=int)
+        binary_features = np.ones((len(ori_features),), dtype=int)
         times_random_search = 1
     elif args.mode == 'zeros' or args.mode == 'zero':
-        binary_features = np.zeros((len(features),), dtype=int)
+        binary_features = np.zeros((len(ori_features),), dtype=int)
         times_random_search = 1
     else:
         raise RuntimeError("Mode needs to be random_search/zeros/ones!")
@@ -42,7 +46,7 @@ if __name__ == "__main__":
     for time in range(1, 1+times_random_search):
         for index, value in enumerate(binary_features, start=0):
             if value == 1:
-                input_features.append(features[index])
+                input_features.append(ori_features[index])
 
         taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv', usecols=input_features+[target_feature])
         new_dataset = utils.data_preprocessing(taiwan_dataset, input_features, target_feature)
