@@ -8,6 +8,7 @@ import pandas as pd
 # ignore warnings
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action='ignore', category=UserWarning)
 
 # get models
 models = utils.get_models("SVR", "Lasso", "ElasticNet", 
@@ -30,7 +31,7 @@ def get_input_features(gen_array):
     return input_features
 
 def get_dataset(input_features):
-    path = 'data/csv/taiwan_test_short.csv'
+    path = 'data/csv/taiwan_test.csv'
     taiwan_dataset = pd.read_csv(path, usecols=input_features+[target_feature])
     new_dataset = utils.data_preprocessing(taiwan_dataset, input_features, target_feature)
     X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(new_dataset, 0.65, 0.15)
@@ -40,7 +41,7 @@ def fitness(gen_array, model_x):
     input_features = get_input_features(gen_array)
     X_train, y_train, X_valid, y_valid, X_test, y_test  = get_dataset(input_features)
     # fit and predict
-    model_x.fit(X_train, y_train)
+    model_x.fit(X_train, y_train, eval_metric="mae", eval_set=[(X_valid, y_valid)], verbose=False, early_stopping_rounds = 10)
     prediction_values = model_x.predict(X_test)
     mae = mean_absolute_error(y_test, prediction_values)
     return mae
