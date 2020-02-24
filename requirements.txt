@@ -11,4 +11,6 @@ keras
 tables
 pyyaml
 pydot
+lightgbm
 plotly_express
+seaborn
