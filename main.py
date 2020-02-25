@@ -6,6 +6,7 @@ import numpy as np
 import yaml
 import random as rn
 from model.supervisor import EncoderDecoder
+from lib.GABinary import evolution
 
 def seed():
     # The below is necessary for starting Numpy generated random numbers
@@ -103,5 +104,7 @@ if __name__ == '__main__':
         evaluate_lstm_ed(config)
     elif args.mode == "test":
         test_lstm_ed(config)
+    elif args.mode == "ga":
+        
     else:
         raise RuntimeError("Mode needs to be train/evaluate/test!")
