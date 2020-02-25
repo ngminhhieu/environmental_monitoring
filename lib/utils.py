@@ -72,21 +72,23 @@ def test_models(X_train, Y_train):
     regressors.append(make_pipeline(RobustScaler(), Lasso(random_state=random_state)))
     regressors.append(make_pipeline(RobustScaler(), ElasticNet(random_state=random_state)))
     regressors.append(KernelRidge())
+    regressors.append(LGBMRegressor(random_state=random_state))
 
     cv_results = []
     for regressor in regressors :
-        # print(regressor)
         cv_results.append(mae_cv(regressor, X_train, Y_train, 2))
-        # cv_results.append(-cross_val_score(regressor, X_train, Y_train, scoring="neg_mean_absolute_error"))
 
     cv_means = []
     cv_std = []
     for cv_result in cv_results:
         cv_means.append(cv_result.mean())
         cv_std.append(cv_result.std())
+    print(cv_means)
+    print(cv_std)
 
     cv_res = pd.DataFrame({"CrossValMeans":cv_means,"CrossValerrors": cv_std,"Algorithm":["SVR","DecisionTree","AdaBoost",
-    "RandomForest","ExtraTrees","GradientBoosting", "XGBoost", "MultipleLayerPerceptron","KNeighboors", "Lasso", "ElasticNet", "KernelRidge"]})
+    "RandomForest","ExtraTrees","GradientBoosting", "XGBoost", "MultipleLayerPerceptron","KNeighboors", "Lasso", "ElasticNet", "KernelRidge",
+    "LGBM"]})
     # "LogisticRegression",
     # "LinearDiscriminantAnalysis"
     g = sns.barplot("CrossValMeans","Algorithm",data = cv_res, palette="Set3",orient = "h",**{'xerr':cv_std})
@@ -208,5 +210,84 @@ def data_preprocessing(original_dataset, input_feature, target_feature, l=48, h=
     new_dataset = np.around(new_dataset, decimals=1)
     
     return new_dataset
-        
+     
+# get models
+def test_each_model(X_train, y_train, X_test, y_test, input_features):
+    print("--Starting get models--")
+    models = utils.get_models("SVR", "Lasso", "ElasticNet", 
+                            "KernelRidge", "GradientBoostingRegressor", 
+                            "LGBMRegressor", "XGBRegressor", "RandomForestRegressor",
+                            "DecisionTreeRegressor", "AdaBoostRegressor",
+                            "MLPRegressor", "KNeighborsRegressor", "ExtraTreesRegressor")
     
+    adaboost = models["AdaBoostRegressor"]
+    decisionTree = models["DecisionTreeRegressor"]
+    extraTree = models["ExtraTreesRegressor"]
+    mlp = models["MLPRegressor"]
+    ENet = models["ElasticNet"]
+    GBoost = models["GradientBoostingRegressor"]
+    KRR = models["KernelRidge"]
+    lasso = models["Lasso"]
+    kn = models["KNeighborsRegressor"]
+    randomForest = models["RandomForestRegressor"]
+    xgb = models["XGBRegressor"]
+    lgb = models["LGBMRegressor"]
+    print("--Done get models!--")
+
+    # test each model
+    filename = "metrics.csv"
+    adaboost.fit(X_train, y_train)
+    adaboost_pred = adaboost.predict(X_test)
+    mae_adaboost = mean_absolute_error(y_test, adaboost_pred)
+    path_adaboost = "log/adaboost/"
+    utils.write_log(path_adaboost, filename, [mae_adaboost], input_features)  
+
+    decisionTree.fit(X_train, y_train)
+    decisionTree_pred = decisionTree.predict(X_test)
+    mae_decisionTree = mean_absolute_error(y_test, decisionTree_pred)
+    path_decisionTree = "log/decisionTree/"
+    utils.write_log(path_decisionTree, filename, [mae_decisionTree], input_features)
+
+    extraTree.fit(X_train, y_train)
+    extraTree_pred = extraTree.predict(X_test)
+    mae_extraTree = mean_absolute_error(y_test, extraTree_pred)
+    path_extraTree = "log/extraTree/metrics.csv"
+    utils.write_log(path_extraTree, filename, [mae_extraTree], input_features)
+
+    GBoost.fit(X_train, y_train)
+    GBoost_pred = GBoost.predict(X_test)
+    mae_GBoost = mean_absolute_error(y_test, GBoost_pred)
+    path_GBoost = "log/GBoost/metrics.csv"
+    utils.write_log(path_GBoost, filename, [mae_GBoost], input_features)
+
+    randomForest.fit(X_train, y_train)
+    randomForest_pred = randomForest.predict(X_test)
+    mae_randomForest = mean_absolute_error(y_test, randomForest_pred)
+    path_randomForest = "log/randomForest/metrics.csv"
+    utils.write_log(path_randomForest, filename, [mae_randomForest], input_features) 
+    
+    xgb.fit(X_train, y_train, eval_metric="mae", eval_set=eval_set, verbose=False, early_stopping_rounds = 10)
+    xgb_train_pred = xgb.predict(X_train)
+    xgb_pred = xgb.predict(X_test)
+    mae_xgb = mean_absolute_error(y_test, xgb_pred)
+    path_xgboost = "log/xgboost/metrics.csv"
+    utils.write_log(path_xgboost, filename, [mae_xgb], input_features)  
+    
+    # stacking
+    stacked_averaged_models = StackingAveragedModels(base_models = (GBoost, xgb, randomForest),
+                                                meta_model = extraTree)
+    stacked_averaged_models.fit(X_train, y_train)
+    stacked_train_pred = stacked_averaged_models.predict(X_train)
+    stacked_pred = stacked_averaged_models.predict(X_test)
+    mae_stacking = mean_absolute_error(y_test, stacked_pred)
+    path_stacked = "log/stacking/metrics.csv"
+    utils.write_log(path_stacked, filename, [mae_stacking], input_features) 
+
+    # averaged_models
+    averaged_models = AveragingModels(models = (GBoost, xgb, randomForest, extraTree))
+    averaged_models.fit(X_train, y_train)
+    averaged_model_train_pred = averaged_models.predict(X_train)
+    averaged_model_pred = averaged_models.predict(X_test)
+    mae_averaged_model = mean_absolute_error(y_test, averaged_model_pred)
+    path_averaged_model = "log/averaged_model/metrics.csv"
+    utils.write_log(path_averaged_model, filename, [mae_averaged_model], input_features) 
