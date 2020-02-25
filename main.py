@@ -8,6 +8,7 @@ import random as rn
 from model.supervisor import EncoderDecoder
 from lib.GABinary import evolution
 from lib import utils_ga
+from lib import constant
 
 def seed():
     # The below is necessary for starting Numpy generated random numbers

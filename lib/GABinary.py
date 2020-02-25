@@ -12,6 +12,7 @@ import pandas as pd
 import utils_ga
 from model.supervisor import EncoderDecoder
 
+target_feature = ['PM2.5']
 def get_input_features(gen_array):
     input_features = []    
     for index, value in enumerate(gen_array, start=0):
@@ -22,7 +23,7 @@ def get_input_features(gen_array):
 def preprocessing_config(input_features):
     path = 'data/csv/taiwan_test.csv'    
     output_dir = 'data/npz/ga.npz'
-    utils_ga.generate_data(input_features, path, output_dir)
+    utils_ga.generate_data(input_features+target_feature, path, output_dir)
 
 def fitness(gen_array, model_x):
     input_features = get_input_features(gen_array)
