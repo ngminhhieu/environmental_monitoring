@@ -11,9 +11,10 @@ def set_config(input_features, name="GA"):
     with open('config/taiwan/{}.yaml'.format(name), 'r') as f:
         config = yaml.load(f)
 
-    config['model']['input_dim'] = len(input_features)
+    # +1 la vi input_features chua co PM2.5
+    config['model']['input_dim'] = len(input_features)+1
 
-    with open('config/taiwan/{name}.yaml'.format(name), 'w') as f:
+    with open('config/taiwan/{}.yaml'.format(name), 'w') as f:
         yaml.dump(config, f)
 
 def write_log(path, filename, error, input_feature = []):

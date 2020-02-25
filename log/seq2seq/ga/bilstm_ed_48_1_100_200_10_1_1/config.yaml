@@ -10,7 +10,7 @@ gpu: 0
 log_level: INFO
 model:
   horizon: 1
-  input_dim: 6
+  input_dim: 10
   l1_decay: 0
   output_dim: 1
   rnn_layers: 1
@@ -24,5 +24,6 @@ test:
 train:
   dropout: 0
   epochs: 300
+  log_dir: log/seq2seq/ga\bilstm_ed_48_1_100_200_10_1_1/
   optimizer: adam
   patience: 15

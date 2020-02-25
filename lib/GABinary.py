@@ -5,11 +5,13 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 import random
 from operator import itemgetter
 import copy
-import constant
-import utils
+import yaml
 from sklearn.metrics import mean_absolute_error
 import pandas as pd
-import utils_ga
+
+from lib import constant
+from lib import utils
+from lib import utils_ga
 from model.supervisor import EncoderDecoder
 
 target_feature = ['PM2.5']
@@ -18,6 +20,7 @@ def get_input_features(gen_array):
     for index, value in enumerate(gen_array, start=0):
         if value == 1:
             input_features.append(constant.features[index])
+    print(len(input_features))
     return input_features
 
 def preprocessing_config(input_features):
@@ -25,7 +28,13 @@ def preprocessing_config(input_features):
     output_dir = 'data/npz/ga.npz'
     utils_ga.generate_data(input_features+target_feature, path, output_dir)
 
-def fitness(gen_array, model_x):
+def load_config():
+    with open("config/taiwan/GA.yaml") as f:
+        config = yaml.load(f)
+    return config
+
+def fitness(gen_array):
+    config = load_config()
     input_features = get_input_features(gen_array)
     preprocessing_config(input_features)
     # train
@@ -45,7 +54,7 @@ def individual(total_feature):
         if r < 0.5:
             a[i] = 1
     indi = {"gen": a, "fitness": 0}
-    indi["fitness"] = fitness(indi["gen"], xgb)
+    indi["fitness"] = fitness(indi["gen"])
     return indi
 
 
@@ -62,12 +71,12 @@ def crossover(father, mother, total_feature):
     child1["gen"][:start] = father["gen"][:start]
     child1["gen"][start:end] = mother["gen"][start:end]
     child1["gen"][end:] = father["gen"][end:]
-    child1["fitness"] = fitness(child1["gen"], xgb)
+    child1["fitness"] = fitness(child1["gen"])
 
     child2["gen"][:start] = mother["gen"][:start]
     child2["gen"][start:end] = father["gen"][start:end]
     child2["gen"][end:] = mother["gen"][end:]
-    child2["fitness"] = fitness(child2["gen"], xgb)
+    child2["fitness"] = fitness(child2["gen"])
     return child1, child2
 
 
@@ -79,7 +88,7 @@ def mutation(father, total_feature):
     else:
         a[i] = 0
     child = {"gen": a, "fitness": 0}
-    child["fitness"] = fitness(child["gen"], xgb)
+    child["fitness"] = fitness(child["gen"])
     return child
 
 
