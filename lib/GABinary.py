@@ -23,7 +23,7 @@ def get_input_features(gen_array):
     return input_features
 
 def preprocessing_config(input_features):
-    path = 'data/csv/taiwan_test.csv'    
+    path = 'data/csv/taiwan_data_mean.csv'    
     output_dir = 'data/npz/ga.npz'
     utils_ga.generate_data(input_features+target_feature, path, output_dir)
 
