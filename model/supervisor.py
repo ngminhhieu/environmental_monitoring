@@ -46,7 +46,7 @@ class EncoderDecoder():
         self._log_dir = self._get_log_dir(kwargs)
         log_level = self._kwargs.get('log_level', 'INFO')
         self._logger = utils.get_logger(self._log_dir, __name__, 'info.log', level=log_level)
-        self._logger.info(kwargs)
+        # self._logger.info(kwargs)
 
         # Model's Args
         self._type = self._model_kwargs.get('type')
