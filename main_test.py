@@ -93,14 +93,14 @@ if __name__ == "__main__":
         GBoost.fit(X_train, y_train)
         GBoost_pred = GBoost.predict(X_test)
         mae_GBoost = mean_absolute_error(y_test, GBoost_pred)
-        path_GBoost = "log/GBoost/metrics.csv"
+        path_GBoost = "log/GBoost/"
         utils.write_log(path_GBoost, filename, [mae_GBoost], input_features)
         
         xgb.fit(X_train, y_train, eval_metric="mae", eval_set=eval_set, verbose=False, early_stopping_rounds = 10)
         xgb_train_pred = xgb.predict(X_train)
         xgb_pred = xgb.predict(X_test)
         mae_xgb = mean_absolute_error(y_test, xgb_pred)
-        path_xgboost = "log/xgboost/metrics.csv"
+        path_xgboost = "log/xgboost/"
         utils.write_log(path_xgboost, filename, [mae_xgb], input_features)  
         
         # stacking
@@ -110,7 +110,7 @@ if __name__ == "__main__":
         stacked_train_pred = stacked_averaged_models.predict(X_train)
         stacked_pred = stacked_averaged_models.predict(X_test)
         mae_stacking = mean_absolute_error(y_test, stacked_pred)
-        path_stacked = "log/stacking/metrics.csv"
+        path_stacked = "log/stacking/"
         utils.write_log(path_stacked, filename, [mae_stacking], input_features) 
 
         # averaged_models
