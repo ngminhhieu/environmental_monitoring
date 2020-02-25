@@ -118,6 +118,8 @@ def evolution(total_feature, population_size, pc=0.8, pm=0.2, max_gen=1000):
                 off = mutation(population[i], total_feature=total_feature)
                 population.append(off)
         population = selection(population, population_size)
+        fitness = [t, population[0]["gen"], population[0]["fitness"]]
+        utils.write_log(path="log/GA/", filename="fitness_gen.csv", error=fitness)
         print("t =", t, "fitness =", population[0]["fitness"])
         t = t + 1
     return population[0]
