@@ -19,14 +19,14 @@ def get_input_features(gen_array):
             input_features.append(constant.features[index])
     return input_features
 
-def generate_dataset(input_features):
+def preprocessing_config(input_features):
     path = 'data/csv/taiwan_test.csv'    
     output_dir = 'data/npz/ga.npz'
     utils_ga.generate_data(input_features, path, output_dir)
 
 def fitness(gen_array, model_x):
     input_features = get_input_features(gen_array)
-    generate_dataset(input_features)
+    preprocessing_config(input_features)
     # train
     model = EncoderDecoder(is_training=True, **config)
     model.train()
@@ -107,7 +107,7 @@ def evolution(total_feature, population_size, pc=0.8, pm=0.2, max_gen=1000):
                 population.append(off)
         population = selection(population, population_size)
         fitness = [t, population[0]["gen"], population[0]["fitness"]]
-        utils.write_log(path="log/GA/", filename="fitness_gen.csv", error=fitness)
+        utils_ga.write_log(path="log/GA/", filename="fitness_gen.csv", error=fitness)
         print("t =", t, "fitness =", population[0]["fitness"])
         t = t + 1
     return population[0]

@@ -7,6 +7,7 @@ import yaml
 import random as rn
 from model.supervisor import EncoderDecoder
 from lib.GABinary import evolution
+from lib import utils_ga
 
 def seed():
     # The below is necessary for starting Numpy generated random numbers
@@ -105,6 +106,8 @@ if __name__ == '__main__':
     elif args.mode == "test":
         test_lstm_ed(config)
     elif args.mode == "ga":
-        
+        evo = evolution(total_feature=len(constant.features), pc=0.2, pm=0.2, population_size=40, max_gen=10)
+        fitness = [evo["gen"], evo["fitness"]]
+        utils_ga.write_log(path="log/GA/", filename="result_binary.csv", error=fitness)
     else:
         raise RuntimeError("Mode needs to be train/evaluate/test!")
