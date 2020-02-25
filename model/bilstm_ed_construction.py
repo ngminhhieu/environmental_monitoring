@@ -22,7 +22,6 @@ def bilstm_ed_model_construction(input_dim, output_dim, rnn_units, dropout, opti
         if is_training:
             return model
         else:
-            print("Load model from: {}".format(log_dir))
             model.load_weights(log_dir + 'best_model.hdf5')
             model.compile(optimizer=optimizer, loss='mse')
 

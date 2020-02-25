@@ -74,9 +74,7 @@ def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, va
     # else:
     #     raise RuntimeError("Wrong input!!!")
     
-    print('|--- Splitting train-test set.')
     train_data2d, valid_data2d, test_data2d = prepare_train_valid_test_2d(data=raw_data, test_size=test_size, valid_size=valid_size)
-    print('|--- Normalizing the train set.')
     data = {}
     scaler = MinMaxScaler(copy=True, feature_range=(0, 1))
     if test_size != 1 and test_size != 0:
@@ -115,7 +113,6 @@ def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, va
         for cat in ["train", "val"]:
             e_x, d_x, d_y = locals()["encoder_input_" + cat], locals()[
             "decoder_input_" + cat], locals()["decoder_target_" + cat]
-            print(cat, "e_x: ", e_x.shape, "d_x: ", d_x.shape, "d_y: ", d_y.shape)
             data["encoder_input_" + cat] = e_x
             data["decoder_input_" + cat] = d_x
             data["decoder_target_" + cat] = d_y
@@ -132,7 +129,6 @@ def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, va
         for cat in ["eval"]:
             e_x, d_x, d_y = locals()["encoder_input_" + cat], locals()[
             "decoder_input_" + cat], locals()["decoder_target_" + cat]
-            print(cat, "e_x: ", e_x.shape, "d_x: ", d_x.shape, "d_y: ", d_y.shape)
             data["encoder_input_" + cat] = e_x
             data["decoder_input_" + cat] = d_x
             data["decoder_target_" + cat] = d_y
@@ -145,17 +141,14 @@ def cal_error(test_arr, prediction_arr):
     with np.errstate(divide='ignore', invalid='ignore'):
         # cal mse
         error_mae = mean_absolute_error(test_arr, prediction_arr)
-        print('MAE: %.3f' % error_mae)
 
         # cal rmse
         error_mse = mean_squared_error(test_arr, prediction_arr)
         error_rmse = np.sqrt(error_mse)
-        print('RMSE: %.3f' % error_rmse)
 
         # cal mape
         y_true, y_pred = np.array(test_arr), np.array(prediction_arr)
         error_mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
-        print('MAPE: %.3f' % error_mape)
         error_list = [error_mae, error_rmse, error_mape]
         return error_list
 

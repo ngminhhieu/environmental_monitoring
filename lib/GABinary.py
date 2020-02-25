@@ -20,7 +20,6 @@ def get_input_features(gen_array):
     for index, value in enumerate(gen_array, start=0):
         if value == 1:
             input_features.append(constant.features[index])
-    print(len(input_features))
     return input_features
 
 def preprocessing_config(input_features):
@@ -34,9 +33,9 @@ def load_config():
     return config
 
 def fitness(gen_array):
-    config = load_config()
     input_features = get_input_features(gen_array)
     preprocessing_config(input_features)
+    config = load_config()    
     # train
     model = EncoderDecoder(is_training=True, **config)
     model.train()

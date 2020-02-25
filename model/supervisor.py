@@ -154,7 +154,7 @@ class EncoderDecoder():
                                                             self._data['decoder_input_val']],
                                                            self._data['decoder_target_val']),
                                           shuffle=True,
-                                          verbose=2)
+                                          verbose=0)
         if training_history is not None:
             self._plot_training_history(training_history)
             self._save_model_history(training_history)
