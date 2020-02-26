@@ -5,6 +5,7 @@ import constant
 import utils
 from sklearn.metrics import mean_absolute_error
 import pandas as pd
+import math
 
 # ignore warnings
 import warnings
@@ -95,8 +96,14 @@ def mutation(father, total_feature):
 
 
 def selection(popu, population_size):
-    new_list = sorted(popu, key=itemgetter("fitness"), reverse=False)
-    return new_list[:population_size]
+    n = math.floor(population_size / 2)
+    temp = sorted(popu, key=itemgetter("fitness"), reverse=False)
+    new_list = temp[:n]
+    while len(new_list) < population_size:
+        i = random.randint(n, len(temp)-1)
+        new_list.append(temp[i])
+        temp.remove(temp[i])
+    return new_list
 
 
 def evolution(total_feature, population_size, pc=0.8, pm=0.2, max_gen=1000):

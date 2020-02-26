@@ -113,16 +113,7 @@ if __name__ == "__main__":
         path_stacked = "log/stacking/"
         utils.write_log(path_stacked, filename, [mae_stacking], input_features) 
 
-        # averaged_models
-        # averaged_models = AveragingModels(models = (GBoost, xgb, randomForest, extraTree))
-        # averaged_models.fit(X_train, y_train)
-        # averaged_model_train_pred = averaged_models.predict(X_train)
-        # averaged_model_pred = averaged_models.predict(X_test)
-        # mae_averaged_model = mean_absolute_error(y_test, averaged_model_pred)
-        # path_averaged_model = "log/averaged_model/metrics.csv"
-        # utils.write_log(path_averaged_model, filename, [mae_averaged_model], input_features) 
-
-        # # reset input_features       
-        # input_features = []
-        # binary_features = np.random.randint(2, size=len(features))            
+        # reset input_features       
+        input_features = []
+        binary_features = np.random.randint(2, size=len(features))            
         
