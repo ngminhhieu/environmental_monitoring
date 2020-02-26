@@ -171,9 +171,10 @@ class EncoderDecoder():
 
     def test(self):
         if self._test_monthly:
-            self._test_month()
+            mae=self._test_month()
         else:
-            self._test(load_dataset=True)
+            mae=self._test(load_dataset=True)
+        return mae
 
     def _test_month(self):
         # load data
