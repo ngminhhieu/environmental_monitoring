@@ -123,22 +123,22 @@ class EncoderDecoder():
     def _get_log_dir(kwargs):
         log_dir = kwargs['train'].get('log_dir')
         if log_dir is None:
-            type_model = kwargs['model'].get('type')
-            batch_size = kwargs['data'].get('batch_size')
-            rnn_layers = kwargs['model'].get('rnn_layers')
-            rnn_units = kwargs['model'].get('rnn_units')
-            structure = '-'.join(
-                ['%d' % rnn_units for _ in range(rnn_layers)])
-            seq_len = kwargs['model'].get('seq_len')
-            horizon = kwargs['model'].get('horizon')
-            input_dim = kwargs['model'].get('input_dim')
-            output_dim = kwargs['model'].get('output_dim')
-            verified_percentage = kwargs['model'].get('verified_percentage')
+            # type_model = kwargs['model'].get('type')
+            # batch_size = kwargs['data'].get('batch_size')
+            # rnn_layers = kwargs['model'].get('rnn_layers')
+            # rnn_units = kwargs['model'].get('rnn_units')
+            # structure = '-'.join(
+            #     ['%d' % rnn_units for _ in range(rnn_layers)])
+            # seq_len = kwargs['model'].get('seq_len')
+            # horizon = kwargs['model'].get('horizon')
+            # input_dim = kwargs['model'].get('input_dim')
+            # output_dim = kwargs['model'].get('output_dim')
+            # verified_percentage = kwargs['model'].get('verified_percentage')
 
-            run_id = '%s_%d_%d_%s_%d_%d_%d_%g/' % (type_model, seq_len, horizon, structure, batch_size, input_dim, output_dim, verified_percentage)
-            base_dir = kwargs.get('base_dir')
-            log_dir = os.path.join(base_dir, run_id)
-        if not os.path.exists(log_dir):
+            # run_id = '%s_%d_%d_%s_%d_%d_%d_%g/' % (type_model, seq_len, horizon, structure, batch_size, input_dim, output_dim, verified_percentage)
+        #     base_dir = kwargs.get('base_dir')
+        #     log_dir = os.path.join(base_dir, run_id)
+        # if not os.path.exists(log_dir):
             os.makedirs(log_dir)
         return log_dir
 
