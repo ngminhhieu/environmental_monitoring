@@ -123,6 +123,7 @@ class EncoderDecoder():
     def _get_log_dir(kwargs):
         log_dir = kwargs['train'].get('log_dir')
         if log_dir is None:
+            log_dir = kwargs.get('base_dir')
             # type_model = kwargs['model'].get('type')
             # batch_size = kwargs['data'].get('batch_size')
             # rnn_layers = kwargs['model'].get('rnn_layers')
