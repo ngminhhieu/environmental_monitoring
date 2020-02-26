@@ -25,6 +25,7 @@ def seed():
     
 if __name__ == '__main__':
     # np.random.seed(1)
+    seed()
     sys.path.append(os.getcwd())
     parser = argparse.ArgumentParser()
     parser.add_argument('--use_cpu_only', default=False, type=str, help='Whether to run tensorflow on cpu.')
