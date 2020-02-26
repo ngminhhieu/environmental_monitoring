@@ -139,7 +139,7 @@ class EncoderDecoder():
             # run_id = '%s_%d_%d_%s_%d_%d_%d_%g/' % (type_model, seq_len, horizon, structure, batch_size, input_dim, output_dim, verified_percentage)
         #     base_dir = kwargs.get('base_dir')
         #     log_dir = os.path.join(base_dir, run_id)
-        # if not os.path.exists(log_dir):
+        if not os.path.exists(log_dir):
             os.makedirs(log_dir)
         return log_dir
 
