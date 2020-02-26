@@ -3,6 +3,7 @@ import numpy as np
 import yaml
 from datetime import datetime
 import os
+import csv
 
 def generate_data(all_input_features, dataset, output_dir):
     set_config(all_input_features)
