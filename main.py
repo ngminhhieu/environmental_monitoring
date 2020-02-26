@@ -33,7 +33,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.mode == 'ga':
-        evo = evolution(total_feature=len(constant.features), pc=0.2, pm=0.2, population_size=2, max_gen=2)
+        evo = evolution(total_feature=len(constant.features), pc=0.2, pm=0.2, population_size=10, max_gen=10)
         fitness = [evo["gen"], evo["fitness"]]
         utils_ga.write_log(path="log/GA/", filename="result_binary.csv", error=fitness)
     else:
