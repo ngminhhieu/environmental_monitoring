@@ -136,6 +136,11 @@ def load_dataset(seq_len, horizon, input_dim, output_dim, dataset, test_size, va
     data['scaler'] = scaler
     return data
 
+def mae(test_arr, prediction_arr):
+    with np.errstate(divide='ignore', invalid='ignore'):
+        # cal mse
+        error_mae = mean_absolute_error(test_arr, prediction_arr)
+        return error_mae
 
 def cal_error(test_arr, prediction_arr):
     with np.errstate(divide='ignore', invalid='ignore'):

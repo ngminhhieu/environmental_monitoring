@@ -239,8 +239,9 @@ class EncoderDecoder():
         np.save(self._log_dir+'gt', ground_truth)
         # save metrics to log dir
         error_list = utils.cal_error(ground_truth.flatten(), predicted_data.flatten())
+        mae = utils.mae(ground_truth.flatten(), predicted_data.flatten())
         utils.save_metrics(error_list, self._log_dir, self._alg_name)
-        return error_list[0]
+        return mae
 
     def _predict(self, source):
         states_value = self.encoder_model.predict(source)
