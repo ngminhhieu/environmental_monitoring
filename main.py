@@ -82,7 +82,7 @@ def evaluate_lstm_ed(config):
 
 
 if __name__ == '__main__':
-    np.random.seed(1)
+    np.random.seed(2)
     sys.path.append(os.getcwd())
     parser = argparse.ArgumentParser()
     parser.add_argument('--use_cpu_only', default=False, type=str, help='Whether to run tensorflow on cpu.')
