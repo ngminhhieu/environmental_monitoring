@@ -1,5 +1,5 @@
 alg: seq2seq
-base_dir: log/seq2seq/ga
+base_dir: log/seq2seq/ga/
 data:
   batch_size: 200
   dataset: data/npz/ga.npz

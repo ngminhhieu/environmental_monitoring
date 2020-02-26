@@ -1,6 +1,6 @@
 ---
 alg: seq2seq
-base_dir: log/seq2seq/ga
+base_dir: log/seq2seq/ga/
 log_level: INFO
 gpu: 0
 data:
