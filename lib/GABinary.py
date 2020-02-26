@@ -44,6 +44,7 @@ def fitness(gen_array):
     # predict
     model = EncoderDecoder(is_training=False, **config)
     mae = model.test()
+    print(mae)
     return mae
 
 
