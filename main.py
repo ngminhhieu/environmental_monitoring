@@ -13,7 +13,7 @@ from lib import constant
 def seed():
     # The below is necessary for starting Numpy generated random numbers
     # in a well-defined initial state.
-    np.random.seed(42)
+    np.random.seed(2)
     # The below is necessary for starting core Python generated random numbers
     # in a well-defined state.
     rn.seed(12345)
