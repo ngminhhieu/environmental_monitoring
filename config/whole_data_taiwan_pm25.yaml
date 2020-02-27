@@ -5,7 +5,7 @@ data:
   dataset: data/npz/taiwan_data_mean_pm25.npz
   test_batch_size: 1
   test_size: 0.2
-  valid_size: 0.15
+  valid_size: 0.2
 gpu: 0
 log_level: INFO
 model:
