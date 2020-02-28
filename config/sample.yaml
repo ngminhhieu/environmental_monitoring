@@ -8,7 +8,7 @@ data:
   test_batch_size: 1
   dataset: data/npz/ga.npz
   test_size: 0.2
-  valid_size: 0.15
+  valid_size: 0.2
 model:
   type: bilstm_ed
   seq_len: 48
