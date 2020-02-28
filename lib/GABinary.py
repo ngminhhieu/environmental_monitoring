@@ -107,10 +107,13 @@ def selection(popu, population_size):
 
 
 def evolution(total_feature, population_size, pc=0.8, pm=0.2, max_gen=1000):
+    print("Starting...")
+    print("Preparing :)")
     population = []
     for _ in range(population_size):
         population.append(individual(total_feature=total_feature))
     t = 0
+    print("Lets go!!!")
     while t < max_gen:
         for i, _ in enumerate(population):
             r = random.random()
@@ -129,4 +132,5 @@ def evolution(total_feature, population_size, pc=0.8, pm=0.2, max_gen=1000):
         utils.write_log(path="log/GA/", filename="fitness_gen.csv", error=fitness)
         print("t =", t, "fitness =", population[0]["fitness"])
         t = t + 1
+    print("Done")
     return population[0]
