@@ -37,7 +37,7 @@ def get_dataset(input_features):
     path = 'data/csv/taiwan_data_mean.csv'
     taiwan_dataset = pd.read_csv(path, usecols=input_features+[target_feature])
     new_dataset = utils.data_preprocessing(taiwan_dataset, input_features, target_feature)
-    X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(new_dataset, 0.6, 0.2)
+    X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(new_dataset, 0.6, 0.15)
     return X_train, y_train, X_valid, y_valid, X_test, y_test
 
 def fitness(gen_array, model_x):
