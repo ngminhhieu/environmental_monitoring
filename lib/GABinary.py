@@ -37,14 +37,14 @@ def get_dataset(input_features):
     path = 'data/csv/taiwan_data_mean.csv'
     taiwan_dataset = pd.read_csv(path, usecols=input_features+[target_feature])
     new_dataset = utils.data_preprocessing(taiwan_dataset, input_features, target_feature)
-    X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(new_dataset, 0.6, 0.15)
+    X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(new_dataset, 0.6, 0.2)
     return X_train, y_train, X_valid, y_valid, X_test, y_test
 
 def fitness(gen_array, model_x):
     input_features = get_input_features(gen_array)
     X_train, y_train, X_valid, y_valid, X_test, y_test  = get_dataset(input_features)
     # fit and predict
-    model_x.fit(X_train, y_train, eval_metric="mae", eval_set=[(X_valid, y_valid)], verbose=False, early_stopping_rounds = 10)
+    model_x.fit(X_train, y_train, eval_metric="mae", eval_set=[(X_valid, y_valid)], verbose=False, early_stopping_rounds = 15)
     prediction_values = model_x.predict(X_test)
     mae = mean_absolute_error(y_test, prediction_values)
     return mae
