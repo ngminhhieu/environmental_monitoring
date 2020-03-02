@@ -72,3 +72,8 @@ if __name__ == "__main__":
     features = ['PM2.5']  
     output_dir = 'data/npz/taiwan_data_mean_pm25.npz'
     generate_data(features, dataset, output_dir)
+
+    features = ['MONTH', 'HOUR', 'AMB_TEMP', 'NO',
+    'NOx', 'RH', 'SO2', 'WIND_SPEED', 'WS_HR', 'PM10', 'PM2.5']  
+    output_dir = 'data/npz/5_years.npz'
+    generate_data(features, dataset, output_dir)

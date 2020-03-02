@@ -164,6 +164,59 @@ class EncoderDecoder():
             with open(os.path.join(self._log_dir, config_filename), 'w') as f:
                 yaml.dump(config, f, default_flow_style=False)
 
+    def predict(self, steps = 43800):
+        if True:
+            self._data = utils.load_dataset(seq_len=self._seq_len, horizon=self._horizon,
+                                                input_dim=self._input_dim, output_dim=self._output_dim,
+                                                dataset=self._dataset,
+                                                test_size=self._test_size, valid_size=self._valid_size,
+                                                verified_percentage=self._verified_percentage, index_feature = self._index_feature)
+        scaler = self._data['scaler']
+        data_test = self._data['test_data_norm'].copy()
+        # this is the meterogical data
+        other_features_data = data_test[:, 0:(self._input_dim-self._output_dim)].copy()
+        pm_data = data_test[:, -self._output_dim:].copy()
+        l = self._seq_len
+        h = self._horizon
+        T = steps+l
+        pd = np.zeros(shape=(len(data_test), self._output_dim), dtype='float32')
+        _pd = np.zeros(shape=(steps+l, self._output_dim), dtype='float32')
+        reverse_prediction = np.zeros(shape=(steps+l, self._output_dim), dtype='float32')
+        _pd[-l:] = pm_data[-l:]
+        iterator = tqdm(range(0, T - l - h, h))
+        count = 0
+        flag = 0
+        for i in iterator:
+            if i+l+h > T-h:
+                # trimm all zero lines
+                pd = pd[~np.all(pd==0, axis=1)]
+                _pd = _pd[~np.all(_pd==0, axis=1)]
+                iterator.close()
+                break
+            input = np.zeros(shape=(self._test_batch_size, l, self._input_dim))
+            input[0, :, :] = _pd[i:i+l].copy()
+            yhats = self._predict(input)
+            _pd[i + l:i + l + h] = yhats
+            pd[i + l:i + l + h] = yhats
+            count = count + h
+            if count == len(data_test) and i < T - len(data_test):
+                inverse_pred_data = scaler.inverse_transform(np.concatenate((other_features_data,pd), axis=1))
+                predicted_data = inverse_pred_data[:,-self._output_dim:]
+                reverse_prediction[flag:flag+len(data_test)] = predicted_data
+                pd = np.zeros(shape=(len(data_test), self._output_dim), dtype='float32')
+                flag = len(data_test)
+                count = 0
+            elif i == T-l-h-1:
+                residual_row = len(other_features_data)-len(pd)
+                if residual_row != 0:
+                    other_features_data = np.delete(other_features_data, np.s_[-residual_row:], axis=0)
+                inverse_pred_data = scaler.inverse_transform(np.concatenate((other_features_data,pd), axis=1))
+                predicted_data = inverse_pred_data[:,-self._output_dim:]
+                reverse_prediction[flag:flag+len(data_test)] = predicted_data
+        
+        
+        np.save(self._log_dir+'pd', predicted_data)
+
     def evaluate(self):
         # todo:
         pass
