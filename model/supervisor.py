@@ -182,7 +182,7 @@ class EncoderDecoder():
         pd = np.zeros(shape=(len(data_test), self._output_dim), dtype='float32')
         _pd = np.zeros(shape=(steps+l, self._output_dim), dtype='float32')
         reverse_prediction = np.zeros(shape=(steps+l, self._output_dim), dtype='float32')
-        _pd[-l:] = pm_data[-l:]
+        _pd[:l] = pm_data[-l:]
         iterator = tqdm(range(0, T - l - h, h))
         count = 0
         flag = 0
