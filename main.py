@@ -84,6 +84,7 @@ def predict(config):
     with tf.device('/device:GPU:{}'.format(config['gpu'])):
         model = EncoderDecoder(is_training=False, **config)
         model.predict()
+        model.plot_series()        
 
 
 if __name__ == '__main__':
@@ -110,6 +111,5 @@ if __name__ == '__main__':
         test_lstm_ed(config)
     elif args.mode == "predict":
         predict(config)
-        model.plot_series()
     else:
         raise RuntimeError("Mode needs to be train/evaluate/test!")
