@@ -194,7 +194,7 @@ class EncoderDecoder():
                 iterator.close()
                 break
             input = np.zeros(shape=(self._test_batch_size, l, self._input_dim))
-            input[0, :, :] = _pd[i:i+l].copy()
+            input[0, :, :] = data_test[i:i+l].copy()
             yhats = self._predict(input)
             _pd[i + l:i + l + h] = yhats
             pd[i + l:i + l + h] = yhats
