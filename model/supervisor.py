@@ -192,7 +192,8 @@ class EncoderDecoder():
             yhats = self._predict(input)
             _pd[i + l:i + l + h] = yhats
 
-        np.save(self._log_dir+'pd', _pd)
+        predicted_data = scaler.inverse_transform(_pd)
+        np.save(self._log_dir+'pd', predicted_data)
 
     def evaluate(self):
         # todo:
