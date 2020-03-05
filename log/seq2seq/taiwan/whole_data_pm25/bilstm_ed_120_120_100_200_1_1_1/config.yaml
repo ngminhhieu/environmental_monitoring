@@ -9,13 +9,13 @@ data:
 gpu: 0
 log_level: INFO
 model:
-  horizon: 1
+  horizon: 120
   input_dim: 1
   l1_decay: 0
   output_dim: 1
   rnn_layers: 1
   rnn_units: 100
-  seq_len: 48
+  seq_len: 120
   type: bilstm_ed
   verified_percentage: 1
 test:
@@ -24,6 +24,6 @@ test:
 train:
   dropout: 0
   epochs: 300
-  log_dir: log/seq2seq/taiwan/whole_data_pm25\bilstm_ed_48_1_100_200_1_1_1/
+  log_dir: log/seq2seq/taiwan/whole_data_pm25\bilstm_ed_120_120_100_200_1_1_1/
   optimizer: adam
   patience: 15

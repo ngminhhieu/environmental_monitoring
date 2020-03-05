@@ -83,7 +83,7 @@ def evaluate_lstm_ed(config):
 def predict(config):
     with tf.device('/device:GPU:{}'.format(config['gpu'])):
         model = EncoderDecoder(is_training=False, **config)
-        model.predict_only_pm25()
+        # model.predict_only_pm25()
         model.plot_series()        
 
 
