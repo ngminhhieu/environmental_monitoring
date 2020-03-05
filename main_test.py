@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
         taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv', usecols=input_features+[target_feature])
         new_dataset = utils.data_preprocessing(taiwan_dataset, input_features, target_feature)
-        X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(new_dataset, 0.65, 0.15)
+        X_train, y_train, X_valid, y_valid, X_test, y_test = utils.split_data(new_dataset, 0.6, 0.2)
         eval_set = [(X_valid, y_valid)]
 
         # get models
@@ -76,25 +76,7 @@ if __name__ == "__main__":
         print("--Done get models!--")
 
         # test each model
-        filename = "metrics.csv"
-
-        KRR.fit(X_train, y_train)
-        KRR_pred = KRR.predict(X_test)
-        mae_KRR = mean_absolute_error(y_test, KRR_pred)
-        path_KRR = "log/KRR/"
-        utils.write_log(path_KRR, filename, [mae_KRR], input_features)
-
-        mlp.fit(X_train, y_train)
-        mlp_pred = mlp.predict(X_test)
-        mae_mlp = mean_absolute_error(y_test, mlp_pred)
-        path_mlp = "log/mlp/"
-        utils.write_log(path_mlp, filename, [mae_mlp], input_features)
-
-        GBoost.fit(X_train, y_train)
-        GBoost_pred = GBoost.predict(X_test)
-        mae_GBoost = mean_absolute_error(y_test, GBoost_pred)
-        path_GBoost = "log/GBoost/"
-        utils.write_log(path_GBoost, filename, [mae_GBoost], input_features)
+        filename = "metrics.csv"        
         
         xgb.fit(X_train, y_train, eval_metric="mae", eval_set=eval_set, verbose=False, early_stopping_rounds = 10)
         xgb_train_pred = xgb.predict(X_train)
@@ -103,15 +85,15 @@ if __name__ == "__main__":
         path_xgboost = "log/xgboost/"
         utils.write_log(path_xgboost, filename, [mae_xgb], input_features)  
         
-        # stacking
-        stacked_averaged_models = StackingAveragedModels(base_models = (xgb, GBoost),
-                                                    meta_model = KRR)
-        stacked_averaged_models.fit(X_train, y_train)
-        stacked_train_pred = stacked_averaged_models.predict(X_train)
-        stacked_pred = stacked_averaged_models.predict(X_test)
-        mae_stacking = mean_absolute_error(y_test, stacked_pred)
-        path_stacked = "log/stacking/"
-        utils.write_log(path_stacked, filename, [mae_stacking], input_features) 
+        # # stacking
+        # stacked_averaged_models = StackingAveragedModels(base_models = (xgb, GBoost),
+        #                                             meta_model = KRR)
+        # stacked_averaged_models.fit(X_train, y_train)
+        # stacked_train_pred = stacked_averaged_models.predict(X_train)
+        # stacked_pred = stacked_averaged_models.predict(X_test)
+        # mae_stacking = mean_absolute_error(y_test, stacked_pred)
+        # path_stacked = "log/stacking/"
+        # utils.write_log(path_stacked, filename, [mae_stacking], input_features) 
 
         # reset input_features       
         input_features = []

@@ -28,7 +28,7 @@ import seaborn as sns
 sns.set(style='white', context='notebook', palette='deep')
 
 error_invalid_model = "Invalid Models"
-random_state = 42
+random_state = 2
 # Cross validation
 def mae_cv(model, X_train, Y_train, n_folds = 10):
     kf = KFold(n_folds, shuffle=True, random_state=random_state).get_n_splits(X_train)
@@ -266,7 +266,7 @@ def test_each_model(X_train, y_train, X_test, y_test, input_features):
     path_randomForest = "log/randomForest/metrics.csv"
     utils.write_log(path_randomForest, filename, [mae_randomForest], input_features) 
     
-    xgb.fit(X_train, y_train, eval_metric="mae", eval_set=eval_set, verbose=False, early_stopping_rounds = 10)
+    xgb.fit(X_train, y_train, eval_metric="mae", eval_set=eval_set, verbose=False, early_stopping_rounds = 15)
     xgb_train_pred = xgb.predict(X_train)
     xgb_pred = xgb.predict(X_test)
     mae_xgb = mean_absolute_error(y_test, xgb_pred)
