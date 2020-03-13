@@ -1,6 +1,21 @@
 from pandas import read_csv
 import numpy as np
 import pandas as pd
+import yaml
+
+def generate_npz(all_input_features, dataset, output_dir, config_path):
+    set_config(all_input_features, config_path)
+    dataset = read_csv(dataset, usecols=all_input_features)
+    np.savez(output_dir, monitoring_data = dataset)
+
+def set_config(all_input_features, config_path):
+    with open(config_path, 'r') as f:
+        config = yaml.load(f)
+
+    config['model']['input_dim'] = len(all_input_features)
+
+    with open(config_path, 'w') as f:
+        yaml.dump(config, f)
 
 def preprocessing_original_data(dataset, output_dir):
     # dataset['TIME'] = pd.to_datetime(dataset['TIME'])
@@ -46,4 +61,9 @@ def preprocessing_comparison_data():
     dataset.to_csv('data/csv/taiwan_data_mean.csv', encoding='utf-8', index=False)
 
 if __name__ == "__main__":
-    preprocessing_comparison_data()
+    cols = ['MONTH', 'HOUR', 'AMB_TEMP', 'NO', 'NOx', 'RH', 'SO2', 'WIND_SPEED', 'WS_HR', 'PM10', 'PM2.5']
+    dataset = 'data/csv/taiwan_data_mean.csv'
+    output_dir = 'data/npz/seq2seq_taiwan.npz'
+    config_path = 'config/taiwan/seq2seq.yaml'
+    generate_npz(cols, dataset, output_dir, config_path)
+    # preprocessing_comparison_data()

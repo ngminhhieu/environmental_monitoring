@@ -6,7 +6,7 @@ import pandas as pd
 import yaml
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from tqdm import tqdm
-from lib import utils
+from lib import utils_model
 from keras.utils import plot_model
 from model.bilstm_ed_construction import bilstm_ed_model_construction
 from model.lstm_ed_construction import lstm_ed_model_construction
@@ -45,12 +45,11 @@ class EncoderDecoder():
         # logging.
         self._log_dir = self._get_log_dir(kwargs)
         log_level = self._kwargs.get('log_level', 'INFO')
-        # self._logger = utils.get_logger(self._log_dir, __name__, 'info.log', level=log_level)
-        # self._logger.info(kwargs)
+        self._logger = utils_model.get_logger(self._log_dir, __name__, 'info.log', level=log_level)
+        self._logger.info(kwargs)
 
         # Model's Args
         self._type = self._model_kwargs.get('type')
-        self._index_feature = self._model_kwargs.get('index_feature')
         self._rnn_units = self._model_kwargs.get('rnn_units')
         self._seq_len = self._model_kwargs.get('seq_len')
         self._horizon = self._model_kwargs.get('horizon')
@@ -67,15 +66,13 @@ class EncoderDecoder():
 
         # Test's args
         self._run_times = self._test_kwargs.get('run_times')
-        self._test_monthly = self._test_kwargs.get('test_monthly')
 
         # Load data
-        if is_training:
-            self._data = utils.load_dataset(seq_len=self._seq_len, horizon=self._horizon,
-                                            input_dim=self._input_dim, output_dim=self._output_dim,
-                                            dataset=self._dataset,
-                                            test_size=self._test_size, valid_size=self._valid_size,
-                                            verified_percentage=self._verified_percentage, index_feature = self._index_feature)
+        self._data = utils_model.load_dataset(seq_len=self._seq_len, horizon=self._horizon,
+                                        input_dim=self._input_dim, output_dim=self._output_dim,
+                                        dataset=self._dataset,
+                                        test_size=self._test_size, valid_size=self._valid_size,
+                                        verified_percentage=self._verified_percentage)
 
         self.callbacks_list = []
 
@@ -155,7 +152,7 @@ class EncoderDecoder():
                                                             self._data['decoder_input_val']],
                                                            self._data['decoder_target_val']),
                                           shuffle=True,
-                                          verbose=0)
+                                          verbose=2)
         if training_history is not None:
             self._plot_training_history(training_history)
             self._save_model_history(training_history)
@@ -165,37 +162,7 @@ class EncoderDecoder():
             with open(os.path.join(self._log_dir, config_filename), 'w') as f:
                 yaml.dump(config, f, default_flow_style=False)
 
-    def evaluate(self):
-        # todo:
-        pass
-
     def test(self):
-        if self._test_monthly:
-            mae=self._test_month()
-        else:
-            mae=self._test(load_dataset=True)
-        return mae
-
-    def _test_month(self):
-        # load data
-        test_size = 1
-        valid_size = 0
-        for i in range (1,13):
-            self._dataset = 'data/npz/monthly_check_taiwan/test_data_{}.npz'.format(i)
-            self._data = utils.load_dataset(seq_len=self._seq_len, horizon=self._horizon,
-                                            input_dim=self._input_dim, output_dim=self._output_dim,
-                                            dataset=self._dataset,
-                                            test_size=test_size, valid_size=valid_size,
-                                            verified_percentage=self._verified_percentage, index_feature = self._index_feature)
-            self._test(load_dataset=False)
-
-    def _test(self, load_dataset):
-        if load_dataset:
-            self._data = utils.load_dataset(seq_len=self._seq_len, horizon=self._horizon,
-                                                input_dim=self._input_dim, output_dim=self._output_dim,
-                                                dataset=self._dataset,
-                                                test_size=self._test_size, valid_size=self._valid_size,
-                                                verified_percentage=self._verified_percentage, index_feature = self._index_feature)
         scaler = self._data['scaler']
         data_test = self._data['test_data_norm'].copy()
         # this is the meterogical data
@@ -204,7 +171,7 @@ class EncoderDecoder():
         T = len(data_test)
         l = self._seq_len
         h = self._horizon
-        bm = utils.binary_matrix(self._verified_percentage, len(data_test), pm_data.shape[1])
+        bm = utils_model.binary_matrix(self._verified_percentage, len(data_test), pm_data.shape[1])
         pd = np.zeros(shape=(T, self._output_dim), dtype='float32')
         pd[:l] = pm_data[:l]
         _pd = np.zeros(shape=(T, self._output_dim), dtype='float32')
@@ -238,9 +205,9 @@ class EncoderDecoder():
         np.save(self._log_dir+'pd', predicted_data)
         np.save(self._log_dir+'gt', ground_truth)
         # save metrics to log dir
-        error_list = utils.cal_error(ground_truth.flatten(), predicted_data.flatten())
-        mae = utils.mae(ground_truth.flatten(), predicted_data.flatten())
-        utils.save_metrics(error_list, self._log_dir, self._alg_name)
+        error_list = utils_model.cal_error(ground_truth.flatten(), predicted_data.flatten())
+        mae = utils_model.mae(ground_truth.flatten(), predicted_data.flatten())
+        utils_model.save_metrics(error_list, self._log_dir, self._alg_name)
         return mae
 
     def _predict(self, source):

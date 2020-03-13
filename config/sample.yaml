@@ -1,6 +1,5 @@
----
-alg: seq2seq
-base_dir: log/seq2seq/ga/
+alg: ga-seq2seq
+base_dir: log/ga-seq2seq/
 log_level: INFO
 gpu: 0
 data:
@@ -26,4 +25,3 @@ train:
   patience: 15
 test:
   run_times: 1
-  test_monthly: false

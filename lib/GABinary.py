@@ -11,22 +11,20 @@ from sklearn.metrics import mean_absolute_error
 import pandas as pd
 
 from lib import constant
-from lib import utils
 from lib import utils_ga
+from lib import preprocessing_data
 from model.supervisor import EncoderDecoder
 
 target_feature = ['PM2.5']
+path = 'data/csv/taiwan_test.csv'
+output_dir = 'data/npz/ga_seq2seq.npz'
+
 def get_input_features(gen_array):
     input_features = []    
     for index, value in enumerate(gen_array, start=0):
         if value == 1:
             input_features.append(constant.features[index])
     return input_features
-
-def preprocessing_config(input_features):
-    path = 'data/csv/taiwan_data_mean.csv'    
-    output_dir = 'data/npz/ga.npz'
-    utils_ga.generate_data(input_features+target_feature, path, output_dir)
 
 def load_config():
     with open("config/taiwan/GA.yaml") as f:
@@ -35,7 +33,7 @@ def load_config():
 
 def fitness(gen_array):
     input_features = get_input_features(gen_array)
-    preprocessing_config(input_features)
+    preprocessing_data.generate_npz(input_features+target_feature, path, output_dir)
     config = load_config()    
     # train
     model = EncoderDecoder(is_training=True, **config)
@@ -125,7 +123,7 @@ def evolution(total_feature, population_size, pc=0.8, pm=0.2, max_gen=1000):
                 population.append(off)
         population = selection(population, population_size)
         fitness = [t, population[0]["gen"], population[0]["fitness"]]
-        utils_ga.write_log(path="log/GA/", filename="fitness_gen.csv", error=fitness)
+        utils_ga.write_log(path="log/ga-seq2seq-results/", filename="fitness_gen.csv", error=fitness)
         print("t =", t, "fitness =", population[0]["fitness"])
         t = t + 1
     return population[0]

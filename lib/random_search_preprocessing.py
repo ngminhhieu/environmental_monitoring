@@ -10,16 +10,6 @@ def generate_hanoi_data(cols, dataset, output_dir):
     dataset = read_csv(dataset, usecols=cols)
     np.savez(output_dir, monitoring_data = dataset)
 
-def set_config(name):
-    with open('config/taiwan/{}.yaml'.format(name), 'r') as f:
-        config = yaml.load(f)
-
-    config['test']['test_monthly'] = False
-
-    with open('config/taiwan/{name}.yaml'.format(name), 'w') as f:
-        yaml.dump(config, f)
-    
-
 def random_search():
     src = 'config/random_search/sample.yaml'
     dataset_train = 'data/csv/taiwan_data_mean.csv'
@@ -81,8 +71,6 @@ if __name__ == "__main__":
     
     if args.func == 'random_search':
         random_search()
-    elif args.func == 'set_config':
-        set_config()
     else:
         raise RuntimeError("No function!")
    

@@ -9,6 +9,7 @@ from model.supervisor import EncoderDecoder
 from lib.GABinary import evolution
 from lib import utils_ga
 from lib import constant
+from model.supervisor import EncoderDecoder
 
 def seed():
     # The below is necessary for starting Numpy generated random numbers
@@ -28,13 +29,25 @@ if __name__ == '__main__':
     sys.path.append(os.getcwd())
     parser = argparse.ArgumentParser()
     parser.add_argument('--use_cpu_only', default=False, type=str, help='Whether to run tensorflow on cpu.')
-    parser.add_argument('--mode', default='ga', type=str,
+    parser.add_argument('--mode', default='ga_seq2seq', type=str,
                         help='Run mode.')
     args = parser.parse_args()
 
-    if args.mode == 'ga':
-        evo = evolution(total_feature=len(constant.features), pc=0.2, pm=0.2, population_size=10, max_gen=10)
+    # load config for seq2seq model
+    with open("config/taiwan/seq2seq.yaml") as f:
+        config = yaml.load(f)
+
+    if args.mode == 'ga_seq2seq':
+        evo = evolution(total_feature=len(constant.features), pc=0.2, pm=0.2, population_size=2, max_gen=2)
         fitness = [evo["gen"], evo["fitness"]]
         utils_ga.write_log(path="log/GA/", filename="result_binary.csv", error=fitness)
+    elif args.mode == 'seq2seq_train':
+        model = EncoderDecoder(is_training=True, **config)
+        model.train()
+    elif args.mode == 'seq2seq_test':
+        # predict
+        model = EncoderDecoder(is_training=False, **config)
+        model.test()
+        model.plot_series()
     else:
         raise RuntimeError("Mode needs to be train/evaluate/test!")
