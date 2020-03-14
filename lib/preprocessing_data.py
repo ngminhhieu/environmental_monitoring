@@ -61,7 +61,9 @@ def preprocessing_comparison_data():
     dataset.to_csv('data/csv/taiwan_data_mean.csv', encoding='utf-8', index=False)
 
 if __name__ == "__main__":
-    cols = ['MONTH', 'HOUR', 'AMB_TEMP', 'NO', 'NOx', 'RH', 'SO2', 'WIND_SPEED', 'WS_HR', 'PM10', 'PM2.5']
+    # cols = ['MONTH', 'HOUR', 'AMB_TEMP', 'NO', 'NOx', 'RH', 'SO2', 'WIND_SPEED', 'WS_HR', 'PM10', 'PM2.5']
+    cols = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP', 'CO', 'NO', 'NO2',
+    'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10', 'PM2.5']
     dataset = 'data/csv/taiwan_data_mean.csv'
     output_dir = 'data/npz/seq2seq_taiwan.npz'
     config_path = 'config/taiwan/seq2seq.yaml'

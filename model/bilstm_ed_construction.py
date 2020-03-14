@@ -5,9 +5,8 @@ from keras.utils import plot_model
 def bilstm_ed_model_construction(input_dim, output_dim, rnn_units, dropout, optimizer, log_dir, is_training=True):
         # Model
         encoder_inputs = Input(shape=(None, input_dim))
-        # conv1d = Conv1D(filters=64, kernel_size=4, strides=1, activation='relu')(encoder_inputs)
         encoder = Bidirectional(LSTM(rnn_units, return_state=True, dropout=dropout))
-        encoder_outputs, forward_h, forward_c, backward_h, backward_c = encoder(encoder_inputs)
+        encoder_outputs, forward_h, forward_c, backward_h, backward_c = encoder(conv1d)
         state_h = Concatenate()([forward_h, backward_h])
         state_c = Concatenate()([forward_c, backward_c])
         encoder_states = [state_h, state_c]
