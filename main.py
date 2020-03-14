@@ -29,12 +29,14 @@ if __name__ == '__main__':
     sys.path.append(os.getcwd())
     parser = argparse.ArgumentParser()
     parser.add_argument('--use_cpu_only', default=False, type=str, help='Whether to run tensorflow on cpu.')
+    parser.add_argument('--config_file', type=str,
+                        help='Config file for pretrained model.')
     parser.add_argument('--mode', default='ga_seq2seq', type=str,
                         help='Run mode.')
     args = parser.parse_args()
 
     # load config for seq2seq model
-    with open("config/taiwan/seq2seq.yaml") as f:
+    with open(args.config_file) as f:
         config = yaml.load(f)
 
     if args.mode == 'ga_seq2seq':
