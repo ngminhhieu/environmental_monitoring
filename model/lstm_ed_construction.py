@@ -5,9 +5,8 @@ from keras.utils import plot_model
 def lstm_ed_model_construction(input_dim, output_dim, rnn_units, dropout, optimizer, log_dir, is_training=True):
         # Model
         encoder_inputs = Input(shape=(None, input_dim), name='encoder_input')
-        conv1d = Conv1D(filters=1, kernel_size=4, strides=1, activation='relu')(encoder_inputs)
         encoder = LSTM(rnn_units, return_state=True, dropout=dropout)
-        encoder_outputs, state_h, state_c = encoder(conv1d)
+        encoder_outputs, state_h, state_c = encoder(encoder_inputs)
 
         encoder_states = [state_h, state_c]
 
