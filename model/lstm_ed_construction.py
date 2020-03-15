@@ -6,7 +6,7 @@ def lstm_ed_model_construction(input_dim, output_dim, rnn_units, dropout, optimi
         # Model
         encoder_inputs = Input(shape=(None, input_dim), name='encoder_input')
         encoder = LSTM(rnn_units, return_state=True, dropout=dropout)
-        encoder_outputs, state_h, state_c = encoder(conv1d)
+        encoder_outputs, state_h, state_c = encoder(encoder_inputs)
 
         encoder_states = [state_h, state_c]
 
