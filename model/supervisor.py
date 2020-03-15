@@ -89,7 +89,7 @@ class EncoderDecoder():
         self.callbacks_list.append(self._earlystop)
         self.callbacks_list.append(self._time_callback)
                                                         
-        if self._type == 'lstm_ed':
+        if self._type == 'bilstm_ed':
             if is_training:
                 self.model = lstm_ed_model_construction(self._input_dim, self._output_dim, self._rnn_units, self._dropout,
                                                         self._optimizer, self._log_dir, is_training=is_training)
