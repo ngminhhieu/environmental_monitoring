@@ -91,10 +91,10 @@ class EncoderDecoder():
                                                         
         if self._type == 'bilstm_ed':
             if is_training:
-                self.model = lstm_ed_model_construction(self._input_dim, self._output_dim, self._rnn_units, self._dropout,
+                self.model = bilstm_ed_model_construction(self._input_dim, self._output_dim, self._rnn_units, self._dropout,
                                                         self._optimizer, self._log_dir, is_training=is_training)
             else:
-                self.model, self.encoder_model, self.decoder_model = lstm_ed_model_construction(self._input_dim, self._output_dim, self._rnn_units, self._dropout,
+                self.model, self.encoder_model, self.decoder_model = bilstm_ed_model_construction(self._input_dim, self._output_dim, self._rnn_units, self._dropout,
                                                         self._optimizer, self._log_dir, is_training=is_training)
 
         else:
