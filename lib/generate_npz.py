@@ -24,9 +24,8 @@ def generate_hanoi_data_fi_xgboost():
 def generate_taiwan_data_fi_xgboost():
     features = np.load('data/npz/feature_engineering/taiwan_data_xgboost.npz')
     cols = features['features']
-    cols = np.append(cols, ['PM10', 'PM2.5'])
+    cols = np.append(cols, ['PM2.5'])
     print(cols)
-    # cols = ['AMB_TEMP', 'CO', 'O3', 'SO2', 'WS_HR', 'PM10', 'PM2.5']
     set_input_dim(len(cols), 'taiwan')
     dataset = read_csv('data/csv/taiwan_data_mean.csv', usecols=cols)
     np.savez('data/npz/taiwan_data_xgboost.npz', monitoring_data = dataset)
