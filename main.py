@@ -28,13 +28,15 @@ if __name__ == '__main__':
     seed()
     sys.path.append(os.getcwd())
     parser = argparse.ArgumentParser()
+    parser.add_argument('--config', default='config/evn/seq2seq.yaml', type=str,
+                        help='Run mode.')
     parser.add_argument('--use_cpu_only', default=False, type=str, help='Whether to run tensorflow on cpu.')
     parser.add_argument('--mode', default='ga_seq2seq', type=str,
                         help='Run mode.')
     args = parser.parse_args()
 
     # load config for seq2seq model
-    with open("config/taiwan/seq2seq.yaml") as f:
+    with open(args.config) as f:
         config = yaml.load(f)
 
     if args.mode == 'ga_seq2seq':
@@ -45,7 +47,6 @@ if __name__ == '__main__':
         model = EncoderDecoder(is_training=True, **config)
         model.train()
     elif args.mode == 'seq2seq_test':
-        # predict
         model = EncoderDecoder(is_training=False, **config)
         model.test()
         model.plot_series()
