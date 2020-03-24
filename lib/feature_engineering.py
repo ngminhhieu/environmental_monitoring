@@ -59,12 +59,12 @@ def feature_importances_xgboost(dataset, cols_feature, name):
 
 if __name__ == "__main__":
     # taiwan
-    cols_taiwan = ['TIME','AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR', 'PM10', 'PM2.5']    
+    cols_taiwan = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR', 'PM10', 'PM2.5']    
     taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv')
     feature_importances_xgboost(taiwan_dataset, cols_taiwan, 'taiwan_data')
 
-    # ha noi
-    cols_hanoi = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM10','PM2.5']    
-    hanoi_dataset = pd.read_csv('data/csv/hanoi_data_mean.csv')
-    feature_importances_xgboost(hanoi_dataset, cols_hanoi, 'hanoi_data')
+    # # ha noi
+    # cols_hanoi = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM10','PM2.5']    
+    # hanoi_dataset = pd.read_csv('data/csv/hanoi_data_mean.csv')
+    # feature_importances_xgboost(hanoi_dataset, cols_hanoi, 'hanoi_data')
 

@@ -45,12 +45,12 @@ def set_input_dim(number_of_input_dim,name):
             yaml.dump(config, f)
     else:
         # update config for inputdim = 24
-        with open('config/taiwan/l_24_horizon_1_xgboost.yaml', 'r') as f:
+        with open('config/taiwan/l_48_horizon_1_xgboost.yaml', 'r') as f:
             config = yaml.load(f)
 
         config['model']['input_dim'] = number_of_input_dim
 
-        with open('config/taiwan/l_24_horizon_1_xgboost.yaml', 'w') as f:
+        with open('config/taiwan/l_48_horizon_1_xgboost.yaml', 'w') as f:
             yaml.dump(config, f)
         
         # update config for inputdim = 48
@@ -64,7 +64,7 @@ def set_input_dim(number_of_input_dim,name):
                 yaml.dump(config, f)
 
 if __name__ == "__main__":
-    generate_hanoi_data()
-    generate_taiwan_data()
-    generate_hanoi_data_fi_xgboost()
+    # generate_hanoi_data()
+    # generate_taiwan_data()
+    # generate_hanoi_data_fi_xgboost()
     generate_taiwan_data_fi_xgboost()
