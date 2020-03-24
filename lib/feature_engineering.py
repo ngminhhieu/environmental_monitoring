@@ -4,23 +4,35 @@ from numpy import sort
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_absolute_error
 from sklearn.feature_selection import SelectFromModel
-
-def feature_importances_xgboost(dataset, cols_feature, name):
-    dataset = dataset.to_numpy()
+random_state=42
+def split_data(dataset, train_per, valid_per):
+    dataset = dataset.to_numpy()    
     # split data into X and y
-    X = dataset[:,0:(len(cols_feature)-1)]
-    Y = dataset[:,-1]
+    X = dataset[:, 0:-1]
+    Y = dataset[:, -1]
     # split data into train and test sets
-    train_size = int(len(dataset)*0.8)
+    train_size = int(len(dataset)*train_per)
+    valid_size = int(len(dataset)*valid_per)
     X_train = X[0:train_size]
     y_train = Y[0:train_size]
-    
-    X_test = X[train_size:]
-    y_test = Y[train_size:]
 
+    X_valid = X[train_size:train_size+valid_size]
+    y_valid = Y[train_size:train_size+valid_size]
+    
+    X_test = X[train_size:train_size+valid_size:]
+    y_test = Y[train_size:train_size+valid_size:]
+
+    return X_train, y_train, X_valid, y_valid, X_test, y_test
+
+
+def feature_importances_xgboost(dataset, cols_feature, name):
+    # split data into X and y
+    X_train, y_train, X_valid, y_valid, X_test, y_test = split_data(dataset, 0.6, 0.2)
+    eval_set = [(X_valid, y_valid)]
     # fit model on all training data
-    model = XGBRegressor(learning_rate=0.01, max_depth=3, min_child_weight=1.5, n_estimators=10000, seed=42, early)
-    model.fit(X_train, y_train)
+    model = XGBRegressor(objective ='reg:squarederror', max_depth=8, n_estimators=1000, min_child_weight=300, colsample_bytree=0.8, 
+    subsample=0.8, eta=0.3, seed=random_state)
+    model.fit(X_train, y_train, eval_metric="mae", eval_set=eval_set, verbose=False, early_stopping_rounds = 15)
     # plot feature importance
     for col,score in zip(cols_feature,model.feature_importances_):
         print(col,score)
