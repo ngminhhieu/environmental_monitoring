@@ -51,12 +51,15 @@ def feature_importances_xgboost(dataset, cols_feature, name):
         # select features using threshold
         selection = SelectFromModel(model, threshold=thresh, prefit=True)
         select_X_train = selection.transform(X_train)
+        select_X_valid = selection.transform(X_valid)
+        select_X_test = selection.transform(X_test)
+        eval_set = [(select_X_valid, y_valid)]
+        
         # train model
         selection_model = XGBRegressor(objective ='reg:squarederror', max_depth=8, n_estimators=1000, min_child_weight=300, colsample_bytree=0.8, 
         subsample=0.8, eta=0.3, seed=random_state)
         selection_model.fit(select_X_train, y_train, eval_metric="mae", eval_set=eval_set, verbose=False, early_stopping_rounds = 15)
         # eval model
-        select_X_test = selection.transform(X_test)
         y_pred = selection_model.predict(select_X_test)
         predictions = [round(value) for value in y_pred]
         mae = mean_absolute_error(y_test, predictions)
