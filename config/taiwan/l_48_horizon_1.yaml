@@ -13,7 +13,7 @@ model:
   type: bilstm_ed
   seq_len: 48
   horizon: 1
-  input_dim: 6
+  input_dim: 2
   l1_decay: 0
   output_dim: 1
   rnn_units: 100

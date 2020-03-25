@@ -4,6 +4,10 @@ from numpy import sort
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_absolute_error
 from sklearn.feature_selection import SelectFromModel
+
+import seaborn as sns
+from matplotlib import pyplot
+
 random_state=42
 def split_data(dataset, train_per, valid_per):
     dataset = dataset.to_numpy()    
@@ -78,9 +82,9 @@ if __name__ == "__main__":
     cols_taiwan = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR', 'PM10', 'PM2.5']    
     taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv', usecols=cols_taiwan)
     feature_importances_xgboost(taiwan_dataset, cols_taiwan, 'taiwan_data')
+    # pyplot.figure(figsize=(12,10))
+    # cor = taiwan_dataset.corr()
+    # sns.heatmap(cor, annot=True, cmap=pyplot.cm.Reds)
+    # pyplot.show()
 
-    # # ha noi
-    # cols_hanoi = ['TIME','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM10','PM2.5']    
-    # hanoi_dataset = pd.read_csv('data/csv/hanoi_data_mean.csv')
-    # feature_importances_xgboost(hanoi_dataset, cols_hanoi, 'hanoi_data')
 
