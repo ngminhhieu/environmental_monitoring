@@ -81,10 +81,10 @@ if __name__ == "__main__":
     # taiwan
     cols_taiwan = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP','CO','NO','NO2','NOx','O3','RH','SO2','WD_HR','WIND_DIREC','WIND_SPEED','WS_HR', 'PM10', 'PM2.5']    
     taiwan_dataset = pd.read_csv('data/csv/taiwan_data_mean.csv', usecols=cols_taiwan)
-    feature_importances_xgboost(taiwan_dataset, cols_taiwan, 'taiwan_data')
-    # pyplot.figure(figsize=(12,10))
-    # cor = taiwan_dataset.corr()
-    # sns.heatmap(cor, annot=True, cmap=pyplot.cm.Reds)
-    # pyplot.show()
+    # feature_importances_xgboost(taiwan_dataset, cols_taiwan, 'taiwan_data')
+    pyplot.figure(figsize=(12,10))
+    cor = taiwan_dataset.corr(method='spearman')
+    sns.heatmap(cor, annot=True, cmap=pyplot.cm.Reds)
+    pyplot.show()
 
 

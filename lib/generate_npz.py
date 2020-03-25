@@ -8,7 +8,7 @@ def generate_hanoi_data():
     np.savez('data/npz/hanoi_data.npz', monitoring_data = dataset)
 
 def generate_taiwan_data():
-    cols = ['PM10', 'PM2.5']
+    cols = ['CO', 'PM10', 'PM2.5']
     dataset = read_csv('data/csv/taiwan_data_mean.csv', usecols=cols)
     np.savez('data/npz/taiwan_data.npz', monitoring_data = dataset)
 
