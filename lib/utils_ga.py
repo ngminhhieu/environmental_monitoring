@@ -6,7 +6,7 @@ import os
 import csv
 
 def generate_data(all_input_features, dataset, output_dir):
-    set_config(all_input_features)
+    set_config(all_input_features, "GA_hanoi")
     dataset = read_csv(dataset, usecols=all_input_features)
     np.savez(output_dir, monitoring_data = dataset)
 

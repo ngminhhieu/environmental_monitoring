@@ -17,7 +17,8 @@ from model.supervisor import EncoderDecoder
 
 target_feature = ['PM2.5']
 def get_input_features(gen_array):
-    input_features = []    
+    input_features = []
+    print(gen_array)    
     for index, value in enumerate(gen_array, start=0):
         if value == 1:
             input_features.append(constant.hanoi_features[index])

@@ -24,5 +24,6 @@ test:
 train:
   dropout: 0
   epochs: 300
+  log_dir: log/seq2seq/ga_hanoi/
   optimizer: adam
   patience: 2
