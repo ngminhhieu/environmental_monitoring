@@ -2,11 +2,11 @@ from pandas import read_csv
 import numpy as np
 import pandas as pd
 
-def preprocessing_original_data(dataset, output_dir):
+def preprocessing_hanoi_data(dataset, output_dir):
     # dataset['TIME'] = pd.to_datetime(dataset['TIME'])
     # dataset['TIME'] = dataset['TIME'].values.astype(float)
-    # replace by median values 
-    dataset.fillna(dataset.mean(), inplace=True)
+    # replace by median values
+    dataset.fillna(dataset.median(), inplace=True)
     dataset.to_csv(output_dir, index=False)
 
 def preprocessing_comparison_data():
@@ -41,9 +41,9 @@ def preprocessing_comparison_data():
     dataset.columns = ['TIME','AMB_TEMP', 'CO','NO', 'NO2', 'NOx', 'O3', 'PM10', 'PM2.5', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR']
     columnsTitles = ['TIME','AMB_TEMP', 'CO','NO', 'NO2', 'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10', 'PM2.5']
     dataset=dataset.reindex(columns=columnsTitles)
-    # dataset['TIME'] = pd.to_datetime(dataset['TIME'])
-    # dataset['TIME'] = dataset['TIME'].values.astype(float)
     dataset.to_csv('data/csv/taiwan_data_mean.csv', encoding='utf-8', index=False)
 
 if __name__ == "__main__":
-    preprocessing_comparison_data()
+    dataset = read_csv('data/csv/raw_hanoi_data.csv')
+    preprocessing_hanoi_data(dataset, 'data/csv/hanoi_data_median.csv')
+    # preprocessing_comparison_data()

@@ -20,16 +20,16 @@ def get_input_features(gen_array):
     input_features = []    
     for index, value in enumerate(gen_array, start=0):
         if value == 1:
-            input_features.append(constant.features[index])
+            input_features.append(constant.hanoi_features[index])
     return input_features
 
 def preprocessing_config(input_features):
-    path = 'data/csv/taiwan_data_mean.csv'    
-    output_dir = 'data/npz/ga.npz'
+    path = 'data/csv/hanoi_data_median.csv'    
+    output_dir = 'data/npz/ga_hanoi.npz'
     utils_ga.generate_data(input_features+target_feature, path, output_dir)
 
 def load_config():
-    with open("config/taiwan/GA.yaml") as f:
+    with open("config/taiwan/GA_hanoi.yaml") as f:
         config = yaml.load(f)
     return config
 
