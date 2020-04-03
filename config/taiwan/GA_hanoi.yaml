@@ -25,4 +25,4 @@ train:
   dropout: 0
   epochs: 300
   optimizer: adam
-  patience: 2
+  patience: 15
