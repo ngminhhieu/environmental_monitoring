@@ -2,6 +2,7 @@ from pandas import read_csv
 import numpy as np
 import pandas as pd
 import yaml
+import constant
 
 def generate_npz(all_input_features, dataset, output_dir, config_path):
     set_config(all_input_features, config_path)
@@ -56,17 +57,22 @@ def preprocessing_comparison_data():
     dataset.columns = ['TIME','AMB_TEMP', 'CO','NO', 'NO2', 'NOx', 'O3', 'PM10', 'PM2.5', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR']
     columnsTitles = ['TIME','AMB_TEMP', 'CO','NO', 'NO2', 'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10', 'PM2.5']
     dataset=dataset.reindex(columns=columnsTitles)
-    # dataset['TIME'] = pd.to_datetime(dataset['TIME'])
-    # dataset['TIME'] = dataset['TIME'].values.astype(float)
     dataset.to_csv('data/csv/taiwan_data_mean.csv', encoding='utf-8', index=False)
 
 if __name__ == "__main__":
+    # taiwan
     cols = ['MONTH', 'HOUR', 'AMB_TEMP', 'NO', 'NOx', 'RH', 'SO2', 'WIND_SPEED', 'WS_HR', 'PM10', 'PM2.5']
-    # cols = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP', 'CO', 'NO', 'NO2',
-    # 'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10', 'PM2.5']
     dataset = 'data/csv/taiwan_data_mean.csv'
-    # output_dir = 'data/npz/seq2seq_taiwan.npz'
     output_dir = 'data/npz/ga_seq2seq.npz'
     config_path = 'config/taiwan/GA.yaml'
     generate_npz(cols, dataset, output_dir, config_path)
-    # preprocessing_comparison_data()
+
+
+    # hanoi
+    target_feature = ['PM2.5']
+    dataset_hanoi = 'data/csv/hanoi_data_median.csv'
+    config_path_full_hanoi = 'config/hanoi/full_hanoi.yaml'
+    generate_npz(constant.hanoi_features + target_feature, dataset, 'data/npz/full_hanoi.npz', config_path_full_hanoi)
+
+    config_path_pm25_hanoi = 'config/hanoi/pm25_hanoi.yaml'
+    generate_npz(target_feature, dataset, 'data/npz/pm25_hanoi.npz', config_path_pm25_hanoi)
