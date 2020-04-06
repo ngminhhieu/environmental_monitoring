@@ -2,7 +2,7 @@ from pandas import read_csv
 import numpy as np
 import pandas as pd
 import yaml
-import constant
+from lib import constant
 
 def generate_npz(all_input_features, dataset, output_dir, config_path):
     set_config(all_input_features, config_path)
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     target_feature = ['PM2.5']
     dataset_hanoi = 'data/csv/hanoi_data_median.csv'
     config_path_full_hanoi = 'config/hanoi/full_hanoi.yaml'
-    generate_npz(constant.hanoi_features + target_feature, dataset, 'data/npz/full_hanoi.npz', config_path_full_hanoi)
+    generate_npz(constant.hanoi_features + target_feature, dataset_hanoi, 'data/npz/full_hanoi.npz', config_path_full_hanoi)
 
     config_path_pm25_hanoi = 'config/hanoi/pm25_hanoi.yaml'
-    generate_npz(target_feature, dataset, 'data/npz/pm25_hanoi.npz', config_path_pm25_hanoi)
+    generate_npz(target_feature, dataset_hanoi, 'data/npz/pm25_hanoi.npz', config_path_pm25_hanoi)

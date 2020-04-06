@@ -1,4 +1,4 @@
-from keras.layers import LSTM, Dense, Input, Bidirectional, Concatenate, Conv1D
+from keras.layers import LSTM, Dense, Input, Bidirectional, Concatenate
 from keras.models import Model
 from keras.utils import plot_model
 
@@ -6,7 +6,7 @@ def bilstm_ed_model_construction(input_dim, output_dim, rnn_units, dropout, opti
         # Model
         encoder_inputs = Input(shape=(None, input_dim))
         encoder = Bidirectional(LSTM(rnn_units, return_state=True, dropout=dropout))
-        encoder_outputs, forward_h, forward_c, backward_h, backward_c = encoder(conv1d)
+        encoder_outputs, forward_h, forward_c, backward_h, backward_c = encoder(encoder_inputs)
         state_h = Concatenate()([forward_h, backward_h])
         state_c = Concatenate()([forward_c, backward_c])
         encoder_states = [state_h, state_c]
