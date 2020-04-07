@@ -24,3 +24,5 @@ train:
   epochs: 300
   optimizer: adam
   patience: 15
+test:
+  run_times: 1
