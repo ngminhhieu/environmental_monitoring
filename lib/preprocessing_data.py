@@ -76,3 +76,7 @@ if __name__ == "__main__":
 
     config_path_pm25_hanoi = 'config/hanoi/pm25_hanoi.yaml'
     generate_npz(target_feature, dataset_hanoi, 'data/npz/pm25_hanoi.npz', config_path_pm25_hanoi)
+
+    ga_hanoi_features = ['WIND_SPEED', 'TEMP', 'RADIATION', 'PM10']
+    config_path_ga_hanoi = 'config/hanoi/ga_hanoi.yaml'
+    generate_npz(ga_hanoi_features, dataset_hanoi, 'data/npz/ga_hanoi.npz', config_path_ga_hanoi)
