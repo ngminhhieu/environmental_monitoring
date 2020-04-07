@@ -5,6 +5,7 @@ from shutil import copyfile
 import argparse
 import os
 import sys
+import constant
 
 def generate_hanoi_data(cols, dataset, output_dir):
     dataset = read_csv(dataset, usecols=cols)
@@ -12,21 +13,10 @@ def generate_hanoi_data(cols, dataset, output_dir):
 
 def random_search():
     src = 'config/random_search/sample.yaml'
-    dataset_train = 'data/csv/taiwan_data_mean.csv'
+    dataset_train = 'data/csv/hanoi_data_median.csv'
     times_random_search = 10
-    features = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP', 'CO', 'NO', 'NO2',
-    'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']
-
-    # generate train npz for only pm2.5
-    # also genereate test npz 
+    features = constant.hanoi_features
     input_features = ['PM2.5']
-    output_dir = 'data/npz/random_search/taiwan/pm25.npz'
-    generate_hanoi_data(input_features, dataset_train, output_dir)
-    # update npz test for each month from March to December 2017
-    for i in range(1,13):
-            dataset_test = 'data/csv/monthly_check_taiwan/test_data_{}.csv'.format(str(i))
-            output_dir = 'data/npz/monthly_check_taiwan/test_data_{}.npz'.format(str(i))
-            generate_hanoi_data(input_features, dataset_test, output_dir)
 
     # random search
     for time in range(1, 1+times_random_search):
@@ -37,11 +27,11 @@ def random_search():
                 input_features.append(features[index])
 
         # generate npz file
-        output_dir = 'data/npz/random_search/taiwan/{}.npz'.format(str(time))
+        output_dir = 'data/npz/random_search/hanoi/{}.npz'.format(str(time))
         generate_hanoi_data(input_features, dataset_train, output_dir)
 
         # create file config        
-        des = 'config/random_search/taiwan/{}.yaml'.format(str(time))
+        des = 'config/random_search/hanoi/{}.yaml'.format(str(time))
         copyfile(src, des)
 
         # update config
@@ -49,8 +39,8 @@ def random_search():
             config = yaml.load(f)
 
         config['model']['input_dim'] = len(input_features)
-        config['data']['dataset'] = 'data/npz/random_search/taiwan/{}.npz'.format(str(time))
-        config['base_dir'] = 'log/seq2seq/random_search/taiwan/{}'.format(str(time))
+        config['data']['dataset'] = 'data/npz/random_search/hanoi/{}.npz'.format(str(time))
+        config['base_dir'] = 'log/seq2seq/random_search/hanoi/{}'.format(str(time))
         config['input_features'] = str(input_features)
 
         with open(des, 'w') as f:
@@ -73,5 +63,3 @@ if __name__ == "__main__":
         random_search()
     else:
         raise RuntimeError("No function!")
-   
-    

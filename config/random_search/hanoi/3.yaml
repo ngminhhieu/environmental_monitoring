@@ -1,0 +1,27 @@
+alg: random_search
+base_dir: log/seq2seq/random_search/hanoi/3
+data:
+  batch_size: 200
+  dataset: data/npz/random_search/hanoi/3.npz
+  test_batch_size: 1
+  test_size: 0.2
+  valid_size: 0.2
+gpu: 0
+input_features: '[''PM2.5'', ''YEAR'', ''WIND_DIR'', ''TEMP'', ''RH'', ''RADIATION'',
+  ''PM1'']'
+log_level: INFO
+model:
+  horizon: 1
+  input_dim: 7
+  l1_decay: 0
+  output_dim: 1
+  rnn_layers: 1
+  rnn_units: 100
+  seq_len: 48
+  type: lstm_ed
+  verified_percentage: 1
+train:
+  dropout: 0
+  epochs: 300
+  optimizer: adam
+  patience: 15
