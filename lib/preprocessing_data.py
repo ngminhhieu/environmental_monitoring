@@ -84,3 +84,7 @@ if __name__ == "__main__":
     xgb_fs_features = ['WIND_DIR', 'DAY', 'MONTH', 'TEMP', 'HOUR', 'INNER_TEMP', 'BAROMETER', 'WIND_SPEED', 'PM10', 'PM1', 'PM2.5']
     config_path_xgb_fs_hanoi = 'config/hanoi/xgb_fs_hanoi.yaml'
     generate_npz(xgb_fs_features, dataset_hanoi, 'data/npz/xgb_fs_hanoi.npz', config_path_xgb_fs_hanoi)
+
+    corr_features = ['PM10', 'PM1', 'PM2.5']
+    config_path_corr_fs_hanoi = 'config/hanoi/corr_fs_hanoi.yaml'
+    generate_npz(corr_features, dataset_hanoi, 'data/npz/corr_fs_hanoi.npz', config_path_corr_fs_hanoi)
