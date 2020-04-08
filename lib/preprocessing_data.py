@@ -77,6 +77,10 @@ if __name__ == "__main__":
     config_path_pm25_hanoi = 'config/hanoi/pm25_hanoi.yaml'
     generate_npz(target_feature, dataset_hanoi, 'data/npz/pm25_hanoi.npz', config_path_pm25_hanoi)
 
-    ga_hanoi_features = ['WIND_SPEED', 'TEMP', 'RADIATION', 'PM10']
+    ga_hanoi_features = ['WIND_SPEED', 'TEMP', 'RADIATION', 'PM10', 'PM2.5']
     config_path_ga_hanoi = 'config/hanoi/ga_hanoi.yaml'
     generate_npz(ga_hanoi_features, dataset_hanoi, 'data/npz/ga_hanoi.npz', config_path_ga_hanoi)
+
+    xgb_fs_features = ['WIND_DIR', 'DAY', 'MONTH', 'TEMP', 'HOUR', 'INNER_TEMP', 'BAROMETER', 'WIND_SPEED', 'PM10', 'PM1', 'PM2.5']
+    config_path_xgb_fs_hanoi = 'config/hanoi/xgb_fs_hanoi.yaml'
+    generate_npz(xgb_fs_features, dataset_hanoi, 'data/npz/xgb_fs_hanoi.npz', config_path_xgb_fs_hanoi)
