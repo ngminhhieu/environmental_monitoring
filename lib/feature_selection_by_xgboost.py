@@ -60,7 +60,8 @@ def feature_importances_xgboost(dataset, cols_feature, train_per=0.2, valid_per=
         if mae < temp_mae:
             # get feature that being important
             features = [feature for (feature,threshold) in feature_importances if threshold >= thresh]
-        temp_mae = mae
+            temp_mae = mae
+            print("Optimal features: ", features)
         print("Thresh=%.3f, n=%d, MAE: %.3f" % (thresh, select_X_train.shape[1], mae))
 
 if __name__ == "__main__":
