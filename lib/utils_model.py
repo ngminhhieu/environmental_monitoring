@@ -122,6 +122,9 @@ def cal_error(test_arr, prediction_arr):
         y_true, y_pred = np.array(test_arr), np.array(prediction_arr)
         error_mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
         error_list = [error_mae, error_rmse, error_mape]
+        print("MAE: %.4f" % (error_mae))
+        print("RMSE: %.4f" % (error_rmse))
+        print("MAPE: %.4f" % (error_mape))
         return error_list
 
 def save_metrics(error_list, log_dir, alg):
