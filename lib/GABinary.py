@@ -23,7 +23,7 @@ def get_input_features(gen_array):
     input_features = []    
     for index, value in enumerate(gen_array, start=0):
         if value == 1:
-            input_features.append(constant.features[index])
+            input_features.append(constant.taiwan_features[index])
     return input_features
 
 def load_config():

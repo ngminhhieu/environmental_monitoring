@@ -40,7 +40,7 @@ if __name__ == '__main__':
         config = yaml.load(f)
 
     if args.mode == 'ga_seq2seq':
-        evo = evolution(total_feature=len(constant.features), pc=0.2, pm=0.2, population_size=2, max_gen=2)
+        evo = evolution(total_feature=len(constant.taiwan_features), pc=0.2, pm=0.2, population_size=2, max_gen=2)
         fitness = [evo["gen"], evo["fitness"]]
         utils_ga.write_log(path="log/GA/", filename="result_binary.csv", error=fitness)
     elif args.mode == 'seq2seq_train':

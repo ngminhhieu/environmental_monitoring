@@ -22,8 +22,6 @@ def feature_importances_xgboost(dataset, cols_feature, train_per=0.2, valid_per=
     X_test = X[train_size:train_size+valid_size:]
     y_test = Y[train_size:train_size+valid_size:]
 
-
-
     model = XGBRegressor(objective ='reg:squarederror', max_depth=8, n_estimators=1000, min_child_weight=300, colsample_bytree=0.8, 
     subsample=0.8, eta=0.3, seed=2)
 
@@ -66,9 +64,8 @@ def feature_importances_xgboost(dataset, cols_feature, train_per=0.2, valid_per=
 
 if __name__ == "__main__":
 
-    # ha noi  
     target = ['PM2.5']
-    cols = constant.hanoi_features+target
-    hanoi_dataset = pd.read_csv('data/csv/hanoi_data_median.csv', usecols=cols)
-    feature_importances_xgboost(hanoi_dataset, cols)
+    cols = constant.taiwan_features+target
+    dataset = pd.read_csv('data/csv/taiwan_data_median.csv', usecols=cols)
+    feature_importances_xgboost(dataset, cols)
 
