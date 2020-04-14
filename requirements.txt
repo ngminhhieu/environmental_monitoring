@@ -12,3 +12,4 @@ tables
 pyyaml
 pydot
 plotly_express
+seaborn
