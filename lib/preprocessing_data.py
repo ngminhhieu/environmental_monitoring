@@ -59,7 +59,7 @@ def preprocessing_comparison_data():
     dataset=dataset.reindex(columns=columnsTitles)
     dataset.to_csv('data/csv/taiwan_data_median.csv', encoding='utf-8', index=False)
 
-if __name__ == "__main__":
+def preprocess_all():
     preprocessing_comparison_data()
     target_feature = ['PM2.5']
 
@@ -67,47 +67,47 @@ if __name__ == "__main__":
     dataset = 'data/csv/taiwan_data_mean.csv'
 
     # full taiwan
-    generate_npz(constant.taiwan_features + target_feature, dataset, 'data/npz/full_taiwan.npz', 'config/taiwan/full_taiwan.yaml')
+    generate_npz(constant.taiwan_features + target_feature, dataset, 'data/npz/taiwan/full_taiwan.npz', 'config/taiwan/full_taiwan.yaml')
 
     # only PM2.5
-    generate_npz(target_feature + target_feature, dataset, 'data/npz/pm25_taiwan.npz', 'config/taiwan/pm25_taiwan.yaml')
+    generate_npz(target_feature + target_feature, dataset, 'data/npz/taiwan/pm25_taiwan.npz', 'config/taiwan/pm25_taiwan.yaml')
 
     # comparison
     comparison_cols = ['AMB_TEMP', 'RH', 'WIND_DIREC', 'WIND_SPEED', 'PM10', 'PM2.5']
-    generate_npz(comparison_cols, dataset, 'data/npz/comparison.npz', 'config/taiwan/comparison.yaml')
+    generate_npz(comparison_cols, dataset, 'data/npz/taiwan/comparison.npz', 'config/taiwan/comparison.yaml')
 
     # with ga
     ga_taiwan_cols = ['MONTH', 'HOUR', 'AMB_TEMP', 'NO', 'NOx', 'RH', 'SO2', 'WIND_SPEED', 'WS_HR', 'PM10', 'PM2.5']
-    generate_npz(ga_taiwan_cols, dataset, 'data/npz/ga_taiwan.npz', 'config/taiwan/ga_taiwan.yaml')
+    generate_npz(ga_taiwan_cols, dataset, 'data/npz/taiwan/ga_taiwan.npz', 'config/taiwan/ga_taiwan.yaml')
 
     # with xgb
     fs_xgb_taiwan_cols = ['MONTH', 'SO2', 'CO', 'PM10', 'PM2.5']
-    generate_npz(fs_xgb_taiwan_cols, dataset, 'data/npz/fs_xgb_taiwan.npz', 'config/taiwan/fs_xgb_taiwan.yaml')
+    generate_npz(fs_xgb_taiwan_cols, dataset, 'data/npz/taiwan/fs_xgb_taiwan.npz', 'config/taiwan/fs_xgb_taiwan.yaml')
     # with corr
     fs_corr_taiwan_cols = ['CO', 'SO2', 'PM10', 'PM2.5']
-    generate_npz(fs_corr_taiwan_cols, dataset, 'data/npz/fs_corr_taiwan.npz', 'config/taiwan/fs_corr_taiwan.yaml')
+    generate_npz(fs_corr_taiwan_cols, dataset, 'data/npz/taiwan/fs_corr_taiwan.npz', 'config/taiwan/fs_corr_taiwan.yaml')
 
     # hanoi
     # full hanoi
     dataset_hanoi = 'data/csv/hanoi_data_median.csv'
     config_path_full_hanoi = 'config/hanoi/full_hanoi.yaml'
-    generate_npz(constant.hanoi_features + target_feature, dataset_hanoi, 'data/npz/full_hanoi.npz', config_path_full_hanoi)
+    generate_npz(constant.hanoi_features + target_feature, dataset_hanoi, 'data/npz/hanoi/full_hanoi.npz', config_path_full_hanoi)
 
     # only PM2.5
     config_path_pm25_hanoi = 'config/hanoi/pm25_hanoi.yaml'
-    generate_npz(target_feature, dataset_hanoi, 'data/npz/pm25_hanoi.npz', config_path_pm25_hanoi)
+    generate_npz(target_feature, dataset_hanoi, 'data/npz/hanoi/pm25_hanoi.npz', config_path_pm25_hanoi)
 
     # with ga
     ga_hanoi_features = ['WIND_SPEED', 'TEMP', 'RADIATION', 'PM10', 'PM2.5']
     config_path_ga_hanoi = 'config/hanoi/ga_hanoi.yaml'
-    generate_npz(ga_hanoi_features, dataset_hanoi, 'data/npz/ga_hanoi.npz', config_path_ga_hanoi)
+    generate_npz(ga_hanoi_features, dataset_hanoi, 'data/npz/hanoi/ga_hanoi.npz', config_path_ga_hanoi)
 
     # with xgb
     xgb_fs_features = ['WIND_DIR', 'DAY', 'MONTH', 'TEMP', 'HOUR', 'INNER_TEMP', 'BAROMETER', 'WIND_SPEED', 'PM10', 'PM1', 'PM2.5']
     config_path_xgb_fs_hanoi = 'config/hanoi/xgb_fs_hanoi.yaml'
-    generate_npz(xgb_fs_features, dataset_hanoi, 'data/npz/xgb_fs_hanoi.npz', config_path_xgb_fs_hanoi)
+    generate_npz(xgb_fs_features, dataset_hanoi, 'data/npz/hanoi/xgb_fs_hanoi.npz', config_path_xgb_fs_hanoi)
 
     # with corr
     corr_features = ['PM10', 'PM1', 'PM2.5']
     config_path_corr_fs_hanoi = 'config/hanoi/corr_fs_hanoi.yaml'
-    generate_npz(corr_features, dataset_hanoi, 'data/npz/corr_fs_hanoi.npz', config_path_corr_fs_hanoi)
+    generate_npz(corr_features, dataset_hanoi, 'data/npz/hanoi/corr_fs_hanoi.npz', config_path_corr_fs_hanoi)
