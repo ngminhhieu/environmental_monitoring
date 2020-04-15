@@ -60,7 +60,6 @@ def preprocessing_comparison_data():
     dataset.to_csv('data/csv/taiwan_data_median.csv', encoding='utf-8', index=False)
 
 def preprocess_all():
-    preprocessing_comparison_data()
     target_feature = ['PM2.5']
 
     # taiwan
@@ -84,7 +83,7 @@ def preprocess_all():
     fs_xgb_taiwan_cols = ['MONTH', 'SO2', 'CO', 'PM10', 'PM2.5']
     generate_npz(fs_xgb_taiwan_cols, dataset, 'data/npz/taiwan/fs_xgb_taiwan.npz', 'config/taiwan/fs_xgb_taiwan.yaml')
     # with corr
-    fs_corr_taiwan_cols = ['CO', 'SO2', 'PM10', 'PM2.5']
+    fs_corr_taiwan_cols = ['SO2', 'PM2.5']
     generate_npz(fs_corr_taiwan_cols, dataset, 'data/npz/taiwan/fs_corr_taiwan.npz', 'config/taiwan/fs_corr_taiwan.yaml')
 
     # hanoi
