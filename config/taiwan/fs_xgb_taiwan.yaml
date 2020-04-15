@@ -2,7 +2,7 @@ alg: ga_seq2seq
 base_dir: log/fs_xgb_taiwan/
 data:
   batch_size: 200
-  dataset: data/npz/fs_xgb_taiwan.npz
+  dataset: data/npz/taiwan/fs_xgb_taiwan.npz
   test_batch_size: 1
   test_size: 0.2
   valid_size: 0.2

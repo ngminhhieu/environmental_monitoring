@@ -2,7 +2,7 @@ alg: seq2seq
 base_dir: log/seq2seq/pm25/
 data:
   batch_size: 200
-  dataset: data/npz/pm25_hanoi.npz
+  dataset: data/npz/hanoi/pm25_hanoi.npz
   test_batch_size: 1
   test_size: 0.2
   valid_size: 0.2
