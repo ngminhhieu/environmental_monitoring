@@ -83,7 +83,7 @@ def preprocess_all():
     fs_xgb_taiwan_cols = ['MONTH', 'SO2', 'CO', 'PM10', 'PM2.5']
     generate_npz(fs_xgb_taiwan_cols, dataset, 'data/npz/taiwan/fs_xgb_taiwan.npz', 'config/taiwan/fs_xgb_taiwan.yaml')
     # with corr
-    fs_corr_taiwan_cols = ['SO2', 'PM2.5']
+    fs_corr_taiwan_cols = ['AMB_TEMP', 'NO2', 'NOx', 'O3', 'RH', 'SO2', 'PM2.5']
     generate_npz(fs_corr_taiwan_cols, dataset, 'data/npz/taiwan/fs_corr_taiwan.npz', 'config/taiwan/fs_corr_taiwan.yaml')
 
     # hanoi
@@ -107,6 +107,6 @@ def preprocess_all():
     generate_npz(xgb_fs_features, dataset_hanoi, 'data/npz/hanoi/xgb_fs_hanoi.npz', config_path_xgb_fs_hanoi)
 
     # with corr
-    corr_features = ['PM10', 'PM1', 'PM2.5']
+    corr_features = ['YEAR', 'WIND_SPEED', 'TEMP', 'BAROMETER', 'INNER_TEMP', 'PM2.5']
     config_path_corr_fs_hanoi = 'config/hanoi/corr_fs_hanoi.yaml'
     generate_npz(corr_features, dataset_hanoi, 'data/npz/hanoi/corr_fs_hanoi.npz', config_path_corr_fs_hanoi)

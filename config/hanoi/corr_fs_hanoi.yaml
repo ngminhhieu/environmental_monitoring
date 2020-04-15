@@ -10,7 +10,7 @@ gpu: 0
 log_level: INFO
 model:
   horizon: 1
-  input_dim: 3
+  input_dim: 6
   l1_decay: 0
   output_dim: 1
   rnn_layers: 1
