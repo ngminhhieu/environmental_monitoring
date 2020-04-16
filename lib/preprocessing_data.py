@@ -94,7 +94,7 @@ def preprocess_all():
 
     # only PM2.5
     config_path_pm25_hanoi = 'config/hanoi/pm25_hanoi.yaml'
-    generate_npz(target_feature, dataset_hanoi, 'data/npz/hanoi/pm25_hanoi.npz', config_path_pm25_hanoi)
+    generate_npz(target_feature + target_feature, dataset_hanoi, 'data/npz/hanoi/pm25_hanoi.npz', config_path_pm25_hanoi)
 
     # with ga
     ga_hanoi_features = ['WIND_SPEED', 'TEMP', 'RADIATION', 'PM10', 'PM2.5']
