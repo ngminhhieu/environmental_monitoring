@@ -1,12 +1,12 @@
 import pandas as pd
 import numpy as np
 
-# d = {'date': ["1/12/2012", "31/12/2012"], 'col2': [3, 4], 'col3': [5, 6], 'col4': [7, 8]}
-# df = pd.DataFrame(data=d)
 
-df = pd.read_csv('./data/csv/SonTay.csv')
-# chuyển các fields cần dự đoán về cuối cho dễ xử lý
-def reconstruct_file(dataset_pd, output_fields):
+
+"""output_fields là mảng string gồm đầu ra người dùng lựa chọn"""
+def reconstruct_file(url_dataset, output_fields):
+    dataset_pd = pd.read_csv(url_dataset)
+    # chuyển các fields cần dự đoán về cuối cho dễ xử lý    
     for field in output_fields:
         drop_col = dataset_pd.pop(field)
         dataset_pd.insert(len(dataset_pd.columns), field, drop_col)
