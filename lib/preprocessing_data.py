@@ -8,6 +8,7 @@ def generate_npz(all_input_features, dataset, output_dir, config_path):
     set_config(all_input_features, config_path)
     dataset = read_csv(dataset, usecols=all_input_features)
     np.savez(output_dir, monitoring_data = dataset)
+    print(dataset.shape[1])
 
 def set_config(all_input_features, config_path):
     with open(config_path, 'r') as f:

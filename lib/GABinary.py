@@ -14,35 +14,37 @@ from lib import constant
 from lib import utils_ga
 from lib import preprocessing_data
 from model.supervisor import EncoderDecoder
+import numpy as np
 
 target_feature = ['PM2.5']
-path = 'data/csv/taiwan_test.csv'
-output_dir = 'data/npz/ga_seq2seq.npz'
+dataset = 'data/csv/hanoi_data_median.csv'
+output_dir = 'data/npz/hanoi/ga_hanoi.npz'
+config_path_ga = 'config/hanoi/ga_hanoi.yaml'
 
 def get_input_features(gen_array):
     input_features = []    
     for index, value in enumerate(gen_array, start=0):
         if value == 1:
-            input_features.append(constant.taiwan_features[index])
+            input_features.append(constant.hanoi_features[index])
     return input_features
 
 def load_config():
-    with open("config/taiwan/GA.yaml") as f:
+    with open(config_path_ga) as f:
         config = yaml.load(f)
     return config
 
 def fitness(gen_array):
     input_features = get_input_features(gen_array)
-    preprocessing_data.generate_npz(input_features+target_feature, path, output_dir)
-    config = load_config()    
+    preprocessing_data.generate_npz(input_features+target_feature, dataset, output_dir, config_path_ga)
+    config = load_config()
     # train
     model = EncoderDecoder(is_training=True, **config)
-    model.train()
+    training_time = model.train()
 
     # predict
     model = EncoderDecoder(is_training=False, **config)
     mae = model.test()
-    return mae
+    return mae, np.sum(np.array(training_time))
 
 
 def individual(total_feature):
@@ -51,8 +53,8 @@ def individual(total_feature):
         r = random.random()
         if r < 0.5:
             a[i] = 1
-    indi = {"gen": a, "fitness": 0}
-    indi["fitness"] = fitness(indi["gen"])
+    indi = {"gen": a, "fitness": 0, "time": 0}
+    indi["fitness"], indi["time"] = fitness(indi["gen"])
     return indi
 
 
@@ -63,18 +65,18 @@ def crossover(father, mother, total_feature):
         cutB = random.randint(1, total_feature - 1)
     start = min(cutA, cutB)
     end = max(cutA, cutB)
-    child1 = {"gen": [0 for _ in range(total_feature)], "fitness": 0}
-    child2 = {"gen": [0 for _ in range(total_feature)], "fitness": 0}
+    child1 = {"gen": [0 for _ in range(total_feature)], "fitness": 0, "time": 0}
+    child2 = {"gen": [0 for _ in range(total_feature)], "fitness": 0, "time": 0}
 
     child1["gen"][:start] = father["gen"][:start]
     child1["gen"][start:end] = mother["gen"][start:end]
     child1["gen"][end:] = father["gen"][end:]
-    child1["fitness"] = fitness(child1["gen"])
+    child1["fitness"], child1["time"] = fitness(child1["gen"])
 
     child2["gen"][:start] = mother["gen"][:start]
     child2["gen"][start:end] = father["gen"][start:end]
     child2["gen"][end:] = mother["gen"][end:]
-    child2["fitness"] = fitness(child2["gen"])
+    child2["fitness"], child1["time"] = fitness(child2["gen"])
     return child1, child2
 
 
@@ -85,8 +87,8 @@ def mutation(father, total_feature):
         a[i] = 1
     else:
         a[i] = 0
-    child = {"gen": a, "fitness": 0}
-    child["fitness"] = fitness(child["gen"])
+    child = {"gen": a, "fitness": 0, "time": 0}
+    child["fitness"], child["time"] = fitness(child["gen"])
     return child
 
 
@@ -122,8 +124,11 @@ def evolution(total_feature, population_size, pc=0.8, pm=0.2, max_gen=1000):
                 off = mutation(population[i], total_feature=total_feature)
                 population.append(off)
         population = selection(population, population_size)
-        fitness = [t, population[0]["gen"], population[0]["fitness"]]
+        training_time_gen = 0
+        for i in range(population_size):
+            training_time_gen += population[i]["time"]
+        fitness = [t, population[0]["gen"], population[0]["fitness"], training_time_gen]
         utils_ga.write_log(path="log/ga-seq2seq-results/", filename="fitness_gen.csv", error=fitness)
-        print("t =", t, "fitness =", population[0]["fitness"])
+        print("t =", t, "fitness =", population[0]["fitness"], "time =", training_time_gen)
         t = t + 1
     return population[0]

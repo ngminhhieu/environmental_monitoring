@@ -44,9 +44,9 @@ class EncoderDecoder():
 
         # logging.
         self._log_dir = self._get_log_dir(kwargs)
-        log_level = self._kwargs.get('log_level', 'INFO')
-        self._logger = utils_model.get_logger(self._log_dir, __name__, 'info.log', level=log_level)
-        self._logger.info(kwargs)
+        # log_level = self._kwargs.get('log_level', 'INFO')
+        # self._logger = utils_model.get_logger(self._log_dir, __name__, 'info.log', level=log_level)
+        # self._logger.info(kwargs)
 
         # Model's Args
         self._type = self._model_kwargs.get('type')
@@ -153,6 +153,8 @@ class EncoderDecoder():
             config['train']['log_dir'] = self._log_dir
             with open(os.path.join(self._log_dir, config_filename), 'w') as f:
                 yaml.dump(config, f, default_flow_style=False)
+
+        return self._time_callback.times
 
     def test(self):
         scaler = self._data['scaler']
