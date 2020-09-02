@@ -1,6 +1,6 @@
 # ignore warnings
 import warnings
-import multiprocessing as mp
+import multiprocessing
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=UserWarning)
 import random
@@ -108,10 +108,15 @@ def selection(popu, population_size):
 
 def evolution(total_feature, population_size, pc=0.8, pm=0.2, max_gen=1000):
     population = []
+    processes = []
     for _ in range(population_size):
-        with mp.Pool(2) as pool:
-            population.append(pool.map(individual, range(total_feature, total_feature+1)))
-            pool.close()
+        p = multiprocessing.Process(target=individual, args=[total_feature])
+        p.start()
+        processes.append(p)
+
+    for process in processes:
+        process.join()
+
     t = 0
     while t < max_gen:
         for i, _ in enumerate(population):
