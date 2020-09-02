@@ -29,15 +29,17 @@ def get_input_features(gen_array):
             input_features.append(constant.hanoi_features[index])
     return input_features
 
-def load_config():
-    with open(config_path_ga) as f:
+def load_config(config_path_fitness):
+    with open(config_path_fitness) as f:
         config = yaml.load(f)
     return config
 
-def fitness(gen_array):
+def fitness(gen_array, index=0, return_dict=None):
+    output_dir_fitness = 'data/npz/hanoi/ga_hanoi_{}.npz'.format(index)
+    config_path_fitness = 'config/hanoi/ga_hanoi_{}.yaml'.format(index)
     input_features = get_input_features(gen_array)
-    preprocessing_data.generate_npz(input_features+target_feature, dataset, output_dir, config_path_ga)
-    config = load_config()
+    preprocessing_data.generate_npz(input_features+target_feature, dataset, output_dir_fitness, config_path_fitness)
+    config = load_config(config_path_fitness)
     # train
     model = EncoderDecoder(is_training=True, **config)
     training_time = model.train()
@@ -45,18 +47,20 @@ def fitness(gen_array):
     # predict
     model = EncoderDecoder(is_training=False, **config)
     mae = model.test()
-    return mae, np.sum(np.array(training_time))
+    training_time = np.sum(np.array(training_time))
+    return_dict[index] = mae
+    return_dict[index+2] = training_time
+    return mae, training_time
 
-
-def individual(total_feature):
+def individual(total_feature, index, return_dict):
     a = [0 for _ in range(total_feature)]
     for i in range(total_feature):
         r = random.random()
         if r < 0.5:
             a[i] = 1
     indi = {"gen": a, "fitness": 0, "time": 0}
-    indi["fitness"], indi["time"] = fitness(indi["gen"])
-    return indi
+    indi["fitness"], indi["time"] = fitness(indi["gen"], index)
+    return_dict[index] = indi
 
 
 def crossover(father, mother, total_feature):
@@ -72,12 +76,26 @@ def crossover(father, mother, total_feature):
     child1["gen"][:start] = father["gen"][:start]
     child1["gen"][start:end] = mother["gen"][start:end]
     child1["gen"][end:] = father["gen"][end:]
-    child1["fitness"], child1["time"] = fitness(child1["gen"])
+    # child1["fitness"], child1["time"] = fitness(child1["gen"])
 
     child2["gen"][:start] = mother["gen"][:start]
     child2["gen"][start:end] = father["gen"][start:end]
     child2["gen"][end:] = mother["gen"][end:]
-    child2["fitness"], child1["time"] = fitness(child2["gen"])
+    # child2["fitness"], child1["time"] = fitness(child2["gen"])
+    manager = multiprocessing.Manager()
+    return_dict = manager.dict()
+    p1 = multiprocessing.Process(target=fitness, args=[child1["gen"], 0, return_dict])
+    p2 = multiprocessing.Process(target=fitness, args=[child2["gen"], 1, return_dict])
+    p1.start()
+    p2.start()
+    p1.join()
+    p2.join()
+
+    child1["fitness"] = return_dict[0]
+    child1["time"] = return_dict[2]
+    child2["fitness"] = return_dict[1]
+    child2["time"] = return_dict[3]
+
     return child1, child2
 
 
@@ -107,15 +125,19 @@ def selection(popu, population_size):
 
 
 def evolution(total_feature, population_size, pc=0.8, pm=0.2, max_gen=1000):
+    manager = multiprocessing.Manager()
+    return_dict = manager.dict()
     population = []
-    processes = []
-    for _ in range(population_size):
-        p = multiprocessing.Process(target=individual, args=[total_feature])
+    for index in range(population_size):
+        p = multiprocessing.Process(target=individual, args=[total_feature, index, return_dict])
         p.start()
-        processes.append(p)
+        population.append(p)
 
-    for process in processes:
+    for process in population:
         process.join()
+
+    for _, indi in return_dict.items():
+        population.append(indi)
 
     t = 0
     while t < max_gen:

@@ -3,17 +3,20 @@ import numpy as np
 import pandas as pd
 import yaml
 from lib import constant
+from shutil import copyfile
 
 def generate_npz(all_input_features, dataset, output_dir, config_path):
-    set_config(all_input_features, config_path)
+    set_config(all_input_features, config_path, output_dir)
     dataset = read_csv(dataset, usecols=all_input_features)
     np.savez(output_dir, monitoring_data = dataset)
     print(dataset.shape[1])
 
-def set_config(all_input_features, config_path):
+def set_config(all_input_features, config_path, output_dir=None):
+    copyfile('config/hanoi/ga_hanoi.yaml', config_path)
     with open(config_path, 'r') as f:
         config = yaml.load(f)
-
+    if output_dir!=None:
+        config['data']['dataset'] = output_dir
     config['model']['input_dim'] = len(all_input_features)
 
     with open(config_path, 'w') as f:
