@@ -42,9 +42,9 @@ if __name__ == '__main__':
             config = yaml.load(f)
 
     if args.mode == 'ga_seq2seq':
-        evo = evolution(total_feature=len(constant.hanoi_features), pc=0.7, pm=0.2, population_size=30, max_gen=40)
+        evo = evolution(total_feature=len(constant.hanoi_features), pc=0.6, pm=0.2, population_size=30, max_gen=40)
         fitness = [evo["gen"], evo["fitness"]]
-        utils_ga.write_log(path="log/GA_pc_0.7/", filename="result_binary.csv", error=fitness)
+        utils_ga.write_log(path="log/GA_pc_0.6/", filename="result_binary.csv", error=fitness)
     elif args.mode == 'seq2seq_train':
         model = EncoderDecoder(is_training=True, **config)
         model.train()
