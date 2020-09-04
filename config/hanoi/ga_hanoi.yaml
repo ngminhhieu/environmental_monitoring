@@ -10,7 +10,7 @@ gpu: 0
 log_level: INFO
 model:
   horizon: 1
-  input_dim: 11
+  input_dim: 8
   l1_decay: 0
   output_dim: 1
   rnn_layers: 1
@@ -25,4 +25,4 @@ train:
   dropout: 0
   epochs: 300
   optimizer: adam
-  patience: 1
+  patience: 15

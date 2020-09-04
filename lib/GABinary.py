@@ -17,7 +17,7 @@ from model.supervisor import EncoderDecoder
 import numpy as np
 
 target_feature = ['PM2.5']
-dataset = 'data/csv/hanoi_data_median.csv'
+dataset = 'data/csv/hanoi_data.csv'
 output_dir = 'data/npz/hanoi/ga_hanoi.npz'
 config_path_ga = 'config/hanoi/ga_hanoi.yaml'
 
@@ -111,6 +111,8 @@ def evolution(total_feature, population_size, pc=0.8, pm=0.2, max_gen=1000):
         population.append(individual(total_feature=total_feature))
     t = 0
     while t < max_gen:
+        training_time_gen = 0
+        temp_population = []
         for i, _ in enumerate(population):
             r = random.random()
             if r < pc:
@@ -118,17 +120,17 @@ def evolution(total_feature, population_size, pc=0.8, pm=0.2, max_gen=1000):
                 while j == i:
                     j = random.randint(0, population_size - 1)
                 f_child, m_child = crossover(population[i], population[j], total_feature=total_feature)
-                population.append(f_child)
-                population.append(m_child)
+                temp_population.append(f_child)
+                temp_population.append(m_child)
+                training_time_gen += f_child["time"] + m_child["time"]
             if r < pm:
                 off = mutation(population[i], total_feature=total_feature)
-                population.append(off)
-        population = selection(population, population_size)
-        training_time_gen = 0
-        for i in range(population_size):
-            training_time_gen += population[i]["time"]
+                temp_population.append(off)
+                training_time_gen += off["time"]
+
+        population = selection(population+temp_population, population_size)
         fitness = [t, population[0]["gen"], population[0]["fitness"], training_time_gen]
-        utils_ga.write_log(path="log/ga-seq2seq-results/", filename="fitness_gen.csv", error=fitness)
+        utils_ga.write_log(path="log/GA/", filename="fitness_gen.csv", error=fitness)
         print("t =", t, "fitness =", population[0]["fitness"], "time =", training_time_gen)
         t = t + 1
     return population[0]

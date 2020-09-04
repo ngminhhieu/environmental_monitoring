@@ -26,7 +26,7 @@ def seed():
     tf.set_random_seed(1234)
     
 if __name__ == '__main__':
-    seed()
+    # seed()
     sys.path.append(os.getcwd())
     parser = argparse.ArgumentParser()
     parser.add_argument('--use_cpu_only', default=False, type=str, help='Whether to run tensorflow on cpu.')
@@ -42,7 +42,7 @@ if __name__ == '__main__':
             config = yaml.load(f)
 
     if args.mode == 'ga_seq2seq':
-        evo = evolution(total_feature=len(constant.hanoi_features), pc=0.6, pm=0.2, population_size=30, max_gen=30)
+        evo = evolution(total_feature=len(constant.hanoi_features), pc=0.8, pm=0.2, population_size=30, max_gen=40)
         fitness = [evo["gen"], evo["fitness"]]
         utils_ga.write_log(path="log/GA/", filename="result_binary.csv", error=fitness)
     elif args.mode == 'seq2seq_train':
