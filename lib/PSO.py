@@ -15,6 +15,7 @@ from lib import utils_ga
 from lib import preprocessing_data
 from model.supervisor import EncoderDecoder
 import numpy as np
+from datetime import datetime
 
 w = 1
 c1 = 1
@@ -24,6 +25,8 @@ target_feature = ['PM2.5']
 dataset = 'data/csv/hanoi_data.csv'
 output_dir = 'data/npz/hanoi/ga_hanoi.npz'
 config_path_ga = 'config/hanoi/ga_hanoi.yaml'
+log_path = "log/pso/"
+
 
 
 def get_input_features(gen_array):
@@ -58,14 +61,6 @@ def individual(total_feature):
     fit, time_training = fitness(np.rint(location))
     return {"location": location, "velocity": velocity, "fitness": fit, "pbest": location, "fit_best": fit, "time": time_training}
 
-
-def population(pop_size, total_feature):
-    pop = []
-    for _ in range(pop_size):
-        pop.append(individual(total_feature=total_feature))
-    return pop
-
-
 def multi(arr1, arr2):
     return arr1 * arr2
 
@@ -96,7 +91,15 @@ def repair(arr):
 
 
 def evolution(pop_size, total_feature, max_time):
-    pop = population(pop_size=pop_size, total_feature=total_feature)
+    pop = []
+    first_training_time = 0
+    start_time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+    for _ in range(pop_size):
+        indi = individual(total_feature=total_feature)
+        pop.append(indi)
+        first_training_time += indi["time"]
+    utils_ga.write_log(path=log_path, filename="fitness_gen.csv", error=[start_time, first_training_time])
+
     t = 1
     while t <= max_time:
         
@@ -118,7 +121,7 @@ def evolution(pop_size, total_feature, max_time):
         g = gbest(popu=pop)
         fitness_mae, time_training = fitness(np.rint(g))     
         fitness_error = [t, np.rint(g), fitness_mae, time_training]
-        utils_ga.write_log(path="log/PSO/", filename="fitness_gen.csv", error=fitness_error)
+        utils_ga.write_log(path=log_path, filename="fitness_gen.csv", error=fitness_error)
         print("t =", t, "fitness =", fitness_mae, "time =", time_training)
 
         t = t + 1
