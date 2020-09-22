@@ -7,6 +7,7 @@ import yaml
 import random as rn
 from model.supervisor import EncoderDecoder
 from lib.GABinary import evolution
+from lib import PSO
 from lib import utils_ga
 from lib import constant
 from model.supervisor import EncoderDecoder
@@ -26,7 +27,7 @@ def seed():
     tf.set_random_seed(1234)
     
 if __name__ == '__main__':
-    seed()
+    # seed()
     sys.path.append(os.getcwd())
     parser = argparse.ArgumentParser()
     parser.add_argument('--use_cpu_only', default=False, type=str, help='Whether to run tensorflow on cpu.')
@@ -42,9 +43,12 @@ if __name__ == '__main__':
             config = yaml.load(f)
 
     if args.mode == 'ga_seq2seq':
-        evo = evolution(total_feature=len(constant.hanoi_features), pc=0.3, pm=0.2, population_size=30, max_gen=40)
-        fitness = [evo["gen"], evo["fitness"]]
-        utils_ga.write_log(path="log/GA_pc_0.3/", filename="result_binary.csv", error=fitness)
+        # evo = evolution(total_feature=len(constant.hanoi_features), pc=0.3, pm=0.2, population_size=30, max_gen=40)
+        # fitness = [evo["gen"], evo["fitness"]]
+        # utils_ga.write_log(path="log/GA_pc_0.3/", filename="result_binary.csv", error=fitness)        
+        location, fitness = PSO.evolution(2, len(constant.hanoi_features), 2)
+        print(location)
+        print(fitness)
     elif args.mode == 'seq2seq_train':
         model = EncoderDecoder(is_training=True, **config)
         model.train()

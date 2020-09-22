@@ -127,7 +127,7 @@ def evolution(total_feature, population_size, pc=0.8, pm=0.2, max_gen=1000):
                 off = mutation(population[i], total_feature=total_feature)
                 temp_population.append(off)
                 training_time_gen += off["time"]
-
+        
         population = selection(population+temp_population, population_size)
         fitness = [t, population[0]["gen"], population[0]["fitness"], training_time_gen]
         utils_ga.write_log(path="log/GA_pc_0.3/", filename="fitness_gen.csv", error=fitness)
