@@ -2,7 +2,11 @@ from pandas import read_csv
 import numpy as np
 import pandas as pd
 import yaml
-from lib import constant
+
+taiwan_features = ['MONTH', 'DAY', 'YEAR', 'HOUR', 'AMB_TEMP', 'CO', 'NO', 'NO2',
+    'NOx', 'O3', 'RH', 'SO2', 'WD_HR', 'WIND_DIREC', 'WIND_SPEED', 'WS_HR', 'PM10']
+
+hanoi_features = ['MONTH','DAY','YEAR','HOUR','WIND_SPEED','WIND_DIR','TEMP','RH','BAROMETER','RADIATION','INNER_TEMP','PM10','PM1']
 
 def generate_npz(all_input_features, dataset, output_dir, config_path):
     set_config(all_input_features, config_path)
@@ -67,7 +71,7 @@ def preprocess_all():
     dataset = 'data/csv/taiwan_data_mean.csv'
 
     # full taiwan
-    generate_npz(constant.taiwan_features + target_feature, dataset, 'data/npz/taiwan/full_taiwan.npz', 'config/taiwan/full_taiwan.yaml')
+    generate_npz(taiwan_features + target_feature, dataset, 'data/npz/taiwan/full_taiwan.npz', 'config/taiwan/full_taiwan.yaml')
 
     # only PM2.5
     generate_npz(target_feature + target_feature, dataset, 'data/npz/taiwan/pm25_taiwan.npz', 'config/taiwan/pm25_taiwan.yaml')
@@ -91,7 +95,7 @@ def preprocess_all():
     # full hanoi
     dataset_hanoi = 'data/csv/hanoi_data_median.csv'
     config_path_full_hanoi = 'config/hanoi/full_hanoi.yaml'
-    generate_npz(constant.hanoi_features + target_feature, dataset_hanoi, 'data/npz/hanoi/full_hanoi.npz', config_path_full_hanoi)
+    generate_npz(hanoi_features + target_feature, dataset_hanoi, 'data/npz/hanoi/full_hanoi.npz', config_path_full_hanoi)
 
     # only PM2.5
     config_path_pm25_hanoi = 'config/hanoi/pm25_hanoi.yaml'
@@ -111,3 +115,6 @@ def preprocess_all():
     corr_features = ['YEAR', 'WIND_SPEED', 'TEMP', 'BAROMETER', 'INNER_TEMP', 'PM2.5']
     config_path_corr_fs_hanoi = 'config/hanoi/corr_fs_hanoi.yaml'
     generate_npz(corr_features, dataset_hanoi, 'data/npz/hanoi/corr_fs_hanoi.npz', config_path_corr_fs_hanoi)
+
+if __name__ == '__main__':
+    preprocess_all()
