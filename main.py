@@ -15,7 +15,7 @@ from lib import preprocessing_data
 def seed():
     # The below is necessary for starting Numpy generated random numbers
     # in a well-defined initial state.
-    np.random.seed(2)
+    np.random.seed(5)
     # The below is necessary for starting core Python generated random numbers
     # in a well-defined state.
     rn.seed(12345)
