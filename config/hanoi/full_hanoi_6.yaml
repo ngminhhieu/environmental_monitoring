@@ -1,8 +1,8 @@
 alg: seq2seq
-base_dir: log/seq2seq/ga_hanoi/
+base_dir: log/seq2seq/full_hanoi/
 data:
   batch_size: 200
-  dataset: data/npz/hanoi/ga_hanoi.npz
+  dataset: data/npz/hanoi/full_hanoi.npz
   test_batch_size: 1
   test_size: 0.2
   valid_size: 0.2
