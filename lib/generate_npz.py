@@ -24,7 +24,7 @@ def generate_mean_data_2():
     np.savez('data/full_mean_data.npz', monitoring_data = monitoring_data)
 
 def generate_comparison_data_uncorr():
-    cols = ['PM10', 'PM2.5', 'RH', 'WIND_DIREC', 'WIND_SPEED']
+    cols = ['PM10', 'PM2.5', 'RH', 'WIND_DIREC', 'WIND_SPEED', 'AMB_TEMP']
     comparison_data = read_csv('data/csv/comparison_data.csv', usecols=[i for i in range(2,26)])
     # convert dataframe to numeric to define whether values are a number or not
     for i in range(24):
@@ -65,11 +65,11 @@ def generate_data_xgboost():
     np.savez('data/ori_data_xgboost.npz', monitoring_data = data)
 
 def generate_comparison_data_corr():
-    cols = ['time', 'AMB_TEMP', 'RH', 'WD_HR', 'WIND_DIREC', 'PM10', 'PM2.5']
+    cols = ['AMB_TEMP', 'RH', 'WD_HR', 'WIND_DIREC', 'PM10', 'PM2.5']
     comparison_data = read_csv('data/csv/full_comparison_data.csv', usecols=cols)
-    comparison_data['time'] = pd.to_datetime(comparison_data['time'])
-    comparison_data['time'] = pd.to_timedelta(comparison_data['time'])
-    comparison_data['time'] = comparison_data['time'] / pd.offsets.Minute(1)
+    # comparison_data['time'] = pd.to_datetime(comparison_data['time'])
+    # comparison_data['time'] = pd.to_timedelta(comparison_data['time'])
+    # comparison_data['time'] = comparison_data['time'] / pd.offsets.Minute(1)
     np.savez('data/comparison_data_corr.npz', monitoring_data = comparison_data)
 
 def generate_comparison_data_fi_xgboost():
@@ -80,8 +80,16 @@ def generate_comparison_data_fi_xgboost():
     # comparison_data['time'] = comparison_data['time'] / pd.offsets.Minute(1)
     np.savez('data/comparison_data_fi_xgboost.npz', monitoring_data = comparison_data)
 
+def generate_comparison_data():
+    cols = ['AMB_TEMP', 'RH', 'WIND_SPEED', 'WIND_DIREC', 'PM10', 'PM2.5']
+    comparison_data = read_csv('data/csv/full_comparison_data.csv', usecols=cols)
+    # comparison_data['time'] = pd.to_datetime(comparison_data['time'])
+    # comparison_data['time'] = pd.to_timedelta(comparison_data['time'])
+    # comparison_data['time'] = comparison_data['time'] / pd.offsets.Minute(1)
+    np.savez('data/comparison_data.npz', monitoring_data = comparison_data)
 
 if __name__ == "__main__":
     # generate_comparison_data_fi_xgboost()
     # generate_mean_data_2()
-    generate_data_xgboost()
+    # generate_data_xgboost()
+    generate_comparison_data()

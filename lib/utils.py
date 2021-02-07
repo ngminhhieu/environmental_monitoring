@@ -52,16 +52,16 @@ def create_data(data, seq_len, input_dim, output_dim, horizon, verified_percenta
     _data = data.copy()
     _std = np.std(data)
     _data[bm == 0] = np.random.uniform(_data[bm == 0] - _std, _data[bm == 0] + _std)
-    weather_data = _data[:, 0:7].copy()
-    pm_data = _data[:, 7:].copy()
+    weather_data = _data[:, 0:5].copy()
+    pm_data = _data[:, 5:].copy()
     
     en_x = np.zeros(shape=((T - seq_len - horizon), seq_len, input_dim))
     de_x = np.zeros(shape=((T - seq_len - horizon), horizon, output_dim))
     de_y = np.zeros(shape=((T - seq_len - horizon), horizon, output_dim))
 
     for i in range(T - seq_len - horizon):
-        en_x[i, :, 0:7] = weather_data[i:i + seq_len]
-        en_x[i, :, 7:] = pm_data[i:i + seq_len]
+        en_x[i, :, 0:5] = weather_data[i:i + seq_len]
+        en_x[i, :, 5:] = pm_data[i:i + seq_len]
 
         de_x[i, :, :] = pm_data[i + seq_len - 1:i + seq_len + horizon - 1]
         de_x[i, 0, :] = 0

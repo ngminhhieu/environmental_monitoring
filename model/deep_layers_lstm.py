@@ -1,4 +1,4 @@
-from keras.layers import LSTM
+from tensorflow.keras.layers import LSTM
 
 
 def lstm_enc(input, rnn_unit, rnn_depth, rnn_dropout):

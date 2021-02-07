@@ -1,7 +1,7 @@
 from model.deep_layers_lstm import lstm_enc, lstm_dec
-from keras.layers import Dense, Input
-from keras.models import Model
-from keras.utils import plot_model
+from tensorflow.keras.layers import Dense, Input
+from tensorflow.keras.models import Model
+from tensorflow.keras.utils import plot_model
 
 def lstm_layers_ed_model_construction(input_dim, output_dim, rnn_units, dropout, optimizer, log_dir, rnn_layers, is_training=True):
         # Model

@@ -1,13 +1,13 @@
 import os
 import time
-import keras.callbacks as keras_callbacks
+import tensorflow.keras.callbacks as keras_callbacks
 import numpy as np
 import pandas as pd
 import yaml
-from keras.callbacks import ModelCheckpoint, EarlyStopping
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tqdm import tqdm
 from lib import utils
-from keras.utils import plot_model
+from tensorflow.keras.utils import plot_model
 from model.bilstm_ed_construction import bilstm_ed_model_construction
 from model.lstm_layers_ed_construction import lstm_layers_ed_model_construction
 from model.lstm_ed_construction import lstm_ed_model_construction
@@ -169,9 +169,10 @@ class EncoderDecoder():
 
     def _test(self):
         scaler = self._data['scaler']
+        start_time = start_time = time.time()
         data_test = self._data['test_data_norm']
-        weather_data = data_test[:, 0:7].copy()
-        pm_data = data_test[:, 7:].copy()
+        weather_data = data_test[:, 0:5].copy()
+        pm_data = data_test[:, 5:].copy()
         T = len(data_test)
         l = self._seq_len
         h = self._horizon
@@ -189,8 +190,8 @@ class EncoderDecoder():
                 iterator.close()
                 break
             input = np.zeros(shape=(self._test_batch_size, l, self._input_dim))
-            input[0, :, 0:7] = weather_data[i:i + l].copy()
-            input[0, :, 7:] = pm_data[i:i + l].copy()
+            input[0, :, 0:5] = weather_data[i:i + l].copy()
+            input[0, :, 5:] = pm_data[i:i + l].copy()
             yhats = self._predict(input)
             _pd[i + l:i + l + h] = yhats
 
@@ -198,6 +199,7 @@ class EncoderDecoder():
             _gt = pm_data[i + l:i + l + h].copy()
             _bm = bm[i + l:i + l + h].copy()
             pd[i + l:i + l + h] = yhats * (1.0 - _bm) + _gt * _bm
+        inference_time = (time.time() - start_time)
         # save metrics when still be scaled
         gt = data_test[0:_pd.shape[0], -self._output_dim:].copy()
         error_list_scaled = utils.cal_error(gt.flatten(), _pd.flatten())
@@ -212,6 +214,7 @@ class EncoderDecoder():
         np.save(self._log_dir+'gt', ground_truth)
         # save metrics to log dir
         error_list = utils.cal_error(ground_truth.flatten(), predicted_data.flatten())
+        error_list = error_list + [inference_time]
         utils.save_metrics(error_list, self._log_dir, self._alg_name)
 
     def _predict_2(self, input):
@@ -261,6 +264,7 @@ class EncoderDecoder():
         if self._time_callback.times is not None:
             dump_model_history['train_time'] = self._time_callback.times
 
+        dump_model_history.loc[-1, -1] = np.sum(self._time_callback.times)
         dump_model_history.to_csv(self._log_dir + 'training_history.csv', index=False)
 
     def _plot_training_history(self, model_history):
