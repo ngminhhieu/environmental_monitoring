@@ -1,6 +1,6 @@
-from keras.layers import LSTM, Dense, Input, Bidirectional, Concatenate
-from keras.models import Model
-from keras.utils import plot_model
+from tensorflow.keras.layers import LSTM, Dense, Input, Bidirectional, Concatenate
+from tensorflow.keras.models import Model
+from tensorflow.keras.utils import plot_model
 
 def bilstm_ed_model_construction(input_dim, output_dim, rnn_units, dropout, optimizer, log_dir, is_training=True):
         # Model

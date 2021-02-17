@@ -1,13 +1,13 @@
 import os
 import time
-import keras.callbacks as keras_callbacks
+import tensorflow.keras.callbacks as keras_callbacks
 import numpy as np
 import pandas as pd
 import yaml
-from keras.callbacks import ModelCheckpoint, EarlyStopping
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tqdm import tqdm
 from lib import utils_model
-from keras.utils import plot_model
+from tensorflow.keras.utils import plot_model
 from model.bilstm_ed_construction import bilstm_ed_model_construction
 from model.lstm_ed_construction import lstm_ed_model_construction
 from model.gru_ed_construction import gru_ed_model_construction

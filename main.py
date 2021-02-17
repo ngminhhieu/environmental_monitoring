@@ -12,6 +12,11 @@ from lib import constant
 from model.supervisor import EncoderDecoder
 from lib import preprocessing_data
 
+# allow run multiple command python (sharing GPU)
+config = tf.compat.v1.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.compat.v1.Session(config=config)
+
 def seed():
     # The below is necessary for starting Numpy generated random numbers
     # in a well-defined initial state.
