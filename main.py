@@ -28,7 +28,7 @@ def seed():
     # in the TensorFlow backend have a well-defined initial state.
     # For further details, see:
     # https://www.tensorflow.org/api_docs/python/tf/set_random_seed
-    tf.set_random_seed(12345)
+    tf.compat.v1.set_random_seed(12345)
     
 if __name__ == '__main__':
     seed()
