@@ -1,5 +1,6 @@
 import argparse
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import sys
 import tensorflow as tf
 import numpy as np
