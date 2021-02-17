@@ -1,3 +1,4 @@
+import matplotlib
 import os
 import time
 import tensorflow.keras.callbacks as keras_callbacks
@@ -7,12 +8,13 @@ import yaml
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from tqdm import tqdm
 from lib import utils_model
-from tensorflow.keras.utils import plot_model
+# from tensorflow.keras.utils import plot_model
 from model.bilstm_ed_construction import bilstm_ed_model_construction
 from model.lstm_ed_construction import lstm_ed_model_construction
 from model.gru_ed_construction import gru_ed_model_construction
 from datetime import datetime
-
+import time
+import matplotlib.pyplot as plt
 
 class TimeHistory(keras_callbacks.Callback):
     def on_train_begin(self, logs={}):
@@ -80,7 +82,7 @@ class EncoderDecoder():
             self._log_dir + "best_model.hdf5",
             monitor='val_loss', verbose=1,
             save_best_only=True,
-            mode='auto', period=1)
+            mode='auto', save_freq='epoch')
         self._earlystop = EarlyStopping(monitor='val_loss', patience=self._train_kwargs.get('patience'),
                                         verbose=1, mode='auto')
         self._time_callback = TimeHistory()
@@ -158,6 +160,7 @@ class EncoderDecoder():
 
     def test(self):
         scaler = self._data['scaler']
+        start_time = start_time = time.time()
         data_test = self._data['test_data_norm'].copy()
         # this is the meterogical data
         other_features_data = data_test[:, 0:(self._input_dim-self._output_dim)].copy()
@@ -188,6 +191,8 @@ class EncoderDecoder():
             _bm = bm[i + l:i + l + h].copy()
             pd[i + l:i + l + h] = yhats * (1.0 - _bm) + _gt * _bm
         
+        
+        inference_time = (time.time()-start_time)
         # rescale metrics
         residual_row = len(other_features_data)-len(_pd)
         if residual_row != 0:
@@ -200,6 +205,7 @@ class EncoderDecoder():
         np.save(self._log_dir+'gt', ground_truth)
         # save metrics to log dir
         error_list = utils_model.cal_error(ground_truth.flatten(), predicted_data.flatten())
+        error_list = error_list + [inference_time]
         mae = utils_model.mae(ground_truth.flatten(), predicted_data.flatten())
         utils_model.save_metrics(error_list, self._log_dir, self._alg_name)
         return mae
@@ -241,11 +247,10 @@ class EncoderDecoder():
         if self._time_callback.times is not None:
             dump_model_history['train_time'] = self._time_callback.times
 
+        dump_model_history.loc[-1, -1] = np.sum(self._time_callback.times)
         dump_model_history.to_csv(self._log_dir + 'training_history.csv', index=False)
 
     def _plot_training_history(self, model_history):
-        import matplotlib.pyplot as plt
-
         plt.plot(model_history.history['loss'], label='loss')
         plt.plot(model_history.history['val_loss'], label='val_loss')
         plt.savefig(self._log_dir + '[loss]{}.png'.format(self._alg_name))
@@ -257,12 +262,11 @@ class EncoderDecoder():
         plt.legend()
         plt.close()
 
-    def plot_models(self):
-        plot_model(model=self.model, to_file=self._log_dir + '/model.png', show_shapes=True)
+    # def plot_models(self):
+    #     plot_model(model=self.model, to_file=self._log_dir + '/model.png', show_shapes=True)
 
 
     def plot_series(self):
-        from matplotlib import pyplot as plt
         preds = np.load(self._log_dir+'pd.npy')
         gt = np.load(self._log_dir+'gt.npy')
         if preds.shape[1] == 1 and gt.shape[1] == 1:
